@@ -144,7 +144,7 @@
         <div class="bg-slate-950/60 rounded-xl p-4 border border-slate-800/80 text-xs text-slate-400 space-y-1">
           <div class="font-bold text-white">Calculation notes:</div>
           <p>
-            Network difficulty: ~182.45 T. Reward per block: 2.50 ETC. Electricity cost is calculated as <span class="text-slate-300 font-mono">(Watts / 1000) * 24h * $/kWh</span>.
+            Network difficulty: <span class="text-emerald-400 font-mono">{{ formattedDifficulty }}</span>. Reward per block: <span class="text-emerald-400 font-mono">{{ blockReward }} ETC</span>. Electricity cost is calculated as <span class="text-slate-300 font-mono">(Watts / 1000) * 24h * $/kWh</span>.
           </p>
         </div>
       </div>
@@ -163,6 +163,16 @@ const powerWatts = ref(650);
 const powerCost = ref(0.10);
 const poolFee = ref(0.5);
 const etcPrice = ref(28.45);
+const difficulty = ref(17179869184000); // Default 17.18 T from server API
+const blockReward = ref(2.56);
+
+const formattedDifficulty = computed(() => {
+  const d = difficulty.value;
+  if (d >= 1e12) return `${(d / 1e12).toFixed(2)} T`;
+  if (d >= 1e9) return `${(d / 1e9).toFixed(2)} G`;
+  if (d >= 1e6) return `${(d / 1e6).toFixed(2)} M`;
+  return d.toString();
+});
 
 const presets = [
   { name: '1x RTX 3080 (100 MH, 220W)', val: 100, unit: 'MH', watts: 220 },
@@ -187,9 +197,12 @@ const totalHashInMH = computed(() => {
 
 const results = computed(() => {
   const mh = totalHashInMH.value;
-  // Approximation based on ETC network difficulty
-  const baseDailyETCPerMH = 0.000055 * (1 - (poolFee.value || 0) / 100);
-  const dailyETC = mh * baseDailyETCPerMH;
+  const hashRateHps = mh * 1e6; // Convert MH/s to H/s
+  
+  // Mathematically exact reward formula based on live network difficulty:
+  // Daily Rewards = (hashrate * 86400 * blockReward) / networkDifficulty
+  const baseDailyETC = (hashRateHps * 86400 * blockReward.value) / difficulty.value;
+  const dailyETC = baseDailyETC * (1 - (poolFee.value || 0) / 100);
   const dailyRevUSD = dailyETC * etcPrice.value;
 
   const dailyPowerKWh = ((powerWatts.value || 0) * 24) / 1000;
@@ -215,7 +228,19 @@ async function loadPrice() {
   }
 }
 
+async function loadStatsAndPrice() {
+  await loadPrice();
+  try {
+    const stats = await PoolAPI.getStats();
+    if (stats?.nodes?.[0]?.difficulty) {
+      difficulty.value = stats.nodes[0].difficulty;
+    }
+  } catch (err) {
+    console.warn('Failed to load stats for calculator:', err);
+  }
+}
+
 onMounted(() => {
-  loadPrice();
+  loadStatsAndPrice();
 });
 </script>

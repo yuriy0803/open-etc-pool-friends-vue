@@ -67,7 +67,7 @@
         title="Unpaid Balance"
         :value="`${formatCoins(minerData?.stats?.balance || 0)} ETC`"
         :subValue="priceData?.market_data?.current_price?.usd ? `≈ $${((minerData?.stats?.balance ? minerData.stats.balance / 1e9 : 0.42) * priceData.market_data.current_price.usd).toFixed(2)} USD` : ''"
-        badgeText="Threshold: 0.5 ETC"
+        :badgeText="`Min Payout: ${minerData?.threshold ? (minerData.threshold / 1e9).toFixed(2) : '0.50'} ETC`"
         badgeClass="bg-teal-500/10 text-teal-400 border border-teal-500/20"
         :icon="Wallet"
       />
@@ -75,7 +75,8 @@
         title="Total Paid Out"
         :value="`${formatCoins(minerData?.stats?.paid || 0)} ETC`"
         :subValue="`${(minerData?.payments || []).length} Payments`"
-        badgeText="PPLNS"
+        :badgeText="(minerData?.miningType || 'pplns').toUpperCase()"
+        :badgeClass="minerData?.miningType === 'solo' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'"
         :icon="Coins"
       />
       <StatCard
@@ -205,59 +206,181 @@
       </div>
     </div>
 
-    <!-- Recent Miner Payouts -->
-    <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h3 class="text-base font-bold text-white flex items-center space-x-2">
-            <CreditCard class="w-4 h-4 text-emerald-400" />
-            <span>Miner Payout History</span>
-          </h3>
-          <p class="text-xs text-slate-400">Transactions sent to this wallet</p>
+    <!-- Payouts & Settings Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Recent Miner Payouts (2 Cols) -->
+      <div class="lg:col-span-2 glass-card rounded-2xl p-5 sm:p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center space-x-2">
+              <CreditCard class="w-4 h-4 text-emerald-400" />
+              <span>Miner Payout History</span>
+            </h3>
+            <p class="text-xs text-slate-400">Transactions sent to this wallet</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs font-mono">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400 font-sans text-[11px] uppercase tracking-wider">
+                <th class="py-3 px-3">Time</th>
+                <th class="py-3 px-3">Amount</th>
+                <th class="py-3 px-3">Transaction Hash</th>
+                <th class="py-3 px-3 text-right">Explorer</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/50 text-slate-300">
+              <tr v-for="p in minerData?.payments || []" :key="p.tx" class="hover:bg-slate-800/30 transition-colors">
+                <td class="py-3 px-3 text-slate-400 font-sans">
+                  {{ formatDateTime(p.timestamp) }}
+                </td>
+                <td class="py-3 px-3 font-bold text-emerald-400">
+                  {{ formatCoins(p.amount) }} ETC
+                </td>
+                <td class="py-3 px-3 text-slate-300">
+                  <span class="hidden sm:inline">{{ shortenAddress(p.tx, 14, 10) }}</span>
+                  <span class="sm:hidden">{{ shortenAddress(p.tx, 6, 4) }}</span>
+                </td>
+                <td class="py-3 px-3 text-right">
+                  <a
+                    :href="`https://etc.blockscout.com/tx/${p.tx}`"
+                    target="_blank"
+                    rel="noopener"
+                    class="inline-flex items-center space-x-1 text-emerald-400 hover:text-emerald-300"
+                  >
+                    <span class="font-sans text-xs">View</span>
+                    <ExternalLink class="w-3 h-3" />
+                  </a>
+                </td>
+              </tr>
+              <tr v-if="!minerData?.payments?.length">
+                <td colspan="4" class="py-8 text-center text-slate-500 font-sans">
+                  No payouts yet recorded for this address.
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs font-mono">
-          <thead>
-            <tr class="border-b border-slate-800 text-slate-400 font-sans text-[11px] uppercase tracking-wider">
-              <th class="py-3 px-3">Time</th>
-              <th class="py-3 px-3">Amount</th>
-              <th class="py-3 px-3">Transaction Hash</th>
-              <th class="py-3 px-3 text-right">Explorer</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-800/50 text-slate-300">
-            <tr v-for="p in minerData?.payments || []" :key="p.tx" class="hover:bg-slate-800/30 transition-colors">
-              <td class="py-3 px-3 text-slate-400 font-sans">
-                {{ formatDateTime(p.timestamp) }}
-              </td>
-              <td class="py-3 px-3 font-bold text-emerald-400">
-                {{ formatCoins(p.amount) }} ETC
-              </td>
-              <td class="py-3 px-3 text-slate-300">
-                <span class="hidden sm:inline">{{ shortenAddress(p.tx, 14, 10) }}</span>
-                <span class="sm:hidden">{{ shortenAddress(p.tx, 6, 4) }}</span>
-              </td>
-              <td class="py-3 px-3 text-right">
-                <a
-                  :href="`https://etc.blockscout.com/tx/${p.tx}`"
-                  target="_blank"
-                  rel="noopener"
-                  class="inline-flex items-center space-x-1 text-emerald-400 hover:text-emerald-300"
-                >
-                  <span class="font-sans text-xs">View</span>
-                  <ExternalLink class="w-3 h-3" />
-                </a>
-              </td>
-            </tr>
-            <tr v-if="!minerData?.payments?.length">
-              <td colspan="4" class="py-8 text-center text-slate-500 font-sans">
-                No payouts yet recorded for this address.
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- Mining Settings Form (1 Col) -->
+      <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center space-x-2">
+            <Sliders class="w-4 h-4 text-emerald-400" />
+            <span>Miner Configuration</span>
+          </h3>
+          <p class="text-xs text-slate-400">Modify reward scheme, threshold & alerts</p>
+        </div>
+
+        <form @submit.prevent="saveSettings" class="space-y-4 text-xs text-slate-300">
+          <!-- Reward Scheme Selector -->
+          <div>
+            <label class="block font-semibold uppercase text-slate-400 mb-1.5 text-[10px] tracking-wider">Reward Scheme</label>
+            <div class="grid grid-cols-2 gap-2 bg-slate-900/60 p-1 rounded-xl border border-slate-800">
+              <button
+                type="button"
+                @click="selectedScheme = 'pplns'"
+                class="py-1.5 px-2 rounded-lg font-semibold transition-all text-center"
+                :class="selectedScheme === 'pplns' ? 'bg-emerald-500 text-slate-950' : 'text-slate-400 hover:text-white'"
+              >
+                PPLNS (Pool)
+              </button>
+              <button
+                type="button"
+                @click="selectedScheme = 'solo'"
+                class="py-1.5 px-2 rounded-lg font-semibold transition-all text-center"
+                :class="selectedScheme === 'solo' ? 'bg-amber-500 text-slate-950' : 'text-slate-400 hover:text-white'"
+              >
+                SOLO (Individual)
+              </button>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-1 leading-normal">
+              {{ selectedScheme === 'solo' ? 'Find blocks individually and claim 100% block reward (minus fee).' : 'Earn proportionally based on your share size.' }}
+            </p>
+          </div>
+
+          <!-- Payout Threshold -->
+          <div>
+            <label class="block font-semibold uppercase text-slate-400 mb-1 text-[10px] tracking-wider">
+              Payout Threshold (ETC)
+            </label>
+            <div class="relative flex items-center">
+              <input
+                v-model.number="payoutThreshold"
+                type="number"
+                step="0.05"
+                min="0.1"
+                max="10.0"
+                required
+                class="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2 text-white font-mono focus:outline-none"
+              />
+              <span class="absolute right-3 text-[10px] text-slate-500 font-sans">0.1 - 10.0</span>
+            </div>
+          </div>
+
+          <!-- Email Alerts -->
+          <div>
+            <label class="block font-semibold uppercase text-slate-400 mb-1 text-[10px] tracking-wider">
+              Notification Email
+            </label>
+            <input
+              v-model="notificationEmail"
+              type="email"
+              placeholder="miner@example.com"
+              class="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2 text-white font-mono focus:outline-none"
+            />
+            <div class="flex items-center space-x-2 mt-2">
+              <input
+                v-model="emailAlert"
+                type="checkbox"
+                id="alertCheck"
+                class="rounded border-slate-800 text-emerald-500 focus:ring-emerald-500/30 bg-slate-900"
+              />
+              <label for="alertCheck" class="text-slate-400 cursor-pointer select-none">
+                Send offline worker alerts
+              </label>
+            </div>
+          </div>
+
+          <!-- Authentication Check -->
+          <div class="border-t border-slate-800/80 pt-3">
+            <label class="block font-semibold uppercase text-slate-300 mb-1 text-[10px] tracking-wider flex items-center space-x-1">
+              <span class="text-rose-400">*</span>
+              <span>IP Address or Password</span>
+            </label>
+            <input
+              v-model="verificationIP"
+              type="text"
+              required
+              placeholder="e.g. 192.168.1.5 or x"
+              class="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2 text-white font-mono focus:outline-none"
+            />
+            <p class="text-[10px] text-slate-500 mt-1 leading-normal">
+              Enter the IP of one of your miners, or your miner's custom password.
+            </p>
+          </div>
+
+          <!-- Save/Status Message -->
+          <div v-if="settingsStatus" class="p-2.5 rounded-xl text-[11px] leading-normal" :class="settingsStatus.type === 'success' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' : 'bg-rose-500/10 border border-rose-500/20 text-rose-400'">
+            <div class="flex items-start space-x-1.5">
+              <Check v-if="settingsStatus.type === 'success'" class="w-3.5 h-3.5 mt-0.5 shrink-0" />
+              <AlertCircle v-else class="w-3.5 h-3.5 mt-0.5 shrink-0" />
+              <span>{{ settingsStatus.text }}</span>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            :disabled="settingsLoading"
+            class="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition-all flex items-center justify-center space-x-1"
+          >
+            <RefreshCw v-if="settingsLoading" class="w-3.5 h-3.5 animate-spin" />
+            <span>{{ settingsLoading ? 'Applying...' : 'Save Config' }}</span>
+          </button>
+        </form>
       </div>
     </div>
   </div>
@@ -268,7 +391,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { 
   ArrowLeft, RefreshCw, Copy, ExternalLink, Cpu, Wallet, 
-  Coins, Box, Activity, Server, CreditCard 
+  Coins, Box, Activity, Server, CreditCard, Sliders, Check, AlertCircle
 } from 'lucide-vue-next';
 import StatCard from '../components/StatCard.vue';
 import HashrateChart from '../components/HashrateChart.vue';
@@ -280,6 +403,25 @@ const walletAddress = computed(() => route.params.address);
 const minerData = ref(null);
 const priceData = ref(null);
 const loading = ref(false);
+
+// Config Form State
+const selectedScheme = ref('pplns');
+const payoutThreshold = ref(0.5);
+const notificationEmail = ref('');
+const emailAlert = ref(false);
+const verificationIP = ref('');
+const settingsLoading = ref(false);
+const settingsStatus = ref(null);
+
+// Sync form values when minerData loads
+watch(minerData, (newVal) => {
+  if (newVal) {
+    selectedScheme.value = newVal.miningType || 'pplns';
+    payoutThreshold.value = newVal.threshold ? Number((newVal.threshold / 1e9).toFixed(2)) : 0.5;
+    notificationEmail.value = newVal.email || '';
+    emailAlert.value = newVal.alert === 'on';
+  }
+}, { immediate: true });
 
 const workerList = computed(() => {
   if (!minerData.value?.workers) return [];
@@ -310,11 +452,16 @@ const etcUsdPrice = computed(() => {
   return priceData.value?.market_data?.current_price?.usd || 28.45;
 });
 
+const networkDifficulty = computed(() => {
+  return minerData.value?.difficulty || 17179869184000;
+});
+
 const estDailyETC = computed(() => {
-  // Hashrate / 180TH * ~16500 ETC daily block rewards
-  const hrMH = currentHash.value / 1e6;
-  const val = hrMH * 0.000055;
-  return Math.max(0.001, val).toFixed(4);
+  const hashRateHps = currentHash.value;
+  const blockReward = 2.56;
+  // Exact daily blocks formula: (hashrate * 86400 * blockReward) / networkDifficulty
+  const baseDailyETC = (hashRateHps * 86400 * blockReward) / networkDifficulty.value;
+  return Math.max(0.0001, baseDailyETC).toFixed(4);
 });
 
 const estDailyUSD = computed(() => {
@@ -341,6 +488,52 @@ async function loadMinerData() {
     console.error('Failed to load miner detail:', err);
   } finally {
     loading.value = false;
+  }
+}
+
+async function saveSettings() {
+  if (!verificationIP.value) {
+    settingsStatus.value = {
+      type: 'error',
+      text: 'IP address or password is required to confirm changes.'
+    };
+    return;
+  }
+
+  settingsLoading.value = true;
+  settingsStatus.value = null;
+
+  try {
+    // 1. Update Mining type
+    await PoolAPI.updateMiningType({
+      radio: selectedScheme.value,
+      login: walletAddress.value,
+      ip_address: verificationIP.value
+    });
+
+    // 2. Update threshold & notification alerts
+    await PoolAPI.updateSettings({
+      email: notificationEmail.value,
+      login: walletAddress.value,
+      threshold: payoutThreshold.value.toString(),
+      ip_address: verificationIP.value,
+      alertCheck: emailAlert.value ? 'on' : 'off'
+    });
+
+    settingsStatus.value = {
+      type: 'success',
+      text: 'Configuration successfully updated and active on the stratum node!'
+    };
+
+    await loadMinerData();
+    verificationIP.value = '';
+  } catch (err) {
+    settingsStatus.value = {
+      type: 'error',
+      text: 'Failed to verify identity. Please check your IP or password.'
+    };
+  } finally {
+    settingsLoading.value = false;
   }
 }
 

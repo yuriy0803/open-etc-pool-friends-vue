@@ -82,9 +82,14 @@ app.use('/api', async (req, res) => {
 
     if (apiPath === '/stats' || apiPath === '/stats/') {
       return res.json({
+        now: Date.now(),
         hashrate: 458293100000 + Math.floor((Math.random() - 0.5) * 5000000000), // ~458 GH/s
         minersTotal: 12,
+        workersTotal: 34,
         totalWorkers: 34,
+        maturedTotal: 142,
+        immatureTotal: 2,
+        candidatesTotal: 0,
         nodes: [
           {
             difficulty: 17179869184000, // 17.18 T
@@ -94,7 +99,11 @@ app.use('/api', async (req, res) => {
         ],
         poolCharts: makeChart(458293100000, 4),
         workerCharts: makeChart(34, 8),
-        netCharts: makeChart(17179869184000, 1)
+        netCharts: makeChart(17179869184000, 1),
+        stats: {
+          paymentThreshold: 500000000000000000,
+          fee: 0.5
+        }
       });
     }
 
@@ -220,6 +229,14 @@ app.use('/api', async (req, res) => {
       });
     }
 
+    if (apiPath === '/settings' || apiPath === '/settings/') {
+      return res.json({ result: "success" });
+    }
+
+    if (apiPath === '/mining' || apiPath === '/mining/') {
+      return res.json({ result: "success" });
+    }
+
     if (apiPath === '/live_stats' || apiPath === '/live_stats/') {
       return res.json({
         hashrate: 458293100000,
@@ -248,6 +265,7 @@ app.use('/api', async (req, res) => {
       return res.json({
         currentHashrate: hash,
         hashrate: hash * 0.96,
+        miningType: "pplns",
         workers: {
           "Rig-Alpha": {
             hr: hash * 0.6,
@@ -302,7 +320,10 @@ app.use('/api', async (req, res) => {
     return res.status(404).json({ error: 'Endpoint not found' });
   }
 
-  const targetUrl = `${POOL_API_URL}${req.url}`;
+  let targetUrl = `${POOL_API_URL}${req.originalUrl}`;
+  if (POOL_API_URL.endsWith('/api') && req.originalUrl.startsWith('/api')) {
+    targetUrl = `${POOL_API_URL}${req.originalUrl.substring(4)}`;
+  }
 
   try {
     const fetchOptions = {
@@ -325,6 +346,13 @@ app.use('/api', async (req, res) => {
 
     if (contentType.includes('application/json')) {
       const data = await upstreamRes.json();
+      if (data && typeof data === 'object') {
+        if (data.workersTotal !== undefined && data.totalWorkers === undefined) {
+          data.totalWorkers = data.workersTotal;
+        } else if (data.totalWorkers !== undefined && data.workersTotal === undefined) {
+          data.workersTotal = data.totalWorkers;
+        }
+      }
       res.json(data);
     } else {
       const text = await upstreamRes.text();

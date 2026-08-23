@@ -43,4 +43,24 @@ export const PoolAPI = {
 
   // Get quick live stats
   getLiveStats: () => fetchJson('/live_stats'),
+
+  // Update miner threshold and notifications settings
+  updateSettings: (params) => {
+    const body = new URLSearchParams(params);
+    return fetchJson('/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body
+    });
+  },
+
+  // Update mining type (PPLNS vs SOLO)
+  updateMiningType: (params) => {
+    const body = new URLSearchParams(params);
+    return fetchJson('/mining', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body
+    });
+  }
 };
