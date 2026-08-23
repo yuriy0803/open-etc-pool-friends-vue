@@ -390,6 +390,7 @@ import HashrateChart from '../components/HashrateChart.vue';
 import { PoolAPI } from '../services/api.js';
 import { formatHashrate, formatDifficulty, formatCoins, formatTimeAgo, shortenAddress, formatDateTime } from '../utils/formatters.js';
 import { useAutoRefresh } from '../composables/useAutoRefresh.js';
+import { useToasts } from '../composables/useToasts.js';
 
 const router = useRouter();
 const walletInput = ref('');
@@ -398,6 +399,8 @@ const priceData = ref(null);
 const blocksData = ref(null);
 const sampleMiners = ref([]);
 const activeChartTab = ref('pool');
+
+const { addToast } = useToasts();
 
 // Miner Payout Tracker State
 const payoutTrackerAddress = ref('');
@@ -412,16 +415,19 @@ async function fetchTrackerPayouts() {
   const addr = payoutTrackerAddress.value.trim();
   if (!addr) {
     trackerError.value = 'Please enter a valid miner address.';
+    addToast('Please enter a valid miner address', 'warning');
     return;
   }
   if (!/^0x[0-9a-fA-F]{40}$/.test(addr)) {
     trackerError.value = 'Invalid Ethereum wallet address format (should start with 0x and be 42 characters).';
+    addToast('Invalid wallet address format', 'error');
     return;
   }
 
   trackerLoading.value = true;
   trackerError.value = '';
   trackerAddressEntered.value = true;
+  const oldPayments = [...trackerPayouts.value];
   trackerPayouts.value = [];
 
   try {
@@ -429,11 +435,20 @@ async function fetchTrackerPayouts() {
     if (data && data.payments) {
       trackerPayouts.value = data.payments;
       localStorage.setItem('etc_pool_tracker_wallet', addr);
+
+      // Check if a new payment transaction was confirmed
+      if (oldPayments.length > 0 && data.payments.length > oldPayments.length) {
+        const newPayment = data.payments[0];
+        addToast(`New Payout Confirmed: ${formatCoins(newPayment.amount)} ETC sent to ${shortenAddress(addr, 6, 4)}!`, 'success', 6000);
+      } else if (oldPayments.length === 0) {
+        addToast(`Successfully retrieved ${data.payments.length} payouts for ${shortenAddress(addr, 6, 4)}`, 'success');
+      }
     } else {
       trackerPayouts.value = [];
     }
   } catch (err) {
     trackerError.value = 'Failed to load payout details. Please ensure the wallet is active and registered on the pool.';
+    addToast('API Error: Failed to fetch payout transactions from pool node', 'error');
   } finally {
     trackerLoading.value = false;
   }
@@ -492,14 +507,38 @@ async function loadData() {
       PoolAPI.getMiners()
     ]);
 
-    if (stats.status === 'fulfilled') statsData.value = stats.value;
-    if (price.status === 'fulfilled') priceData.value = price.value;
-    if (blocks.status === 'fulfilled') blocksData.value = blocks.value;
+    let failedCount = 0;
+
+    if (stats.status === 'fulfilled') {
+      statsData.value = stats.value;
+    } else {
+      failedCount++;
+    }
+
+    if (price.status === 'fulfilled') {
+      priceData.value = price.value;
+    } else {
+      failedCount++;
+    }
+
+    if (blocks.status === 'fulfilled') {
+      blocksData.value = blocks.value;
+    } else {
+      failedCount++;
+    }
+
     if (miners.status === 'fulfilled' && miners.value?.miners) {
       sampleMiners.value = Object.keys(miners.value.miners);
+    } else {
+      failedCount++;
+    }
+
+    if (failedCount > 0) {
+      addToast(`API Warning: ${failedCount} server endpoint(s) failed to fetch. Showing cached values.`, 'warning');
     }
   } catch (err) {
     console.error('Error loading home data:', err);
+    addToast('Critical Error: Failed to connect to mining pool daemon.', 'error');
   }
 }
 

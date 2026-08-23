@@ -57,10 +57,20 @@
             <span>Start Mining</span>
           </router-link>
 
+          <!-- Theme Switcher -->
+          <button 
+            @click="toggleTheme" 
+            class="p-2 rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 border border-slate-200 dark:border-slate-800 transition-colors"
+            title="Toggle Theme"
+          >
+            <Sun v-if="isDark" class="w-4 h-4 text-amber-400" />
+            <Moon v-else class="w-4 h-4 text-sky-500" />
+          </button>
+
           <!-- Mobile Hamburger -->
           <button 
             @click="mobileOpen = !mobileOpen"
-            class="md:hidden p-2 rounded-lg bg-slate-900 text-slate-400 hover:text-slate-100 border border-slate-800"
+            class="md:hidden p-2 rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 border border-slate-200 dark:border-slate-800"
           >
             <Menu v-if="!mobileOpen" class="w-5 h-5" />
             <X v-else class="w-5 h-5" />
@@ -70,22 +80,36 @@
     </div>
 
     <!-- Mobile Menu Dropdown -->
-    <div v-if="mobileOpen" class="md:hidden border-t border-slate-800 bg-[#090d16] px-4 pt-3 pb-5 space-y-2">
+    <div v-if="mobileOpen" class="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#090d16] px-4 pt-3 pb-5 space-y-2">
       <form @submit.prevent="handleSearch" class="mb-4">
         <input
           v-model="searchQuery"
           type="text"
           placeholder="Miner address 0x..."
-          class="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 font-mono"
+          class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-emerald-500 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 font-mono"
         />
       </form>
+
+      <!-- Mobile Theme Toggle row -->
+      <div class="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/60">
+        <span class="text-xs font-medium text-slate-600 dark:text-slate-400">Color Mode</span>
+        <button 
+          @click="toggleTheme" 
+          class="flex items-center space-x-1.5 px-3 py-1 rounded-md bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold"
+        >
+          <Sun v-if="isDark" class="w-3.5 h-3.5 text-amber-400" />
+          <Moon v-else class="w-3.5 h-3.5 text-sky-500" />
+          <span>{{ isDark ? 'Light' : 'Dark' }}</span>
+        </button>
+      </div>
+
       <router-link 
         v-for="item in navItems" 
         :key="item.path" 
         :to="item.path"
         @click="mobileOpen = false"
         class="block px-3 py-2 rounded-lg text-sm font-medium transition-colors"
-        :class="$route.path === item.path ? 'bg-slate-800 text-emerald-400' : 'text-slate-400 hover:text-slate-100'"
+        :class="$route.path === item.path ? 'bg-slate-100 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800/50'"
       >
         {{ item.name }}
       </router-link>
@@ -94,13 +118,29 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { Search, Zap, Menu, X } from 'lucide-vue-next';
+import { Search, Zap, Menu, X, Sun, Moon } from 'lucide-vue-next';
 
 const router = useRouter();
 const searchQuery = ref('');
 const mobileOpen = ref(false);
+const isDark = ref(true);
+
+onMounted(() => {
+  isDark.value = localStorage.getItem('etc_theme') !== 'light';
+});
+
+function toggleTheme() {
+  isDark.value = !isDark.value;
+  if (isDark.value) {
+    document.documentElement.classList.add('dark');
+    localStorage.setItem('etc_theme', 'dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+    localStorage.setItem('etc_theme', 'light');
+  }
+}
 
 const navItems = [
   { name: 'Dashboard', path: '/' },
