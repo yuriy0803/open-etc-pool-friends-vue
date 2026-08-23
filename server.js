@@ -11,8 +11,8 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = 3000;
 
-// Upstream Pool API URL from environment variable
-const POOL_API_URL = (process.env.POOL_API_URL || 'https://etc-api.pool2mine.net/api').replace(/\/+$/, '');
+// Upstream Pool API URL from environment variable (never hardcoded in git)
+const POOL_API_URL = (process.env.POOL_API_URL || '').replace(/\/+$/, '');
 
 app.use(cors());
 app.use(express.json());
@@ -64,6 +64,13 @@ app.get('/api/price', async (_req, res) => {
 
 // Proxy all other /api/* requests to POOL_API_URL
 app.use('/api', async (req, res) => {
+  if (!POOL_API_URL) {
+    return res.status(503).json({
+      error: 'POOL_API_URL not configured',
+      message: 'Please provide POOL_API_URL in the .env file or server environment variables.'
+    });
+  }
+
   const targetUrl = `${POOL_API_URL}${req.url}`;
 
   try {
