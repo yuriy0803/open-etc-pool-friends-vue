@@ -1,45 +1,45 @@
-# 🌐 Vue-Web Frontend & Backend Proxy — Installationsanleitung
+# 🌐 Vue-Web Frontend & Backend Proxy — Installation Guide
 
-Moderne Benutzeroberfläche (Vue 3, Tailwind CSS, Vite) und Express.js Proxy-Server für den **Open ETC Mining Pool**.
+Modern web user interface (Vue 3, Tailwind CSS, Vite) and Express.js proxy server for the **Open ETC Mining Pool**.
 
-Diese Anleitung beschreibt die vollständige Installation, Konfiguration und den Produktivbetrieb auf **Linux (x86_64)** sowie **ARM-Systemen (ARM64 / aarch64, Raspberry Pi 4/5, Oracle Cloud ARM)**.
-
----
-
-## 📋 Systemvoraussetzungen
-
-- **Betriebssystem**: Linux (Ubuntu 20.04/22.04/24.04, Debian 11/12, Raspberry Pi OS 64-Bit, AlmaLinux/Rocky Linux)
-- **Architektur**: `x86_64` (AMD64) oder `aarch64` / `arm64` (ARM)
-- **Node.js**: Version **18.x LTS** oder **20.x LTS / 22.x**
-- **RAM**: Mindestens 1 GB RAM (für ARM/Raspberry Pi wird 1 GB Swap empfohlen während des Builds)
+This guide covers complete installation, configuration, and production deployment on **Linux (x86_64)** as well as **ARM architectures (ARM64 / aarch64, Raspberry Pi 4/5, Oracle Cloud ARM, Apple Silicon)**.
 
 ---
 
-## 🚀 1. Node.js & Paketmanager installieren
+## 📋 System Requirements
 
-### Für Ubuntu / Debian / Raspberry Pi OS (x86_64 & ARM64)
+- **Operating System**: Linux (Ubuntu 20.04/22.04/24.04, Debian 11/12, Raspberry Pi OS 64-Bit, AlmaLinux/Rocky Linux, Arch Linux)
+- **Architecture**: `x86_64` (AMD64) or `aarch64` / `arm64` (ARM)
+- **Node.js**: Version **18.x LTS** or **20.x LTS / 22.x**
+- **RAM**: At least 1 GB RAM (on ARM/Raspberry Pi boards, 1–2 GB Swap is recommended during the build process)
 
-Installiere die aktuelle Node.js LTS Version (z. B. v20) über das offizielle NodeSource-Repository:
+---
+
+## 🚀 1. Install Node.js & Package Manager
+
+### For Ubuntu / Debian / Raspberry Pi OS (x86_64 & ARM64)
+
+Install the current Node.js LTS release (v20) via the official NodeSource repository:
 
 ```bash
-# System aktualisieren & Basispakete installieren
+# Update system & install essential tools
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y curl git build-essential
 
-# NodeSource Node.js 20 LTS Repository einrichten
+# Set up NodeSource repository for Node.js 20 LTS
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 
-# Node.js und npm installieren
+# Install Node.js and npm
 sudo apt install -y nodejs
 
-# Versionen überprüfen
-node -v   # z.B. v20.x.x
-npm -v    # z.B. 10.x.x
+# Verify versions
+node -v   # e.g., v20.x.x
+npm -v    # e.g., 10.x.x
 ```
 
-### Für ARM / Raspberry Pi (Empfohlen: Swap einrichten)
+### For ARM / Raspberry Pi (Recommended: Configure Swap)
 
-Auf Geräten mit weniger als 2 GB RAM (z. B. Raspberry Pi) empfiehlt sich temporärer Swap-Speicher für den Build-Prozess:
+On devices with less than 2 GB RAM (e.g. Raspberry Pi), enabling extra swap memory prevents out-of-memory errors during build optimization:
 
 ```bash
 sudo dphys-swapfile swapoff
@@ -50,120 +50,120 @@ sudo dphys-swapfile swapon
 
 ---
 
-## 📦 2. Installation & Abhängigkeiten
+## 📦 2. Clone & Install Dependencies
 
-Navigiere in das Stammverzeichnis des Projekts (dort wo `package.json` und `server.js` liegen):
+Navigate to the project root directory (where `package.json` and `server.js` are located):
 
 ```bash
-# In das Projektverzeichnis wechseln
-cd /pfad/zu/open-etc-pool-friends
+# Navigate to project directory
+cd /path/to/open-etc-pool-friends
 
-# Node.js Abhängigkeiten installieren
+# Install Node.js dependencies
 npm install
 ```
 
 ---
 
-## ⚙️ 3. Konfiguration (`.env`)
+## ⚙️ 3. Environment Configuration (`.env`)
 
-Erstelle eine `.env`-Datei im Stammverzeichnis basierend auf `.env.example`:
+Create your `.env` file from the provided `.env.example`:
 
 ```bash
 cp .env.example .env
 ```
 
-Bearbeite die Datei `.env` mit deinem bevorzugten Editor (z. B. `nano`):
+Edit `.env` with your preferred text editor (e.g., `nano`):
 
 ```bash
 nano .env
 ```
 
-Inhalt der `.env`:
+Set the configuration values:
 ```env
-# Port für den Webserver / Proxy (Standard: 3000)
+# Server Port (default: 3000)
 PORT=3000
 
-# Upstream Pool API Endpoint (Wird im Backend gehalten und nicht an GitHub übertragen)
+# Upstream Pool API Endpoint (Kept private on the server, never committed to GitHub)
 POOL_API_URL=https://etc-api.pool2mine.net/api
 ```
 
-> 🔒 **Sicherheitshinweis**: Die `.env`-Datei ist in `.gitignore` eingetragen und wird niemals auf GitHub veröffentlicht.
+> 🔒 **Security Note**: The `.env` file is listed in `.gitignore` and is never pushed to public repositories.
 
 ---
 
-## 🔨 4. Vue-Web Frontend bauen
+## 🔨 4. Build the Vue-Web Frontend
 
-Das Frontend wird mit Vite kompiliert und in den Ordner `dist/` geschrieben:
+Compile the Vue 3 application into production-ready static assets in the `dist/` directory:
 
 ```bash
-# Produktions-Build erstellen
+# Build for production
 npm run build
 ```
 
-Nach erfolgreichem Build enthält der Ordner `dist/` alle statischen HTML-, CSS- und JS-Dateien.
+Once completed, the `dist/` directory contains all optimized HTML, JavaScript, CSS, and asset files.
 
 ---
 
-## 🏃 5. Starten des Servers
+## 🏃 5. Start the Application
 
-### Entwicklung / Schnelltest:
+### Development / Quick Test:
 ```bash
-# Startet server.js (liefert API-Proxy und Web-Frontend aus)
+# Start server.js (serves API proxy and the static web UI)
 node server.js
 ```
-Der Server läuft standardmäßig auf `http://localhost:3000` (bzw. `http://DEINE_IP:3000`).
+The server will be accessible at `http://localhost:3000` (or `http://YOUR_SERVER_IP:3000`).
 
 ---
 
-## 🛡️ 6. Produktivbetrieb (Dauerhafter Hintergrunddienst)
+## 🛡️ 6. Production Daemon (24/7 Background Service)
 
-Für einen stabilen 24/7-Betrieb stehen zwei empfohlene Optionen zur Verfügung:
+For high-availability 24/7 operation, choose one of the following methods:
 
-### Option A: Mit PM2 Process Manager (Empfohlen)
+### Option A: Using PM2 Process Manager (Recommended)
 
-PM2 überwacht den Node-Prozess und startet ihn bei Abstürzen oder Systemneustarts automatisch neu.
+PM2 monitors the Node.js process and automatically restarts it on crashes or server reboots.
 
 ```bash
-# PM2 global installieren
+# Install PM2 globally
 sudo npm install -g pm2
 
-# Server mit PM2 starten
+# Start the application with PM2
 pm2 start server.js --name "etc-pool-web"
 
-# Status prüfen
+# Check process status
 pm2 status
 
-# Autostart bei System-Boot aktivieren
+# Enable auto-start on system boot
 pm2 startup
 pm2 save
 ```
 
-Nützliche PM2 Befehle:
-- Logs anzeigen: `pm2 logs etc-pool-web`
-- Neustarten: `pm2 restart etc-pool-web`
-- Stoppen: `pm2 stop etc-pool-web`
+Useful PM2 commands:
+- View live logs: `pm2 logs etc-pool-web`
+- Restart server: `pm2 restart etc-pool-web`
+- Stop server: `pm2 stop etc-pool-web`
 
 ---
 
-### Option B: Als Linux Systemd Service
+### Option B: Linux Systemd Service
 
-Erstelle eine Service-Datei für systemd:
+Create a systemd service unit:
 
 ```bash
 sudo nano /etc/systemd/system/etc-pool-web.service
 ```
 
-Füge folgenden Inhalt ein (Pfade und Benutzer anpassen):
+Add the following unit configuration (adjust paths and user as needed):
 
 ```ini
 [Unit]
-Description=ETC Pool Vue Web and API Proxy
+Description=ETC Mining Pool Web Interface & API Proxy
 After=network.target
 
 [Service]
 Type=simple
 User=ubuntu
-WorkingDirectory=/pfad/zu/open-etc-pool-friends
+WorkingDirectory=/path/to/open-etc-pool-friends
 ExecStart=/usr/bin/node server.js
 Restart=always
 RestartSec=10
@@ -176,34 +176,34 @@ Environment=NODE_ENV=production
 WantedBy=multi-user.target
 ```
 
-Dienst aktivieren und starten:
+Enable and start the service:
 
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable etc-pool-web
 sudo systemctl start etc-pool-web
 
-# Status & Logs prüfen:
+# Verify status & logs:
 sudo systemctl status etc-pool-web
 journalctl -u etc-pool-web -f
 ```
 
 ---
 
-## 🌐 7. Nginx Reverse Proxy mit SSL (Optional & Empfohlen)
+## 🌐 7. Nginx Reverse Proxy with SSL (HTTPS)
 
-Um die Seite über eine Domain mit HTTPS (Port 443 / 80) erreichbar zu machen:
+To serve the application on standard web ports (80/443) with your custom domain and SSL:
 
 ```bash
 sudo apt install -y nginx certbot python3-certbot-nginx
 ```
 
-Nginx-Konfiguration erstellen (`/etc/nginx/sites-available/pool.conf`):
+Create an Nginx virtual host configuration (`/etc/nginx/sites-available/etc-pool.conf`):
 
 ```nginx
 server {
     listen 80;
-    server_name pool.deinedomain.com;
+    server_name pool.yourdomain.com;
 
     location / {
         proxy_pass http://127.0.0.1:3000;
@@ -219,24 +219,24 @@ server {
 }
 ```
 
-Aktivieren und SSL-Zertifikat von Let's Encrypt holen:
+Enable the configuration and issue a free Let's Encrypt SSL certificate:
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/pool.conf /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/etc-pool.conf /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl restart nginx
 
-# Kostenloses SSL-Zertifikat einrichten:
-sudo certbot --nginx -d pool.deinedomain.com
+# Obtain SSL Certificate:
+sudo certbot --nginx -d pool.yourdomain.com
 ```
 
 ---
 
-## 🔍 8. Fehlerbehebung & Tipps
+## 🔍 8. Troubleshooting & Performance Tips
 
-| Problem | Ursache | Lösung |
+| Issue | Cause | Solution |
 | :--- | :--- | :--- |
-| `npm run build` friert auf ARM ein | Zu wenig RAM während der Optimierung | Swap-Speicher vergrößern (`2048 MB`) oder lokal auf PC bauen und `dist/` hochladen. |
-| `POOL_API_URL not configured` | `.env` fehlt oder ist leer | `cp .env.example .env` ausführen und `POOL_API_URL` eintragen. |
-| Port 3000 belegt (`EADDRINUSE`) | Ein anderer Prozess nutzt Port 3000 | Mit `sudo lsof -i :3000` prüfen und Prozess beenden oder `PORT=3001` in `.env` setzen. |
-| Firewall blockiert Zugriff | UFW / iptables sperrt Port | `sudo ufw allow 3000/tcp` oder `sudo ufw allow 'Nginx Full'` |
+| `npm run build` hangs/freezes on ARM | Insufficient memory during asset compression | Allocate swap space (`2048 MB`) or build on a PC and transfer the `dist/` directory. |
+| `POOL_API_URL not configured` | Missing or empty `.env` | Copy `.env.example` to `.env` and configure `POOL_API_URL`. |
+| Port 3000 already in use (`EADDRINUSE`) | Another process is bound to port 3000 | Check with `sudo lsof -i :3000` to terminate or change `PORT=3001` in `.env`. |
+| Cannot access via browser | Firewall blocking port | Run `sudo ufw allow 3000/tcp` or `sudo ufw allow 'Nginx Full'`. |
