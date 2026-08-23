@@ -59,7 +59,7 @@ type Entry struct {
 	updatedAt int64
 }
 
-const diff = 4000000000
+const diff int64 = 4000000000
 
 func NewApiServer(cfg *ApiConfig, backend *storage.RedisClient) *ApiServer {
 	hashrateWindow := util.MustParseDuration(cfg.HashrateWindow)
@@ -453,7 +453,7 @@ func (s *ApiServer) BlocksIndex(w http.ResponseWriter, r *http.Request) {
 
 		crs := fmt.Sprintf("%d", tmp["currentRoundShares"])
 
-		crsInt, _ := strconv.Atoi(crs)
+		crsInt, _ := strconv.ParseInt(crs, 10, 64)
 
 		networkDiff, _ := s.backend.GetNetworkDifficulty()
 

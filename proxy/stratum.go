@@ -209,7 +209,7 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 			reply, errReply := s.handleLoginRPC(cs, params, req.Worker)
 			if errReply != nil {
 				return cs.sendStratumError(req.Id, []string{
-					string(errReply.Code),
+					strconv.Itoa(errReply.Code),
 					errReply.Message,
 				})
 			}
@@ -516,7 +516,7 @@ func (cs *Session) sendJob(s *ProxyServer, id json.RawMessage, newjob bool) erro
 		reply, errReply := s.handleGetWorkRPC(cs)
 		if errReply != nil {
 			return cs.sendStratumError(id, []string{
-				string(errReply.Code),
+				strconv.Itoa(errReply.Code),
 				errReply.Message,
 			})
 		}

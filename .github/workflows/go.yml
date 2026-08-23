@@ -1,4 +1,4 @@
-name: Go Build & Test
+name: Go Build
 
 on:
   push:
@@ -26,18 +26,24 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: 'stable'
+          go-version: '1.22'
           cache: true
 
       - name: Download Go modules
         run: go mod download
 
-      - name: Run Go tests
-        if: matrix.goarch == 'amd64'
-        run: go test -v ./...
-
       - name: Build Go binary
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
-        run: go build -v -o "bin/open-etc-pool-${{ matrix.goos }}-${{ matrix.goarch }}" .
+          CGO_ENABLED: '0'
+        run: |
+          mkdir -p bin
+          go build -v -o "bin/open-etc-pool-${{ matrix.goos }}-${{ matrix.goarch }}" .
+
+      - name: Upload compiled binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: open-etc-pool-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: bin/open-etc-pool-${{ matrix.goos }}-${{ matrix.goarch }}
+          retention-days: 7

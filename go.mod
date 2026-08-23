@@ -11,6 +11,8 @@ require (
 	gopkg.in/redis.v3 v3.6.4
 )
 
+replace github.com/btcsuite/btcd/btcec/v2 => github.com/btcsuite/btcd/btcec/v2 v2.2.0
+
 require (
 	github.com/btcsuite/btcd/btcec/v2 v2.3.4 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0 // indirect

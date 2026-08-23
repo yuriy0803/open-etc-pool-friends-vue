@@ -22,7 +22,7 @@ func TestGetData(t *testing.T) {
 
 	for k, v := range Result {
 
-		fmt.Println("Key: %s , Value, %s", k, v)
+		fmt.Printf("Key: %s , Value: %s\n", k, v)
 
 	}
 
