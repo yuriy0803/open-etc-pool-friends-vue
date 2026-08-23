@@ -1,0 +1,8 @@
+{
+  "name": "Remix open-etc-pool-friends",
+  "description": "Imported from GitHub: yuriy0803/open-etc-pool-friends",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
