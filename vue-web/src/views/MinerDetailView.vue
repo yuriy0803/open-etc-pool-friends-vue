@@ -6,10 +6,15 @@
         <ArrowLeft class="w-4 h-4" />
         <span>Back to All Miners</span>
       </router-link>
-      <button @click="loadMinerData" class="inline-flex items-center space-x-1 text-xs text-slate-400 hover:text-white bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
-        <RefreshCw class="w-3 h-3" :class="{ 'animate-spin': loading }" />
-        <span>Refresh</span>
-      </button>
+      <div class="flex items-center space-x-2">
+        <div class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-slate-950/80 border border-slate-800/80 text-[10px] text-slate-400 font-sans">
+          <span>Auto-refresh in <strong class="text-white font-mono">{{ secondsLeft }}s</strong></span>
+        </div>
+        <button @click="triggerRefresh" class="inline-flex items-center space-x-1 text-xs text-slate-400 hover:text-white bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
+          <RefreshCw class="w-3 h-3" :class="{ 'animate-spin': loading || isRefreshing }" />
+          <span>Refresh</span>
+        </button>
+      </div>
     </div>
 
     <!-- Miner Header Card -->
@@ -397,12 +402,15 @@ import StatCard from '../components/StatCard.vue';
 import HashrateChart from '../components/HashrateChart.vue';
 import { PoolAPI } from '../services/api.js';
 import { formatHashrate, formatCoins, formatTimeAgo, formatDateTime, shortenAddress } from '../utils/formatters.js';
+import { useAutoRefresh } from '../composables/useAutoRefresh.js';
 
 const route = useRoute();
 const walletAddress = computed(() => route.params.address);
 const minerData = ref(null);
 const priceData = ref(null);
 const loading = ref(false);
+
+const { secondsLeft, isRefreshing, triggerRefresh } = useAutoRefresh(loadMinerData, 30);
 
 // Config Form State
 const selectedScheme = ref('pplns');

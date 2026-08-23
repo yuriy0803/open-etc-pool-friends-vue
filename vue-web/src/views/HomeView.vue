@@ -7,9 +7,16 @@
       <div class="absolute top-1/2 -right-24 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
       <div class="relative z-10 max-w-3xl">
-        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-4">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>Ethereum Classic Mainnet Pool</span>
+        <div class="flex flex-wrap items-center gap-2 mb-4">
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Ethereum Classic Mainnet Pool</span>
+          </div>
+
+          <div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-950/80 border border-slate-800/80 text-[11px] text-slate-400 font-sans">
+            <RefreshCw class="w-3 h-3 text-emerald-400" :class="{ 'animate-spin': isRefreshing }" />
+            <span>Auto-refreshing in <strong class="text-white font-mono">{{ secondsLeft }}s</strong></span>
+          </div>
         </div>
 
         <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
@@ -296,12 +303,13 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { 
   Search, Cpu, Users, Coins, Layers, Activity, Server, Copy, 
-  Sliders, Box, ArrowRight 
+  Sliders, Box, ArrowRight, RefreshCw
 } from 'lucide-vue-next';
 import StatCard from '../components/StatCard.vue';
 import HashrateChart from '../components/HashrateChart.vue';
 import { PoolAPI } from '../services/api.js';
 import { formatHashrate, formatDifficulty, formatCoins, formatTimeAgo, shortenAddress } from '../utils/formatters.js';
+import { useAutoRefresh } from '../composables/useAutoRefresh.js';
 
 const router = useRouter();
 const walletInput = ref('');
@@ -310,6 +318,8 @@ const priceData = ref(null);
 const blocksData = ref(null);
 const sampleMiners = ref([]);
 const activeChartTab = ref('pool');
+
+const { secondsLeft, isRefreshing } = useAutoRefresh(loadData, 30);
 
 const activeNode = computed(() => {
   return statsData.value?.nodes?.[0] || null;
