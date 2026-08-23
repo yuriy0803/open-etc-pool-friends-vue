@@ -1,25 +1,43 @@
-name: Go Build
+name: Go Build & Test
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "main" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master", "main" ]
 
 jobs:
   build:
+    name: Go Build (${{ matrix.goos }}/${{ matrix.goarch }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ARCH: [arm, arm64, amd64]
+        include:
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
+          - goos: linux
+            goarch: arm
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.24'  # Use the desired Go version
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: true
 
-    - name: go build
-      run: go build -v ./...
+      - name: Download Go modules
+        run: go mod download
+
+      - name: Run Go tests
+        if: matrix.goarch == 'amd64'
+        run: go test -v ./...
+
+      - name: Build Go binary
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: go build -v -o "bin/open-etc-pool-${{ matrix.goos }}-${{ matrix.goarch }}" .
