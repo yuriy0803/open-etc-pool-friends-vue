@@ -140,18 +140,26 @@ export const PoolStatsService = {
       ? (networkDifficulty / poolHashrate)
       : 0;
 
-    // Calculate Top Miners list
+    // Calculate Top Miners list with estimated earnings
     const topMinersList = [];
+    const etcPrice = priceRes?.market_data?.current_price?.usd || 28.45;
     if (minersRes && minersRes.miners) {
       for (const [address, data] of Object.entries(minersRes.miners)) {
         const hr = typeof data === 'object' ? (data.hashrate || data.hr || 0) : Number(data) || 0;
         const sharePct = poolHashrate > 0 ? (hr / poolHashrate) * 100 : 0;
+        const est = this.calculateProfitability(hr, networkDifficulty, etcPrice);
         topMinersList.push({
           address,
           hashrate: hr,
           formattedHashrate: formatHashrate(hr),
           sharePercent: sharePct.toFixed(2),
-          workers: typeof data === 'object' ? (data.workersTotal || data.workers || 1) : 1
+          workers: typeof data === 'object' ? (data.workersTotal || data.workers || 1) : 1,
+          estDailyEtc: est.dailyEtc,
+          estDailyUsd: est.dailyUsd,
+          estWeeklyEtc: est.weeklyEtc,
+          estWeeklyUsd: est.weeklyUsd,
+          estMonthlyEtc: est.monthlyEtc,
+          estMonthlyUsd: est.monthlyUsd
         });
       }
       // Sort descending by hashrate

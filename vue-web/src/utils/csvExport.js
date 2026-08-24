@@ -88,7 +88,7 @@ export function exportPoolStatsToCsv(dashboardData) {
   // Section 4: Top Active Miners
   if (dashboardData.topMiners && dashboardData.topMiners.length > 0) {
     rows.push(['## TOP ACTIVE MINERS LEADERBOARD']);
-    rows.push(['Rank', 'Wallet Address', 'Current Hashrate (H/s)', 'Formatted Hashrate', 'Pool Share %', 'Active Workers']);
+    rows.push(['Rank', 'Wallet Address', 'Current Hashrate (H/s)', 'Formatted Hashrate', 'Pool Share %', 'Active Workers', 'Est. Daily ETC', 'Est. Daily USD', 'Est. Monthly ETC', 'Est. Monthly USD']);
     dashboardData.topMiners.forEach((miner, idx) => {
       rows.push([
         idx + 1,
@@ -96,7 +96,11 @@ export function exportPoolStatsToCsv(dashboardData) {
         miner.hashrate || 0,
         miner.formattedHashrate || formatHashrate(miner.hashrate),
         `${miner.sharePercent || '0.00'}%`,
-        miner.workers || 1
+        miner.workers || 1,
+        miner.estDailyEtc || 0,
+        `$${(miner.estDailyUsd || 0).toFixed(2)}`,
+        miner.estMonthlyEtc || 0,
+        `$${(miner.estMonthlyUsd || 0).toFixed(2)}`
       ]);
     });
     rows.push([]);

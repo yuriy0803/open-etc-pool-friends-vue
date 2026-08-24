@@ -436,73 +436,257 @@
       </div>
     </div>
 
-    <!-- Top Pool Miners Leaderboard -->
+    <!-- Top Pool Miners Leaderboard & Estimated Earnings -->
     <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm" id="pool-top-miners">
-      <div class="flex items-center justify-between">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
-            <Users class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            <span>Top Pool Miners</span>
-          </h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Leading hashpower contributors currently connected</p>
+          <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/20">
+              <Award class="w-4 h-4" />
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                <span>Top Miners: Hashrate & Erträge</span>
+                <span class="text-xs font-normal text-slate-500 dark:text-slate-400 font-sans">
+                  ({{ dashboardData?.topMiners?.length || 0 }} aktive Leader)
+                </span>
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Echtzeit-Hashpower und dynamisch kalkulierte Ertragsprognosen (PPLNS) basierend auf Netzwerkschwierigkeit
+              </p>
+            </div>
+          </div>
         </div>
-        <router-link to="/miners" class="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 font-semibold flex items-center space-x-1">
-          <span>View All Miners ({{ dashboardData?.pool?.minersTotal || 0 }})</span>
-          <ArrowRight class="w-3.5 h-3.5" />
-        </router-link>
+
+        <div class="flex items-center flex-wrap gap-2.5 self-start lg:self-auto">
+          <!-- Quick Search Filter -->
+          <div class="relative">
+            <Search class="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
+            <input
+              v-model="topMinersSearch"
+              type="text"
+              id="top-miners-search-input"
+              placeholder="Miner-Adresse filtern..."
+              class="pl-8 pr-3 py-1.5 bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-mono text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition-all w-36 sm:w-48"
+            />
+          </div>
+
+          <!-- Timeframe Selector -->
+          <div class="flex items-center bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-0.5 text-xs font-semibold">
+            <button
+              @click="topMinersTimeframe = '24h'"
+              id="top-miners-timeframe-24h"
+              class="px-2.5 py-1 rounded-lg transition-all cursor-pointer"
+              :class="topMinersTimeframe === '24h' ? 'bg-emerald-500 text-slate-950 shadow-sm font-bold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+            >
+              24h Ertrag
+            </button>
+            <button
+              @click="topMinersTimeframe = '30d'"
+              id="top-miners-timeframe-30d"
+              class="px-2.5 py-1 rounded-lg transition-all cursor-pointer"
+              :class="topMinersTimeframe === '30d' ? 'bg-emerald-500 text-slate-950 shadow-sm font-bold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+            >
+              30 Tage
+            </button>
+          </div>
+
+          <!-- View All Link -->
+          <router-link 
+            to="/miners" 
+            id="top-miners-view-all-link"
+            class="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 font-semibold flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 transition-all"
+          >
+            <span>Alle Miner ({{ dashboardData?.pool?.minersTotal || 0 }})</span>
+            <ArrowRight class="w-3.5 h-3.5" />
+          </router-link>
+        </div>
       </div>
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs font-mono">
+      <!-- Table Container -->
+      <div class="overflow-x-auto rounded-xl border border-slate-200/80 dark:border-slate-800/80">
+        <table class="w-full text-left text-xs font-mono" id="top-miners-earnings-table">
           <thead>
-            <tr class="border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-sans text-[11px] uppercase tracking-wider">
-              <th class="py-3 px-3">#</th>
-              <th class="py-3 px-3">Miner Wallet</th>
-              <th class="py-3 px-3">Hashrate</th>
-              <th class="py-3 px-3">Pool Share</th>
-              <th class="py-3 px-3">Workers</th>
-              <th class="py-3 px-3 text-right">Action</th>
+            <tr class="bg-slate-100/70 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-sans text-[11px] uppercase tracking-wider">
+              <th class="py-3 px-3.5 text-center w-12">Rang</th>
+              <th class="py-3 px-3.5">Miner Wallet</th>
+              <th class="py-3 px-3.5">
+                <button @click="topMinersSort = 'hashrate'" class="hover:text-emerald-500 cursor-pointer flex items-center space-x-1">
+                  <span>Hashrate</span>
+                  <span v-if="topMinersSort === 'hashrate'" class="text-emerald-500">▼</span>
+                </button>
+              </th>
+              <th class="py-3 px-3.5">
+                <button @click="topMinersSort = 'share'" class="hover:text-emerald-500 cursor-pointer flex items-center space-x-1">
+                  <span>Pool-Anteil</span>
+                  <span v-if="topMinersSort === 'share'" class="text-emerald-500">▼</span>
+                </button>
+              </th>
+              <th class="py-3 px-3.5">
+                <button @click="topMinersSort = 'earnings'" class="hover:text-emerald-500 cursor-pointer flex items-center space-x-1">
+                  <span>{{ topMinersTimeframe === '24h' ? 'Geschätzter 24h Ertrag' : 'Geschätzter 30d Ertrag' }}</span>
+                  <span v-if="topMinersSort === 'earnings'" class="text-emerald-500">▼</span>
+                </button>
+              </th>
+              <th class="py-3 px-3.5 text-center">
+                <button @click="topMinersSort = 'workers'" class="hover:text-emerald-500 cursor-pointer inline-flex items-center space-x-1">
+                  <span>Workers</span>
+                  <span v-if="topMinersSort === 'workers'" class="text-emerald-500">▼</span>
+                </button>
+              </th>
+              <th class="py-3 px-3.5 text-right">Aktionen</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-200 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
-            <tr v-for="(miner, idx) in dashboardData?.topMiners" :key="miner.address" class="hover:bg-slate-100/60 dark:hover:bg-slate-800/30 transition-colors">
-              <td class="py-3 px-3 font-bold text-slate-400 dark:text-slate-500">
-                #{{ idx + 1 }}
-              </td>
-              <td class="py-3 px-3 font-semibold text-slate-900 dark:text-white">
-                <router-link :to="`/miner/${miner.address}`" class="hover:text-emerald-600 dark:hover:text-emerald-400 hover:underline">
-                  <span class="hidden sm:inline">{{ shortenAddress(miner.address, 10, 8) }}</span>
-                  <span class="sm:hidden">{{ shortenAddress(miner.address, 6, 4) }}</span>
-                </router-link>
-              </td>
-              <td class="py-3 px-3 font-bold text-emerald-600 dark:text-emerald-400">
-                {{ miner.formattedHashrate }}
-              </td>
-              <td class="py-3 px-3 text-slate-500 dark:text-slate-400">
-                {{ miner.sharePercent }}%
-              </td>
-              <td class="py-3 px-3 text-slate-600 dark:text-slate-300">
-                <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[11px]">
-                  {{ miner.workers }}
+          <tbody class="divide-y divide-slate-200 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300 bg-white/40 dark:bg-slate-900/20">
+            <tr 
+              v-for="(miner, idx) in processedTopMiners" 
+              :key="miner.address" 
+              class="hover:bg-slate-100/70 dark:hover:bg-slate-800/40 transition-colors group"
+            >
+              <!-- Rank with Medals -->
+              <td class="py-3.5 px-3.5 text-center">
+                <span 
+                  v-if="idx === 0" 
+                  class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 font-bold text-xs border border-amber-500/40 shadow-xs"
+                  title="Platz 1 - Pool Hashrate Leader"
+                >
+                  🥇
+                </span>
+                <span 
+                  v-else-if="idx === 1" 
+                  class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-300/30 dark:bg-slate-700/40 text-slate-700 dark:text-slate-200 font-bold text-xs border border-slate-400/40 shadow-xs"
+                  title="Platz 2"
+                >
+                  🥈
+                </span>
+                <span 
+                  v-else-if="idx === 2" 
+                  class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-500/20 text-orange-600 dark:text-orange-300 font-bold text-xs border border-orange-500/40 shadow-xs"
+                  title="Platz 3"
+                >
+                  🥉
+                </span>
+                <span v-else class="text-xs font-bold text-slate-400 dark:text-slate-500">
+                  #{{ idx + 1 }}
                 </span>
               </td>
-              <td class="py-3 px-3 text-right font-sans">
-                <router-link
-                  :to="`/miner/${miner.address}`"
-                  class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-emerald-500/20 text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 border border-slate-300 dark:border-slate-700/60 transition-colors text-[11px]"
-                >
-                  <span>Stats</span>
-                  <ArrowRight class="w-3 h-3" />
-                </router-link>
+
+              <!-- Wallet Address & Copy -->
+              <td class="py-3.5 px-3.5 font-semibold text-slate-900 dark:text-white">
+                <div class="flex items-center space-x-2">
+                  <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" title="Online & Mining"></div>
+                  <router-link 
+                    :to="`/miner/${miner.address}`" 
+                    class="hover:text-emerald-600 dark:hover:text-emerald-400 hover:underline flex items-center space-x-1 font-mono"
+                    :title="miner.address"
+                  >
+                    <span class="hidden sm:inline">{{ shortenAddress(miner.address, 10, 8) }}</span>
+                    <span class="sm:hidden">{{ shortenAddress(miner.address, 6, 4) }}</span>
+                  </router-link>
+                  <button 
+                    @click="copyText(miner.address)" 
+                    class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-emerald-500 transition-opacity p-0.5 cursor-pointer"
+                    title="Adresse kopieren"
+                  >
+                    <Copy class="w-3 h-3" />
+                  </button>
+                </div>
+              </td>
+
+              <!-- Hashrate -->
+              <td class="py-3.5 px-3.5 font-bold text-emerald-600 dark:text-emerald-400">
+                <div class="flex items-center space-x-1.5">
+                  <Zap class="w-3.5 h-3.5 text-emerald-500" />
+                  <span>{{ miner.formattedHashrate }}</span>
+                </div>
+              </td>
+
+              <!-- Pool Share with mini visual bar -->
+              <td class="py-3.5 px-3.5">
+                <div class="flex items-center space-x-2">
+                  <div class="w-14 bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                    <div 
+                      class="bg-emerald-500 h-full rounded-full transition-all duration-500" 
+                      :style="{ width: `${Math.min(100, Math.max(4, Number(miner.sharePercent || 0)))}%` }"
+                    ></div>
+                  </div>
+                  <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    {{ miner.sharePercent }}%
+                  </span>
+                </div>
+              </td>
+
+              <!-- Estimated Earnings (24h vs 30d) -->
+              <td class="py-3.5 px-3.5 font-mono">
+                <div v-if="topMinersTimeframe === '24h'">
+                  <div class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center space-x-1">
+                    <span>+{{ (miner.estDailyEtc || 0).toFixed(4) }} ETC</span>
+                  </div>
+                  <div class="text-[10px] text-slate-500 dark:text-slate-400 font-sans">
+                    ≈ ${{ ((miner.estDailyUsd || 0)).toFixed(2) }} USD / Tag
+                  </div>
+                </div>
+                <div v-else>
+                  <div class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center space-x-1">
+                    <span>+{{ (miner.estMonthlyEtc || 0).toFixed(3) }} ETC</span>
+                  </div>
+                  <div class="text-[10px] text-slate-500 dark:text-slate-400 font-sans">
+                    ≈ ${{ ((miner.estMonthlyUsd || 0)).toFixed(2) }} USD / Monat
+                  </div>
+                </div>
+              </td>
+
+              <!-- Active Workers count badge -->
+              <td class="py-3.5 px-3.5 text-center">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-[11px] font-semibold">
+                  {{ miner.workers }} Rig{{ miner.workers > 1 ? 's' : '' }}
+                </span>
+              </td>
+
+              <!-- Actions -->
+              <td class="py-3.5 px-3.5 text-right font-sans">
+                <div class="flex items-center justify-end space-x-1.5">
+                  <button
+                    @click="setupDropAlertForMiner(miner.address)"
+                    class="p-1.5 rounded-lg bg-slate-100 hover:bg-emerald-500/20 text-slate-500 hover:text-emerald-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700/60 transition-colors cursor-pointer"
+                    title="Hashrate-Alarm für diesen Miner einrichten"
+                  >
+                    <BellRing class="w-3.5 h-3.5" />
+                  </button>
+
+                  <router-link
+                    :to="`/miner/${miner.address}`"
+                    class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 transition-colors text-[11px] font-semibold"
+                    title="Vollständige Miner-Statistiken öffnen"
+                  >
+                    <span>Details</span>
+                    <ArrowRight class="w-3 h-3" />
+                  </router-link>
+                </div>
               </td>
             </tr>
-            <tr v-if="!dashboardData?.topMiners?.length">
-              <td colspan="6" class="py-8 text-center text-slate-500 font-sans">
-                Loading active miners from pool...
+
+            <tr v-if="!processedTopMiners.length">
+              <td colspan="7" class="py-10 text-center text-slate-500 font-sans">
+                <div class="flex flex-col items-center justify-center space-y-2">
+                  <Users class="w-6 h-6 text-slate-400 animate-pulse" />
+                  <p class="text-xs">Keine aktiven Miner gefunden oder Filter liefert kein Ergebnis.</p>
+                </div>
               </td>
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- Quick Summary Footer Info -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between pt-2 border-t border-slate-200/60 dark:border-slate-800/60 text-[11px] text-slate-500 dark:text-slate-400 gap-2 font-sans">
+        <div class="flex items-center space-x-2">
+          <Info class="w-3.5 h-3.5 text-emerald-500" />
+          <span>Ertragsprognosen basieren auf PPLNS-Poolverteilung & aktuellem ETC-Marktpreis (${{ (dashboardData?.market?.usdPrice || 28.45).toFixed(2) }}).</span>
+        </div>
+        <div class="flex items-center space-x-3">
+          <span>Zeige Top {{ processedTopMiners.length }} Miner</span>
+        </div>
       </div>
     </div>
 
@@ -640,7 +824,7 @@ import { useRouter } from 'vue-router';
 import { 
   Search, Cpu, Users, Coins, Layers, Activity, Server, Copy, 
   Sliders, Box, ArrowRight, RefreshCw, ShieldCheck, AlertTriangle, Calculator, Download,
-  Info, CheckCircle, Zap, ExternalLink, Terminal, HardDrive, BellRing
+  Info, CheckCircle, Zap, ExternalLink, Terminal, HardDrive, BellRing, Award, TrendingUp, DollarSign
 } from 'lucide-vue-next';
 import StatCard from './StatCard.vue';
 import HashrateChart from './HashrateChart.vue';
@@ -652,7 +836,7 @@ import { useHashrateAlerts } from '../composables/useHashrateAlerts.js';
 
 const router = useRouter();
 const { addToast } = useToasts();
-const { isModalOpen, unreadCount } = useHashrateAlerts();
+const { isModalOpen, unreadCount, config } = useHashrateAlerts();
 
 // Dashboard Reactive State
 const dashboardData = ref(null);
@@ -661,6 +845,50 @@ const secondsLeft = ref(30);
 const lastUpdated = ref(Date.now());
 const walletInput = ref('');
 const activeChartTab = ref('pool');
+
+// Top Miners Table Filter & State
+const topMinersTimeframe = ref('24h'); // '24h' | '30d'
+const topMinersSearch = ref('');
+const topMinersSort = ref('hashrate'); // 'hashrate' | 'earnings' | 'share' | 'workers'
+const topMinersLimit = ref(10); // 5, 10, 25
+
+const processedTopMiners = computed(() => {
+  if (!dashboardData.value?.topMiners) return [];
+  let list = [...dashboardData.value.topMiners];
+
+  // Search filter
+  if (topMinersSearch.value.trim()) {
+    const q = topMinersSearch.value.trim().toLowerCase();
+    list = list.filter(m => m.address.toLowerCase().includes(q));
+  }
+
+  // Sort
+  list.sort((a, b) => {
+    if (topMinersSort.value === 'earnings') {
+      return (b.estDailyEtc || 0) - (a.estDailyEtc || 0);
+    }
+    if (topMinersSort.value === 'share') {
+      return Number(b.sharePercent || 0) - Number(a.sharePercent || 0);
+    }
+    if (topMinersSort.value === 'workers') {
+      return (b.workers || 0) - (a.workers || 0);
+    }
+    return (b.hashrate || 0) - (a.hashrate || 0);
+  });
+
+  if (topMinersLimit.value !== 'all') {
+    list = list.slice(0, Number(topMinersLimit.value));
+  }
+
+  return list;
+});
+
+function setupDropAlertForMiner(address) {
+  if (address) {
+    config.value.monitoredWallet = address;
+  }
+  isModalOpen.value = true;
+}
 
 // Calculator State
 const calcHashrateInput = ref(250);
