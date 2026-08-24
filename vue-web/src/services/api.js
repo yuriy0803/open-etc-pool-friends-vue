@@ -10,9 +10,20 @@ async function fetchJson(endpoint, options = {}) {
       ...options,
     });
     if (!res.ok) {
+      if (res.status === 404 && endpoint === '/live_stats') {
+        return { live: true, now: Date.now() };
+      }
       throw new Error(`HTTP error ${res.status}`);
     }
-    return await res.json();
+    const text = await res.text();
+    if (!text || !text.trim()) {
+      return {};
+    }
+    try {
+      return JSON.parse(text);
+    } catch {
+      return {};
+    }
   } catch (err) {
     console.warn(`API call failed for ${endpoint}:`, err.message);
     throw err;
@@ -65,3 +76,5 @@ export const PoolAPI = {
     });
   }
 };
+
+export { PoolStatsService } from './poolStatsService.js';

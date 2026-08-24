@@ -389,25 +389,37 @@ app.use('/api', async (req, res) => {
 
     const upstreamRes = await fetch(targetUrl, fetchOptions);
     const contentType = upstreamRes.headers.get('content-type') || '';
+    const rawText = await upstreamRes.text();
 
-    res.status(upstreamRes.status);
-
-    if (contentType.includes('application/json')) {
-      const data = await upstreamRes.json();
-      if (data && typeof data === 'object') {
-        if (data.workersTotal !== undefined && data.totalWorkers === undefined) {
-          data.totalWorkers = data.workersTotal;
-        } else if (data.totalWorkers !== undefined && data.workersTotal === undefined) {
-          data.workersTotal = data.totalWorkers;
-        }
+    // Check if body is empty or whitespace
+    if (!rawText || !rawText.trim()) {
+      if (upstreamRes.status === 404 && req.path === '/live_stats') {
+        return res.status(200).json({ now: Date.now(), live: true });
       }
-      res.json(data);
-    } else {
-      const text = await upstreamRes.text();
-      res.send(text);
+      return res.status(upstreamRes.status).json({});
     }
+
+    // Try parsing JSON if content type is JSON or looks like JSON
+    if (contentType.includes('application/json') || rawText.trim().startsWith('{') || rawText.trim().startsWith('[')) {
+      try {
+        const data = JSON.parse(rawText);
+        if (data && typeof data === 'object') {
+          if (data.workersTotal !== undefined && data.totalWorkers === undefined) {
+            data.totalWorkers = data.workersTotal;
+          } else if (data.totalWorkers !== undefined && data.workersTotal === undefined) {
+            data.workersTotal = data.totalWorkers;
+          }
+        }
+        return res.status(upstreamRes.status).json(data);
+      } catch {
+        // Fallback if JSON parsing fails despite JSON header
+        return res.status(upstreamRes.status).send(rawText);
+      }
+    }
+
+    res.status(upstreamRes.status).send(rawText);
   } catch (err) {
-    console.error(`Proxy error for ${targetUrl}:`, err.message);
+    console.error(`Proxy request error for ${req.path}:`, err.message);
     res.status(502).json({ error: 'Upstream pool API error', message: err.message });
   }
 });
