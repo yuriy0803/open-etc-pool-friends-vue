@@ -3,30 +3,30 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Pool Mined Blocks</h1>
-        <p class="text-xs sm:text-sm text-slate-400 mt-1">Verified Ethereum Classic blocks discovered by pool miners</p>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Pool Mined Blocks</h1>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">Verified Ethereum Classic blocks discovered by pool miners</p>
       </div>
 
       <div class="flex items-center space-x-2">
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-1 flex space-x-1">
+        <div class="bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-xl p-1 flex space-x-1">
           <button
             @click="activeTab = 'matured'"
-            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
-            :class="activeTab === 'matured' ? 'bg-emerald-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'"
+            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer"
+            :class="activeTab === 'matured' ? 'bg-emerald-500 text-slate-950 shadow' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
           >
             Matured ({{ blocksData?.maturedTotal || blocksData?.matured?.length || 0 }})
           </button>
           <button
             @click="activeTab = 'immature'"
-            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
-            :class="activeTab === 'immature' ? 'bg-teal-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'"
+            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer"
+            :class="activeTab === 'immature' ? 'bg-teal-500 text-slate-950 shadow' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
           >
             Immature ({{ blocksData?.immatureTotal || blocksData?.immature?.length || 0 }})
           </button>
           <button
             @click="activeTab = 'candidates'"
-            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
-            :class="activeTab === 'candidates' ? 'bg-indigo-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'"
+            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer"
+            :class="activeTab === 'candidates' ? 'bg-indigo-500 text-slate-950 shadow' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
           >
             Candidates ({{ blocksData?.candidatesTotal || 0 }})
           </button>
@@ -36,46 +36,46 @@
 
     <!-- Luck & Block Performance Statistics -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="glass-card rounded-xl p-4">
-        <div class="text-[11px] font-medium text-slate-400 uppercase">Matured Blocks</div>
-        <div class="text-2xl font-bold font-mono text-white mt-1">
+      <div class="glass-card rounded-xl p-5 shadow-sm">
+        <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Matured Blocks</div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono text-slate-900 dark:text-white mt-1.5">
           {{ blocksData?.maturedTotal || (blocksData?.matured ? blocksData.matured.length : 0) }}
         </div>
-        <div class="text-[11px] text-emerald-400 mt-1 font-mono">Confirmed on-chain</div>
+        <div class="text-[11px] text-emerald-600 dark:text-emerald-400 mt-1 font-mono font-medium">Confirmed on-chain</div>
       </div>
-      <div class="glass-card rounded-xl p-4">
-        <div class="text-[11px] font-medium text-slate-400 uppercase">Immature Blocks</div>
-        <div class="text-2xl font-bold font-mono text-teal-400 mt-1">
+      <div class="glass-card rounded-xl p-5 shadow-sm">
+        <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Immature Blocks</div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono text-teal-600 dark:text-teal-400 mt-1.5">
           {{ blocksData?.immatureTotal || (blocksData?.immature ? blocksData.immature.length : 0) }}
         </div>
-        <div class="text-[11px] text-slate-400 mt-1 font-mono">Awaiting confirmations</div>
+        <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">Awaiting confirmations</div>
       </div>
-      <div class="glass-card rounded-xl p-4">
-        <div class="text-[11px] font-medium text-slate-400 uppercase">Pool Luck (64 Blocks)</div>
-        <div class="text-2xl font-bold font-mono text-emerald-400 mt-1">
+      <div class="glass-card rounded-xl p-5 shadow-sm">
+        <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pool Luck (64 Blocks)</div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-1.5">
           {{ luckPercent }}%
         </div>
-        <div class="text-[11px] text-slate-400 mt-1 font-mono">&lt;100% = Higher Efficiency</div>
+        <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">&lt;100% = Higher Efficiency</div>
       </div>
-      <div class="glass-card rounded-xl p-4">
-        <div class="text-[11px] font-medium text-slate-400 uppercase">Uncle / Orphan Rate</div>
-        <div class="text-2xl font-bold font-mono text-white mt-1">
+      <div class="glass-card rounded-xl p-5 shadow-sm">
+        <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Uncle / Orphan Rate</div>
+        <div class="text-2xl sm:text-3xl font-bold font-mono text-slate-900 dark:text-white mt-1.5">
           {{ uncleRate }}%
         </div>
-        <div class="text-[11px] text-slate-400 mt-1 font-mono">Orphan Rate: 0.00%</div>
+        <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">Orphan Rate: 0.00%</div>
       </div>
     </div>
 
     <!-- Blocks Table Header / Toolbar -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-      <h3 class="text-base font-bold text-white flex items-center space-x-2">
-        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
         <span>Mined Blocks List</span>
       </h3>
       <button
         @click="exportToCSV"
         :disabled="!currentBlockList.length"
-        class="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 px-3.5 py-1.5 rounded-xl transition-all shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+        class="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-800 px-3.5 py-1.5 rounded-xl transition-all shadow-sm cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
       >
         <Download class="w-3.5 h-3.5" />
         <span>Export tab to CSV</span>
@@ -83,11 +83,11 @@
     </div>
 
     <!-- Blocks Table -->
-    <div class="glass-card rounded-2xl overflow-hidden">
+    <div class="glass-card rounded-2xl overflow-hidden shadow-sm">
       <div class="overflow-x-auto">
         <table class="w-full text-left text-xs font-mono">
           <thead>
-            <tr class="bg-slate-900/60 border-b border-slate-800 text-slate-400 font-sans text-[11px] uppercase tracking-wider">
+            <tr class="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-sans text-[11px] uppercase tracking-wider">
               <th class="py-3.5 px-4">Block Height</th>
               <th class="py-3.5 px-4">Block Hash</th>
               <th class="py-3.5 px-4">Reward</th>
@@ -97,34 +97,34 @@
               <th class="py-3.5 px-4 text-right">Explorer</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-800/50 text-slate-300">
-            <tr v-for="block in currentBlockList" :key="block.hash" class="hover:bg-slate-800/40 transition-colors">
-              <td class="py-3.5 px-4 font-bold text-white">
+          <tbody class="divide-y divide-slate-200 dark:divide-slate-800/50 text-slate-700 dark:text-slate-300">
+            <tr v-for="block in currentBlockList" :key="block.hash" class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+              <td class="py-3.5 px-4 font-bold text-slate-900 dark:text-white">
                 <a
                   :href="`https://etc.blockscout.com/block/${block.height}`"
                   target="_blank"
                   rel="noopener"
-                  class="hover:text-emerald-400 underline decoration-slate-700"
+                  class="text-emerald-600 dark:text-emerald-400 hover:underline font-semibold"
                 >
                   #{{ block.height }}
                 </a>
               </td>
-              <td class="py-3.5 px-4 text-slate-400">
+              <td class="py-3.5 px-4 text-slate-600 dark:text-slate-400 font-mono">
                 <span class="hidden md:inline">{{ shortenAddress(block.hash, 12, 10) }}</span>
                 <span class="md:hidden">{{ shortenAddress(block.hash, 6, 4) }}</span>
               </td>
-              <td class="py-3.5 px-4 font-bold text-emerald-400">
+              <td class="py-3.5 px-4 font-bold text-emerald-600 dark:text-emerald-400">
                 {{ formatCoins(block.reward || '2500000000000000000') }} ETC
               </td>
-              <td class="py-3.5 px-4 text-slate-400">
+              <td class="py-3.5 px-4 text-slate-600 dark:text-slate-400">
                 {{ formatDifficulty(block.difficulty) }}
               </td>
               <td class="py-3.5 px-4">
-                <span :class="calculateBlockLuck(block) <= 100 ? 'text-emerald-400 font-semibold' : 'text-slate-300'">
+                <span :class="calculateBlockLuck(block) <= 100 ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : 'text-slate-600 dark:text-slate-300'">
                   {{ calculateBlockLuck(block) }}%
                 </span>
               </td>
-              <td class="py-3.5 px-4 text-slate-400 font-sans">
+              <td class="py-3.5 px-4 text-slate-500 dark:text-slate-400 font-sans">
                 {{ formatTimeAgo(block.timestamp) }}
               </td>
               <td class="py-3.5 px-4 text-right">
@@ -132,7 +132,7 @@
                   :href="`https://etc.blockscout.com/block/${block.height}`"
                   target="_blank"
                   rel="noopener"
-                  class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-400 border border-slate-700/60 font-sans text-xs transition-colors"
+                  class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-emerald-500/20 text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 border border-slate-300 dark:border-slate-700/60 font-sans text-xs transition-colors"
                 >
                   <span>Blockscout</span>
                   <ExternalLink class="w-3 h-3" />

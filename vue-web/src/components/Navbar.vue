@@ -1,23 +1,23 @@
 <template>
-  <header class="sticky top-0 z-50 bg-[#090d16]/90 backdrop-blur-md border-b border-slate-800/80">
+  <header class="sticky top-0 z-50 bg-white/90 dark:bg-[#090d16]/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800/80 transition-colors duration-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <!-- Logo & Brand -->
         <div class="flex items-center space-x-3">
           <router-link to="/" class="flex items-center space-x-3 group">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 p-0.5 shadow-lg shadow-emerald-900/30 group-hover:scale-105 transition-transform duration-200">
-              <div class="w-full h-full bg-[#090d16] rounded-[10px] flex items-center justify-center">
-                <svg class="w-5 h-5 text-emerald-400" viewBox="0 0 100 100" fill="currentColor">
+              <div class="w-full h-full bg-white dark:bg-[#090d16] rounded-[10px] flex items-center justify-center">
+                <svg class="w-5 h-5 text-emerald-500 dark:text-emerald-400" viewBox="0 0 100 100" fill="currentColor">
                   <polygon points="50,15 82,50 50,85 18,50" fill="none" stroke="currentColor" stroke-width="8"/>
                   <polygon points="50,28 72,50 50,72 28,50" fill="currentColor"/>
                 </svg>
               </div>
             </div>
             <div>
-              <span class="text-lg font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
+              <span class="text-lg font-extrabold tracking-tight text-slate-900 dark:bg-gradient-to-r dark:from-white dark:via-slate-100 dark:to-slate-400 dark:bg-clip-text dark:text-transparent">
                 ETC Pool
               </span>
-              <span class="hidden sm:inline-block ml-1.5 px-2 py-0.5 text-[10px] font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full">
+              <span class="hidden sm:inline-block ml-1.5 px-2 py-0.5 text-[10px] font-mono font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 rounded-full">
                 ETCHASH
               </span>
             </div>
@@ -31,40 +31,42 @@
             :key="item.path" 
             :to="item.path"
             class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
-            :class="$route.path === item.path ? 'bg-slate-800 text-emerald-400 font-semibold' : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/50'"
+            :class="$route.path === item.path ? 'bg-emerald-50 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 font-semibold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/50'"
           >
             {{ item.name }}
           </router-link>
         </nav>
 
         <!-- Quick Wallet Search & Connect CTA -->
-        <div class="flex items-center space-x-3">
-          <form @submit.prevent="handleSearch" class="relative hidden sm:block w-48 lg:w-64">
+        <div class="flex items-center space-x-2.5 sm:space-x-3">
+          <form @submit.prevent="handleSearch" class="relative hidden sm:block w-44 lg:w-60">
             <input
               v-model="searchQuery"
               type="text"
               placeholder="Miner address 0x..."
-              class="w-full bg-slate-900/90 border border-slate-800 focus:border-emerald-500 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all font-mono"
+              class="w-full bg-slate-100 dark:bg-slate-900/90 border border-slate-300 dark:border-slate-800 focus:border-emerald-500 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all font-mono"
             />
-            <Search class="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" />
+            <Search class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-2.5 top-2.5" />
           </form>
 
           <router-link 
             to="/connect"
-            class="flex items-center space-x-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-3.5 py-1.5 rounded-lg text-xs tracking-wide transition-all shadow-md shadow-emerald-950/50"
+            class="flex items-center space-x-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-3.5 py-1.5 rounded-lg text-xs tracking-wide transition-all shadow-md shadow-emerald-950/20"
           >
             <Zap class="w-3.5 h-3.5 fill-current" />
             <span>Start Mining</span>
           </router-link>
 
-          <!-- Theme Switcher -->
+          <!-- Theme Switcher Button -->
           <button 
             @click="toggleTheme" 
-            class="p-2 rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 border border-slate-200 dark:border-slate-800 transition-colors"
-            title="Toggle Theme"
+            id="theme-toggle-button"
+            class="p-2 rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-800 transition-all cursor-pointer shadow-sm flex items-center justify-center"
+            :title="isDark ? 'Zum hellen Design wechseln' : 'Zum dunklen Design wechseln'"
+            aria-label="Theme umschalten"
           >
-            <Sun v-if="isDark" class="w-4 h-4 text-amber-400" />
-            <Moon v-else class="w-4 h-4 text-sky-500" />
+            <Sun v-if="isDark" class="w-4 h-4 text-amber-400 hover:rotate-45 transition-transform duration-300" />
+            <Moon v-else class="w-4 h-4 text-indigo-500 hover:-rotate-12 transition-transform duration-300" />
           </button>
 
           <!-- Mobile Hamburger -->

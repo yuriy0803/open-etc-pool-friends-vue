@@ -2,14 +2,14 @@
   <div class="space-y-8 max-w-4xl mx-auto">
     <!-- Header -->
     <div class="text-center max-w-2xl mx-auto space-y-3">
-      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
+      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold uppercase tracking-wider">
         <HelpCircle class="w-3.5 h-3.5" />
         <span>Knowledge Base</span>
       </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
         Frequently Asked Questions
       </h1>
-      <p class="text-sm text-slate-400">
+      <p class="text-sm text-slate-600 dark:text-slate-400">
         Everything you need to know about ETCHASH mining, payouts, vardiff, and pool reward distributions.
       </p>
     </div>
@@ -19,22 +19,22 @@
       <div
         v-for="(item, idx) in faqs"
         :key="idx"
-        class="glass-card rounded-2xl p-5 cursor-pointer transition-all duration-200"
+        class="glass-card rounded-2xl p-5 cursor-pointer transition-all duration-200 shadow-sm"
         @click="item.open = !item.open"
       >
         <div class="flex items-center justify-between">
-          <h3 class="text-base font-bold text-white flex items-center space-x-3">
-            <span class="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs font-mono font-bold">
+          <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-3">
+            <span class="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-mono font-bold">
               0{{ idx + 1 }}
             </span>
             <span>{{ item.q }}</span>
           </h3>
           <ChevronDown
-            class="w-5 h-5 text-slate-400 transition-transform duration-200"
-            :class="{ 'rotate-180 text-emerald-400': item.open }"
+            class="w-5 h-5 text-slate-400 dark:text-slate-500 transition-transform duration-200"
+            :class="{ 'rotate-180 text-emerald-600 dark:text-emerald-400': item.open }"
           />
         </div>
-        <div v-if="item.open" class="mt-4 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-slate-800/80 pt-4">
+        <div v-if="item.open" class="mt-4 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed border-t border-slate-200 dark:border-slate-800/80 pt-4">
           <p>{{ item.a }}</p>
         </div>
       </div>

@@ -6,20 +6,20 @@
     @mouseleave="handleMouseLeave"
   >
     <!-- Y-Scale Mode Selection Overlay -->
-    <div class="absolute top-2 left-2 z-10 flex items-center bg-slate-900/80 border border-slate-800/80 p-0.5 rounded-lg text-[10px] font-mono">
+    <div class="absolute top-2 left-2 z-10 flex items-center bg-slate-100 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-800/80 p-0.5 rounded-lg text-[10px] font-mono shadow-sm">
       <span class="text-slate-500 px-1.5 font-bold uppercase">Y-Axis:</span>
       <button 
         @click="localZeroBaseline = false"
-        class="px-2 py-0.5 rounded transition-all font-bold text-[9px]"
-        :class="!localZeroBaseline ? 'bg-emerald-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'"
+        class="px-2 py-0.5 rounded transition-all font-bold text-[9px] cursor-pointer"
+        :class="!localZeroBaseline ? 'bg-emerald-500 text-slate-950 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
         title="Dynamic auto-scaling based on peak and low hashrate performance"
       >
         Peak Auto
       </button>
       <button 
         @click="localZeroBaseline = true"
-        class="px-2 py-0.5 rounded transition-all font-bold text-[9px]"
-        :class="localZeroBaseline ? 'bg-emerald-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'"
+        class="px-2 py-0.5 rounded transition-all font-bold text-[9px] cursor-pointer"
+        :class="localZeroBaseline ? 'bg-emerald-500 text-slate-950 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
         title="Compare from absolute zero hashrate baseline"
       >
         0-Baseline
@@ -27,13 +27,13 @@
     </div>
 
     <!-- Timeframe Selection Overlay -->
-    <div class="absolute top-2 right-2 z-10 flex items-center bg-slate-900/80 border border-slate-800/80 p-0.5 rounded-lg text-[10px] font-mono">
+    <div class="absolute top-2 right-2 z-10 flex items-center bg-slate-100 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-800/80 p-0.5 rounded-lg text-[10px] font-mono shadow-sm">
       <button 
         v-for="tf in ['24h', '7d', '30d']" 
         :key="tf"
         @click="selectedTimeframe = tf"
-        class="px-2.5 py-1 rounded transition-all uppercase font-bold"
-        :class="selectedTimeframe === tf ? 'bg-emerald-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'"
+        class="px-2.5 py-1 rounded transition-all uppercase font-bold cursor-pointer"
+        :class="selectedTimeframe === tf ? 'bg-emerald-500 text-slate-950 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
       >
         {{ tf }}
       </button>
@@ -60,7 +60,7 @@
       </defs>
 
       <!-- Cartesian Grid (Horizontal & Vertical) -->
-      <g class="recharts-cartesian-grid" stroke="rgba(51, 65, 85, 0.15)" stroke-dasharray="3 3">
+      <g class="recharts-cartesian-grid" stroke="rgba(100, 116, 139, 0.2)" stroke-dasharray="3 3">
         <!-- Horizontal grid lines -->
         <line 
           v-for="(gridY, index) in horizontalGridLines" 
@@ -87,7 +87,7 @@
         :y1="height - paddingBottom" 
         :x2="width - paddingRight" 
         :y2="height - paddingBottom" 
-        stroke="rgba(51, 65, 85, 0.4)" 
+        stroke="rgba(100, 116, 139, 0.3)" 
         stroke-width="1"
       />
 
@@ -167,19 +167,19 @@
     <!-- Floating Recharts HTML Tooltip -->
     <div 
       v-if="hoveredPoint" 
-      class="absolute z-30 pointer-events-none bg-slate-950/95 border border-slate-800/80 px-3 py-2.5 rounded-xl shadow-xl text-left flex flex-col space-y-1 min-w-[150px] backdrop-blur-sm transition-all duration-75"
+      class="absolute z-30 pointer-events-none bg-white/95 dark:bg-slate-950/95 border border-slate-200 dark:border-slate-800/80 px-3 py-2.5 rounded-xl shadow-xl text-left flex flex-col space-y-1 min-w-[150px] backdrop-blur-sm transition-all duration-75"
       :style="{
         left: tooltipStyle.left,
         top: tooltipStyle.top,
         transform: 'translate(-50%, -110%)'
       }"
     >
-      <div class="text-[10px] text-slate-400 font-mono font-medium">
+      <div class="text-[10px] text-slate-500 dark:text-slate-400 font-mono font-medium">
         {{ hoveredPoint.timeLabel }}
       </div>
       <div class="flex items-center space-x-2">
         <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: color }"></span>
-        <span class="text-xs font-bold text-white font-mono">
+        <span class="text-xs font-bold text-slate-900 dark:text-white font-mono">
           {{ formatYValue(hoveredPoint.rawValue) }}
         </span>
       </div>

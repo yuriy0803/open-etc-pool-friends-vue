@@ -2,15 +2,15 @@
   <div class="space-y-6">
     <!-- Breadcrumb & Back -->
     <div class="flex items-center justify-between">
-      <router-link to="/miners" class="inline-flex items-center space-x-1.5 text-xs text-slate-400 hover:text-emerald-400 font-medium transition-colors">
+      <router-link to="/miners" class="inline-flex items-center space-x-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium transition-colors">
         <ArrowLeft class="w-4 h-4" />
         <span>Back to All Miners</span>
       </router-link>
       <div class="flex items-center space-x-2">
-        <div class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-slate-950/80 border border-slate-800/80 text-[10px] text-slate-400 font-sans">
-          <span>Auto-refresh in <strong class="text-white font-mono">{{ secondsLeft }}s</strong></span>
+        <div class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800/80 text-[10px] text-slate-600 dark:text-slate-400 font-sans">
+          <span>Auto-refresh in <strong class="text-slate-900 dark:text-white font-mono">{{ secondsLeft }}s</strong></span>
         </div>
-        <button @click="triggerRefresh" class="inline-flex items-center space-x-1 text-xs text-slate-400 hover:text-white bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
+        <button @click="triggerRefresh" class="inline-flex items-center space-x-1 text-xs text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-lg cursor-pointer">
           <RefreshCw class="w-3 h-3" :class="{ 'animate-spin': loading || isRefreshing }" />
           <span>Refresh</span>
         </button>
@@ -18,20 +18,20 @@
     </div>
 
     <!-- Miner Header Card -->
-    <div class="glass-card rounded-2xl p-6 relative overflow-hidden">
+    <div class="glass-card rounded-2xl p-6 relative overflow-hidden shadow-sm">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="space-y-2">
           <div class="flex items-center space-x-2">
-            <div class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></div>
-            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Ethereum Classic Miner</span>
+            <div class="w-3 h-3 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse"></div>
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Ethereum Classic Miner</span>
           </div>
           <div class="flex items-center flex-wrap gap-2">
-            <h1 class="text-lg sm:text-xl md:text-2xl font-bold font-mono text-white break-all">
+            <h1 class="text-lg sm:text-xl md:text-2xl font-bold font-mono text-slate-900 dark:text-white break-all">
               {{ walletAddress }}
             </h1>
             <button
               @click="copyAddress"
-              class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+              class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
               title="Copy Address"
             >
               <Copy class="w-4 h-4" />
@@ -40,7 +40,7 @@
               :href="`https://etc.blockscout.com/address/${walletAddress}`"
               target="_blank"
               rel="noopener"
-              class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 hover:text-emerald-300 transition-colors"
+              class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 transition-colors"
               title="View on Blockscout Explorer"
             >
               <ExternalLink class="w-4 h-4" />
@@ -49,9 +49,9 @@
         </div>
 
         <div class="flex items-center space-x-3 self-start md:self-auto">
-          <div class="bg-slate-900/80 border border-slate-800 rounded-xl px-4 py-2.5 text-right">
+          <div class="bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-right">
             <div class="text-[10px] text-slate-500 uppercase">Active Workers</div>
-            <div class="text-lg font-bold font-mono text-emerald-400">
+            <div class="text-lg font-bold font-mono text-emerald-600 dark:text-emerald-400">
               {{ Object.keys(minerData?.workers || {}).length || 1 }} Online
             </div>
           </div>
@@ -73,7 +73,7 @@
         :value="`${formatCoins(minerData?.stats?.balance || 0)} ETC`"
         :subValue="priceData?.market_data?.current_price?.usd ? `≈ $${((minerData?.stats?.balance ? minerData.stats.balance / 1e9 : 0.42) * priceData.market_data.current_price.usd).toFixed(2)} USD` : ''"
         :badgeText="`Min Payout: ${minerData?.threshold ? (minerData.threshold / 1e9).toFixed(2) : '0.50'} ETC`"
-        badgeClass="bg-teal-500/10 text-teal-400 border border-teal-500/20"
+        badgeClass="bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20"
         :icon="Wallet"
       />
       <StatCard
@@ -81,7 +81,7 @@
         :value="`${formatCoins(minerData?.stats?.paid || 0)} ETC`"
         :subValue="`${(minerData?.payments || []).length} Payments`"
         :badgeText="(minerData?.miningType || 'pplns').toUpperCase()"
-        :badgeClass="minerData?.miningType === 'solo' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'"
+        :badgeClass="minerData?.miningType === 'solo' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'"
         :icon="Coins"
       />
       <StatCard
@@ -89,24 +89,24 @@
         :value="minerData?.stats?.blocksFound || 0"
         :subValue="`Valid Shares: ${(minerData?.roundShares || 0).toLocaleString()}`"
         badgeText="Immature: 0"
-        badgeClass="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
+        badgeClass="bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20"
         :icon="Box"
       />
     </div>
 
     <!-- Miner Hashrate History Chart -->
-    <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4">
+    <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
       <div class="flex items-center justify-between">
         <div>
-          <h3 class="text-base font-bold text-white flex items-center space-x-2">
-            <Activity class="w-4 h-4 text-emerald-400" />
+          <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+            <Activity class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>Miner Hashrate History</span>
           </h3>
-          <p class="text-xs text-slate-400">Reported and effective hashrate timeline</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Reported and effective hashrate timeline</p>
         </div>
         <button
           @click="exportToCSV"
-          class="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-slate-900 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-400 border border-slate-800 hover:border-emerald-500/30 rounded-xl text-xs font-bold transition-all"
+          class="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-emerald-500/20 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-emerald-400 border border-slate-300 dark:border-slate-800 hover:border-emerald-500/30 rounded-xl text-xs font-bold transition-all cursor-pointer"
           title="Export 24-hour historical hashrate points to CSV"
         >
           <Download class="w-3.5 h-3.5" />
@@ -126,19 +126,19 @@
     <!-- Workers & Payouts Tabs -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Workers Table (2 Cols) -->
-      <div class="lg:col-span-2 glass-card rounded-2xl p-5 sm:p-6 space-y-4">
+      <div class="lg:col-span-2 glass-card rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
         <div class="flex items-center justify-between">
-          <h3 class="text-base font-bold text-white flex items-center space-x-2">
-            <Server class="w-4 h-4 text-teal-400" />
+          <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+            <Server class="w-4 h-4 text-teal-600 dark:text-teal-400" />
             <span>Connected Workers</span>
           </h3>
-          <span class="text-xs text-slate-400 font-mono">{{ workerList.length }} Registered</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 font-mono">{{ workerList.length }} Registered</span>
         </div>
 
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs font-mono">
             <thead>
-              <tr class="border-b border-slate-800 text-slate-400 font-sans text-[11px] uppercase tracking-wider">
+              <tr class="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-sans text-[11px] uppercase tracking-wider">
                 <th class="py-3 px-3">Worker Name</th>
                 <th class="py-3 px-3">Hashrate</th>
                 <th class="py-3 px-3">Shares</th>
@@ -146,25 +146,25 @@
                 <th class="py-3 px-3 text-right">Status</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-800/50 text-slate-300">
-              <tr v-for="w in workerList" :key="w.name" class="hover:bg-slate-800/30 transition-colors">
-                <td class="py-3 px-3 font-bold text-white flex items-center space-x-2">
-                  <span class="w-2 h-2 rounded-full" :class="w.offline ? 'bg-rose-400' : 'bg-emerald-400 animate-pulse'"></span>
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-800/50 text-slate-700 dark:text-slate-300">
+              <tr v-for="w in workerList" :key="w.name" class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                <td class="py-3 px-3 font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                  <span class="w-2 h-2 rounded-full" :class="w.offline ? 'bg-rose-500' : 'bg-emerald-500 animate-pulse'"></span>
                   <span>{{ w.name }}</span>
                 </td>
-                <td class="py-3 px-3 font-semibold text-emerald-400">
+                <td class="py-3 px-3 font-semibold text-emerald-600 dark:text-emerald-400">
                   {{ formatHashrate(w.hr) }}
                 </td>
-                <td class="py-3 px-3 text-slate-300">
+                <td class="py-3 px-3 text-slate-700 dark:text-slate-300">
                   {{ (w.shares || 0).toLocaleString() }}
                 </td>
-                <td class="py-3 px-3 text-slate-400 font-sans">
+                <td class="py-3 px-3 text-slate-500 dark:text-slate-400 font-sans">
                   {{ formatTimeAgo(w.lastBeat) }}
                 </td>
                 <td class="py-3 px-3 text-right font-sans">
                   <span
                     class="px-2 py-0.5 rounded-full text-[10px] font-semibold"
-                    :class="w.offline ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'"
+                    :class="w.offline ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'"
                   >
                     {{ w.offline ? 'Offline' : 'Online' }}
                   </span>
@@ -181,91 +181,91 @@
       </div>
 
       <!-- Estimated Earnings Widget -->
-      <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4 flex flex-col justify-between">
+      <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4 flex flex-col justify-between shadow-sm">
         <div>
-          <h3 class="text-base font-bold text-white flex items-center space-x-2 mb-1">
-            <Coins class="w-4 h-4 text-emerald-400" />
+          <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2 mb-1">
+            <Coins class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>Estimated Rewards</span>
           </h3>
-          <p class="text-xs text-slate-400">Interactive profitability calculator</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Interactive profitability calculator</p>
         </div>
 
         <!-- Interactive Calculator Customizer Controls -->
-        <div class="bg-slate-900/60 border border-slate-800/80 p-3 rounded-xl space-y-2 text-[11px] font-sans">
-          <div class="flex items-center justify-between text-slate-400 font-bold uppercase text-[9px] tracking-wider mb-1">
+        <div class="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 p-3 rounded-xl space-y-2 text-[11px] font-sans">
+          <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 font-bold uppercase text-[9px] tracking-wider mb-1">
             <span>Adjust Parameters Below</span>
-            <span class="text-emerald-400 text-[10px]">Real-Time Data</span>
+            <span class="text-emerald-600 dark:text-emerald-400 text-[10px]">Real-Time Data</span>
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="block text-slate-500 font-semibold mb-0.5">Hashrate (MH/s):</label>
+              <label class="block text-slate-600 dark:text-slate-400 font-semibold mb-0.5">Hashrate (MH/s):</label>
               <input
                 v-model.number="calcHashMHs"
                 type="number"
                 step="5"
                 min="0.1"
-                class="w-full bg-slate-950 border border-slate-800/80 rounded px-2 py-1 text-white font-mono text-xs focus:outline-none focus:border-emerald-500"
+                class="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800/80 rounded px-2 py-1 text-slate-900 dark:text-white font-mono text-xs focus:outline-none focus:border-emerald-500"
               />
             </div>
             <div>
-              <label class="block text-slate-500 font-semibold mb-0.5">ETC Price (USD):</label>
+              <label class="block text-slate-600 dark:text-slate-400 font-semibold mb-0.5">ETC Price (USD):</label>
               <input
                 v-model.number="calcUsdPrice"
                 type="number"
                 step="0.5"
                 min="0.1"
-                class="w-full bg-slate-950 border border-slate-800/80 rounded px-2 py-1 text-white font-mono text-xs focus:outline-none focus:border-emerald-500"
+                class="w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800/80 rounded px-2 py-1 text-slate-900 dark:text-white font-mono text-xs focus:outline-none focus:border-emerald-500"
               />
             </div>
           </div>
           <div class="flex items-center justify-between">
-            <label class="text-slate-500 font-semibold">Pool Fee %:</label>
+            <label class="text-slate-600 dark:text-slate-400 font-semibold">Pool Fee %:</label>
             <input
               v-model.number="calcPoolFeePercent"
               type="number"
               step="0.5"
               min="0"
               max="10"
-              class="w-16 bg-slate-950 border border-slate-800/80 rounded px-2 py-0.5 text-white font-mono text-xs text-center focus:outline-none focus:border-emerald-500"
+              class="w-16 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-800/80 rounded px-2 py-0.5 text-slate-900 dark:text-white font-mono text-xs text-center focus:outline-none focus:border-emerald-500"
             />
           </div>
         </div>
 
         <div class="space-y-2.5 font-mono text-xs">
-          <div class="bg-slate-900/80 rounded-xl p-2.5 border border-slate-800/80 flex items-center justify-between">
+          <div class="bg-slate-50 dark:bg-slate-900/80 rounded-xl p-2.5 border border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
             <div>
               <div class="text-[10px] text-slate-500 uppercase font-sans">Daily (24h)</div>
-              <div class="text-sm font-bold text-white mt-0.5">{{ calcEstDailyETC.toFixed(4) }} ETC</div>
+              <div class="text-sm font-bold text-slate-900 dark:text-white mt-0.5">{{ calcEstDailyETC.toFixed(4) }} ETC</div>
             </div>
             <div class="text-right">
-              <div class="text-xs text-emerald-400 font-sans font-bold">≈ ${{ calcEstDailyUSD.toFixed(2) }} USD</div>
+              <div class="text-xs text-emerald-600 dark:text-emerald-400 font-sans font-bold">≈ ${{ calcEstDailyUSD.toFixed(2) }} USD</div>
             </div>
           </div>
 
-          <div class="bg-slate-900/80 rounded-xl p-2.5 border border-slate-800/80 flex items-center justify-between">
+          <div class="bg-slate-50 dark:bg-slate-900/80 rounded-xl p-2.5 border border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
             <div>
               <div class="text-[10px] text-slate-500 uppercase font-sans">Weekly (7d)</div>
-              <div class="text-sm font-bold text-white mt-0.5">{{ (calcEstDailyETC * 7).toFixed(4) }} ETC</div>
+              <div class="text-sm font-bold text-slate-900 dark:text-white mt-0.5">{{ (calcEstDailyETC * 7).toFixed(4) }} ETC</div>
             </div>
             <div class="text-right">
-              <div class="text-xs text-emerald-400 font-sans font-bold">≈ ${{ (calcEstDailyUSD * 7).toFixed(2) }} USD</div>
+              <div class="text-xs text-emerald-600 dark:text-emerald-400 font-sans font-bold">≈ ${{ (calcEstDailyUSD * 7).toFixed(2) }} USD</div>
             </div>
           </div>
 
-          <div class="bg-slate-900/80 rounded-xl p-2.5 border border-slate-800/80 flex items-center justify-between">
+          <div class="bg-slate-50 dark:bg-slate-900/80 rounded-xl p-2.5 border border-slate-200 dark:border-slate-800/80 flex items-center justify-between">
             <div>
               <div class="text-[10px] text-slate-500 uppercase font-sans">Monthly (30d)</div>
-              <div class="text-sm font-bold text-white mt-0.5">{{ (calcEstDailyETC * 30).toFixed(4) }} ETC</div>
+              <div class="text-sm font-bold text-slate-900 dark:text-white mt-0.5">{{ (calcEstDailyETC * 30).toFixed(4) }} ETC</div>
             </div>
             <div class="text-right">
-              <div class="text-xs text-emerald-400 font-sans font-bold">≈ ${{ (calcEstDailyUSD * 30).toFixed(2) }} USD</div>
+              <div class="text-xs text-emerald-600 dark:text-emerald-400 font-sans font-bold">≈ ${{ (calcEstDailyUSD * 30).toFixed(2) }} USD</div>
             </div>
           </div>
         </div>
 
         <router-link
           to="/calculator"
-          class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-semibold text-center font-sans transition-all"
+          class="w-full py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white rounded-xl text-xs font-semibold text-center font-sans transition-all"
         >
           Custom Profitability Calculator
         </router-link>
@@ -275,36 +275,36 @@
     <!-- Payouts & Settings Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Recent Miner Payouts (2 Cols) -->
-      <div class="lg:col-span-2 glass-card rounded-2xl p-5 sm:p-6 space-y-4">
+      <div class="lg:col-span-2 glass-card rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="text-base font-bold text-white flex items-center space-x-2">
-              <CreditCard class="w-4 h-4 text-emerald-400" />
+            <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+              <CreditCard class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               <span>Miner Payout History</span>
             </h3>
-            <p class="text-xs text-slate-400">Transactions sent to this wallet</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Transactions sent to this wallet</p>
           </div>
         </div>
 
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs font-mono">
             <thead>
-              <tr class="border-b border-slate-800 text-slate-400 font-sans text-[11px] uppercase tracking-wider">
+              <tr class="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-sans text-[11px] uppercase tracking-wider">
                 <th class="py-3 px-3">Time</th>
                 <th class="py-3 px-3">Amount</th>
                 <th class="py-3 px-3">Transaction Hash</th>
                 <th class="py-3 px-3 text-right">Explorer</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-800/50 text-slate-300">
-              <tr v-for="p in minerData?.payments || []" :key="p.tx" class="hover:bg-slate-800/30 transition-colors">
-                <td class="py-3 px-3 text-slate-400 font-sans">
+            <tbody class="divide-y divide-slate-200 dark:divide-slate-800/50 text-slate-700 dark:text-slate-300">
+              <tr v-for="p in minerData?.payments || []" :key="p.tx" class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                <td class="py-3 px-3 text-slate-500 dark:text-slate-400 font-sans">
                   {{ formatDateTime(p.timestamp) }}
                 </td>
-                <td class="py-3 px-3 font-bold text-emerald-400">
+                <td class="py-3 px-3 font-bold text-emerald-600 dark:text-emerald-400">
                   {{ formatCoins(p.amount) }} ETC
                 </td>
-                <td class="py-3 px-3 text-slate-300">
+                <td class="py-3 px-3 text-slate-700 dark:text-slate-300">
                   <span class="hidden sm:inline">{{ shortenAddress(p.tx, 14, 10) }}</span>
                   <span class="sm:hidden">{{ shortenAddress(p.tx, 6, 4) }}</span>
                 </td>
@@ -313,7 +313,7 @@
                     :href="`https://etc.blockscout.com/tx/${p.tx}`"
                     target="_blank"
                     rel="noopener"
-                    class="inline-flex items-center space-x-1 text-emerald-400 hover:text-emerald-300"
+                    class="inline-flex items-center space-x-1 text-emerald-600 dark:text-emerald-400 hover:text-emerald-500"
                   >
                     <span class="font-sans text-xs">View</span>
                     <ExternalLink class="w-3 h-3" />
@@ -331,33 +331,33 @@
       </div>
 
       <!-- Mining Settings Form (1 Col) -->
-      <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4">
+      <div class="glass-card rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
         <div>
-          <h3 class="text-base font-bold text-white flex items-center space-x-2">
-            <Sliders class="w-4 h-4 text-emerald-400" />
+          <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+            <Sliders class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>Miner Configuration</span>
           </h3>
-          <p class="text-xs text-slate-400">Modify reward scheme, threshold & alerts</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Modify reward scheme, threshold & alerts</p>
         </div>
 
-        <form @submit.prevent="saveSettings" class="space-y-4 text-xs text-slate-300">
+        <form @submit.prevent="saveSettings" class="space-y-4 text-xs text-slate-700 dark:text-slate-300">
           <!-- Reward Scheme Selector -->
           <div>
-            <label class="block font-semibold uppercase text-slate-400 mb-1.5 text-[10px] tracking-wider">Reward Scheme</label>
-            <div class="grid grid-cols-2 gap-2 bg-slate-900/60 p-1 rounded-xl border border-slate-800">
+            <label class="block font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1.5 text-[10px] tracking-wider">Reward Scheme</label>
+            <div class="grid grid-cols-2 gap-2 bg-slate-100 dark:bg-slate-900/60 p-1 rounded-xl border border-slate-200 dark:border-slate-800">
               <button
                 type="button"
                 @click="selectedScheme = 'pplns'"
-                class="py-1.5 px-2 rounded-lg font-semibold transition-all text-center"
-                :class="selectedScheme === 'pplns' ? 'bg-emerald-500 text-slate-950' : 'text-slate-400 hover:text-white'"
+                class="py-1.5 px-2 rounded-lg font-semibold transition-all text-center cursor-pointer"
+                :class="selectedScheme === 'pplns' ? 'bg-emerald-500 text-slate-950 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
               >
                 PPLNS (Pool)
               </button>
               <button
                 type="button"
                 @click="selectedScheme = 'solo'"
-                class="py-1.5 px-2 rounded-lg font-semibold transition-all text-center"
-                :class="selectedScheme === 'solo' ? 'bg-amber-500 text-slate-950' : 'text-slate-400 hover:text-white'"
+                class="py-1.5 px-2 rounded-lg font-semibold transition-all text-center cursor-pointer"
+                :class="selectedScheme === 'solo' ? 'bg-amber-500 text-slate-950 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
               >
                 SOLO (Individual)
               </button>
@@ -369,7 +369,7 @@
 
           <!-- Payout Threshold -->
           <div>
-            <label class="block font-semibold uppercase text-slate-400 mb-1 text-[10px] tracking-wider">
+            <label class="block font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1 text-[10px] tracking-wider">
               Payout Threshold (ETC)
             </label>
             <div class="relative flex items-center">
@@ -380,7 +380,7 @@
                 min="0.1"
                 max="10.0"
                 required
-                class="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2 text-white font-mono focus:outline-none"
+                class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2 text-slate-900 dark:text-white font-mono focus:outline-none"
               />
               <span class="absolute right-3 text-[10px] text-slate-500 font-sans">0.1 - 10.0</span>
             </div>
@@ -388,47 +388,47 @@
 
           <!-- Email Alerts -->
           <div>
-            <label class="block font-semibold uppercase text-slate-400 mb-1 text-[10px] tracking-wider">
+            <label class="block font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1 text-[10px] tracking-wider">
               Notification Email
             </label>
             <input
               v-model="notificationEmail"
               type="email"
               placeholder="miner@example.com"
-              class="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2 text-white font-mono focus:outline-none"
+              class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2 text-slate-900 dark:text-white font-mono focus:outline-none"
             />
             <div class="flex items-center space-x-2 mt-2">
               <input
                 v-model="emailAlert"
                 type="checkbox"
                 id="alertCheck"
-                class="rounded border-slate-800 text-emerald-500 focus:ring-emerald-500/30 bg-slate-900"
+                class="rounded border-slate-300 dark:border-slate-800 text-emerald-500 focus:ring-emerald-500/30 bg-slate-50 dark:bg-slate-900"
               />
-              <label for="alertCheck" class="text-slate-400 cursor-pointer select-none">
+              <label for="alertCheck" class="text-slate-600 dark:text-slate-400 cursor-pointer select-none">
                 Send offline worker alerts
               </label>
             </div>
             <!-- Hashrate Drop Alert System Settings -->
-            <div class="border-t border-slate-800/40 pt-2 mt-2 space-y-2">
+            <div class="border-t border-slate-200 dark:border-slate-800/40 pt-2 mt-2 space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] text-slate-400 font-bold uppercase">Hashrate Drop Alert</span>
-                <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">{{ dropAlert ? 'Enabled' : 'Disabled' }}</span>
+                <span class="text-[10px] text-slate-600 dark:text-slate-400 font-bold uppercase">Hashrate Drop Alert</span>
+                <span class="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">{{ dropAlert ? 'Enabled' : 'Disabled' }}</span>
               </div>
               <div class="flex items-center space-x-2">
                 <input
                   v-model="dropAlert"
                   type="checkbox"
                   id="dropCheck"
-                  class="rounded border-slate-800 text-emerald-500 focus:ring-emerald-500/30 bg-slate-900"
+                  class="rounded border-slate-300 dark:border-slate-800 text-emerald-500 focus:ring-emerald-500/30 bg-slate-50 dark:bg-slate-900"
                 />
-                <label for="dropCheck" class="text-slate-400 cursor-pointer select-none">
+                <label for="dropCheck" class="text-slate-600 dark:text-slate-400 cursor-pointer select-none">
                   Alert if hashrate drops
                 </label>
               </div>
               <div v-if="dropAlert" class="space-y-1">
                 <div class="flex justify-between text-[10px]">
                   <span class="text-slate-500">Drop Threshold:</span>
-                  <span class="text-emerald-400 font-bold font-mono">{{ dropThreshold }}%</span>
+                  <span class="text-emerald-600 dark:text-emerald-400 font-bold font-mono">{{ dropThreshold }}%</span>
                 </div>
                 <input
                   v-model.number="dropThreshold"
@@ -436,7 +436,7 @@
                   min="10"
                   max="90"
                   step="5"
-                  class="w-full accent-emerald-500 h-1.5 bg-slate-950 rounded"
+                  class="w-full accent-emerald-500 h-1.5 bg-slate-200 dark:bg-slate-950 rounded"
                 />
                 <span class="text-[9px] text-slate-500 block leading-normal">
                   Alerts if current hashrate falls below this % of worker average.
@@ -448,7 +448,7 @@
               <button
                 type="button"
                 @click="showStatusModal = true"
-                class="w-full py-1.5 bg-slate-950 hover:bg-slate-900 border border-slate-800/80 rounded-xl text-slate-400 hover:text-white transition-all text-[11px] font-medium"
+                class="w-full py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-950 dark:hover:bg-slate-900 border border-slate-300 dark:border-slate-800/80 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all text-[11px] font-medium cursor-pointer"
               >
                 View Live Alert Diagnostic Status
               </button>
@@ -456,9 +456,9 @@
           </div>
 
           <!-- Authentication Check -->
-          <div class="border-t border-slate-800/80 pt-3">
-            <label class="block font-semibold uppercase text-slate-300 mb-1 text-[10px] tracking-wider flex items-center space-x-1">
-              <span class="text-rose-400">*</span>
+          <div class="border-t border-slate-200 dark:border-slate-800/80 pt-3">
+            <label class="block font-semibold uppercase text-slate-700 dark:text-slate-300 mb-1 text-[10px] tracking-wider flex items-center space-x-1">
+              <span class="text-rose-500 dark:text-rose-400">*</span>
               <span>IP Address or Password</span>
             </label>
             <input
@@ -466,7 +466,7 @@
               type="text"
               required
               placeholder="e.g. 192.168.1.5 or x"
-              class="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2 text-white font-mono focus:outline-none"
+              class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2 text-slate-900 dark:text-white font-mono focus:outline-none"
             />
             <p class="text-[10px] text-slate-500 mt-1 leading-normal">
               Enter the IP of one of your miners, or your miner's custom password.
@@ -474,7 +474,7 @@
           </div>
 
           <!-- Save/Status Message -->
-          <div v-if="settingsStatus" class="p-2.5 rounded-xl text-[11px] leading-normal" :class="settingsStatus.type === 'success' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' : 'bg-rose-500/10 border border-rose-500/20 text-rose-400'">
+          <div v-if="settingsStatus" class="p-2.5 rounded-xl text-[11px] leading-normal" :class="settingsStatus.type === 'success' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400' : 'bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-400'">
             <div class="flex items-start space-x-1.5">
               <Check v-if="settingsStatus.type === 'success'" class="w-3.5 h-3.5 mt-0.5 shrink-0" />
               <AlertCircle v-else class="w-3.5 h-3.5 mt-0.5 shrink-0" />
@@ -486,7 +486,7 @@
           <button
             type="submit"
             :disabled="settingsLoading"
-            class="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition-all flex items-center justify-center space-x-1"
+            class="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition-all flex items-center justify-center space-x-1 shadow-sm cursor-pointer disabled:opacity-50"
           >
             <RefreshCw v-if="settingsLoading" class="w-3.5 h-3.5 animate-spin" />
             <span>{{ settingsLoading ? 'Applying...' : 'Save Config' }}</span>
@@ -497,48 +497,48 @@
 
     <!-- Live Alerts Diagnostic Modal -->
     <div v-if="showStatusModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-          <h3 class="text-base font-bold text-white flex items-center space-x-2">
-            <Activity class="w-4 h-4 text-emerald-400" />
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+          <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+            <Activity class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>Alert Diagnostics Status</span>
           </h3>
-          <button @click="showStatusModal = false" class="text-slate-400 hover:text-white font-bold">&times;</button>
+          <button @click="showStatusModal = false" class="text-slate-400 hover:text-slate-700 dark:hover:text-white font-bold cursor-pointer">&times;</button>
         </div>
 
         <div class="space-y-3 text-xs">
-          <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800 space-y-1.5">
+          <div class="bg-slate-50 dark:bg-slate-950/80 p-3 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1.5">
             <div class="flex justify-between">
               <span class="text-slate-500">Miner Address:</span>
-              <span class="font-mono text-slate-300 break-all text-[11px]">{{ walletAddress }}</span>
+              <span class="font-mono text-slate-800 dark:text-slate-300 break-all text-[11px]">{{ walletAddress }}</span>
             </div>
             <div class="flex justify-between">
               <span class="text-slate-500">Subscribed Email:</span>
-              <span class="font-mono text-emerald-400">{{ notificationEmail || 'None' }}</span>
+              <span class="font-mono text-emerald-600 dark:text-emerald-400">{{ notificationEmail || 'None' }}</span>
             </div>
             <div class="flex justify-between">
               <span class="text-slate-500">Offline Rig Alerts:</span>
-              <span class="font-mono" :class="emailAlert ? 'text-emerald-400' : 'text-slate-500'">{{ emailAlert ? 'ACTIVE (Email)' : 'INACTIVE' }}</span>
+              <span class="font-mono" :class="emailAlert ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500'">{{ emailAlert ? 'ACTIVE (Email)' : 'INACTIVE' }}</span>
             </div>
             <div class="flex justify-between">
               <span class="text-slate-500">Hashrate Drop Alerts:</span>
-              <span class="font-mono" :class="dropAlert ? 'text-emerald-400' : 'text-slate-500'">{{ dropAlert ? 'ACTIVE' : 'INACTIVE' }}</span>
+              <span class="font-mono" :class="dropAlert ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500'">{{ dropAlert ? 'ACTIVE' : 'INACTIVE' }}</span>
             </div>
             <div class="flex justify-between" v-if="dropAlert">
               <span class="text-slate-500">Drop Threshold:</span>
-              <span class="font-mono text-emerald-400 font-bold">{{ dropThreshold }}%</span>
+              <span class="font-mono text-emerald-600 dark:text-emerald-400 font-bold">{{ dropThreshold }}%</span>
             </div>
           </div>
 
-          <div class="p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-xl text-[11px] text-slate-400 leading-relaxed">
-            <span class="font-bold text-white block mb-1">How it works:</span>
-            Our background Go-scheduler scans workers every 10 minutes. If drop alerts are active and a worker's hashrate drops below {{ dropThreshold }}% of its 24h moving average, an automatic notification is fired to <strong>{{ notificationEmail || 'your email' }}</strong>.
+          <div class="p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-xl text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+            <span class="font-bold text-slate-900 dark:text-white block mb-1">How it works:</span>
+            Our background Go-scheduler scans workers every 10 minutes. If drop alerts are active and a worker's hashrate drops below {{ dropThreshold }}% of its 24h moving average, an automatic notification is fired to <strong class="text-slate-900 dark:text-white">{{ notificationEmail || 'your email' }}</strong>.
           </div>
         </div>
 
         <button
           @click="showStatusModal = false"
-          class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition-all text-xs"
+          class="w-full py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold rounded-xl transition-all text-xs cursor-pointer"
         >
           Dismiss Diagnostics
         </button>

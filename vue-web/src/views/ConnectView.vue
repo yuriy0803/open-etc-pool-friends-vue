@@ -2,72 +2,72 @@
   <div class="space-y-8 max-w-5xl mx-auto">
     <!-- Header -->
     <div class="text-center max-w-2xl mx-auto space-y-3">
-      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
+      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold uppercase tracking-wider">
         <Zap class="w-3.5 h-3.5 fill-current" />
         <span>Quick Connect & Setup</span>
       </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
         Start Mining Ethereum Classic
       </h1>
-      <p class="text-sm text-slate-400">
+      <p class="text-sm text-slate-600 dark:text-slate-400">
         Generate custom batch files, bash scripts, and command lines for your mining hardware in seconds.
       </p>
     </div>
 
     <!-- Stratum Server Endpoints -->
-    <div class="glass-card rounded-2xl p-6 space-y-4">
-      <h3 class="text-base font-bold text-white flex items-center space-x-2">
-        <Globe class="w-4 h-4 text-emerald-400" />
+    <div class="glass-card rounded-2xl p-6 space-y-4 shadow-sm">
+      <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+        <Globe class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
         <span>Stratum Regional Endpoints</span>
       </h3>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
-        <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800 space-y-2">
-          <div class="flex items-center justify-between text-slate-300 font-sans font-bold">
+        <div class="bg-slate-50 dark:bg-slate-900/80 rounded-xl p-4 border border-slate-200 dark:border-slate-800 space-y-2">
+          <div class="flex items-center justify-between text-slate-800 dark:text-slate-300 font-sans font-bold">
             <span class="flex items-center space-x-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span class="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400"></span>
               <span>Europe (Primary)</span>
             </span>
-            <span class="text-[10px] text-emerald-400 font-mono">15ms</span>
+            <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-bold">15ms</span>
           </div>
-          <div class="text-slate-400 text-[11px]">TCP Stratum:</div>
-          <div class="text-white font-semibold flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-slate-800">
+          <div class="text-slate-500 dark:text-slate-400 text-[11px]">TCP Stratum:</div>
+          <div class="text-slate-900 dark:text-white font-semibold flex items-center justify-between bg-white dark:bg-slate-950 p-2 rounded-lg border border-slate-300 dark:border-slate-800">
             <span class="truncate">stratum+tcp://pool:8008</span>
-            <button @click="copyText('stratum+tcp://pool:8008')" class="ml-2 text-slate-400 hover:text-white">
+            <button @click="copyText('stratum+tcp://pool:8008')" class="ml-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white cursor-pointer">
               <Copy class="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
-        <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800 space-y-2">
-          <div class="flex items-center justify-between text-slate-300 font-sans font-bold">
+        <div class="bg-slate-50 dark:bg-slate-900/80 rounded-xl p-4 border border-slate-200 dark:border-slate-800 space-y-2">
+          <div class="flex items-center justify-between text-slate-800 dark:text-slate-300 font-sans font-bold">
             <span class="flex items-center space-x-2">
-              <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+              <span class="w-2 h-2 rounded-full bg-teal-500 dark:bg-teal-400"></span>
               <span>North America (US)</span>
             </span>
-            <span class="text-[10px] text-teal-400 font-mono">35ms</span>
+            <span class="text-[10px] text-teal-600 dark:text-teal-400 font-mono font-bold">35ms</span>
           </div>
-          <div class="text-slate-400 text-[11px]">TCP Stratum:</div>
-          <div class="text-white font-semibold flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-slate-800">
+          <div class="text-slate-500 dark:text-slate-400 text-[11px]">TCP Stratum:</div>
+          <div class="text-slate-900 dark:text-white font-semibold flex items-center justify-between bg-white dark:bg-slate-950 p-2 rounded-lg border border-slate-300 dark:border-slate-800">
             <span class="truncate">stratum+tcp://us.pool:8008</span>
-            <button @click="copyText('stratum+tcp://us.pool:8008')" class="ml-2 text-slate-400 hover:text-white">
+            <button @click="copyText('stratum+tcp://us.pool:8008')" class="ml-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white cursor-pointer">
               <Copy class="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
-        <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800 space-y-2">
-          <div class="flex items-center justify-between text-slate-300 font-sans font-bold">
+        <div class="bg-slate-50 dark:bg-slate-900/80 rounded-xl p-4 border border-slate-200 dark:border-slate-800 space-y-2">
+          <div class="flex items-center justify-between text-slate-800 dark:text-slate-300 font-sans font-bold">
             <span class="flex items-center space-x-2">
-              <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+              <span class="w-2 h-2 rounded-full bg-indigo-500 dark:bg-indigo-400"></span>
               <span>Asia / Pacific</span>
             </span>
-            <span class="text-[10px] text-indigo-400 font-mono">55ms</span>
+            <span class="text-[10px] text-indigo-600 dark:text-indigo-400 font-mono font-bold">55ms</span>
           </div>
-          <div class="text-slate-400 text-[11px]">TCP Stratum:</div>
-          <div class="text-white font-semibold flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-slate-800">
+          <div class="text-slate-500 dark:text-slate-400 text-[11px]">TCP Stratum:</div>
+          <div class="text-slate-900 dark:text-white font-semibold flex items-center justify-between bg-white dark:bg-slate-950 p-2 rounded-lg border border-slate-300 dark:border-slate-800">
             <span class="truncate">stratum+tcp://asia.pool:8008</span>
-            <button @click="copyText('stratum+tcp://asia.pool:8008')" class="ml-2 text-slate-400 hover:text-white">
+            <button @click="copyText('stratum+tcp://asia.pool:8008')" class="ml-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white cursor-pointer">
               <Copy class="w-3.5 h-3.5" />
             </button>
           </div>
@@ -76,24 +76,24 @@
     </div>
 
     <!-- Interactive Config Generator -->
-    <div class="glass-card rounded-2xl p-6 sm:p-8 space-y-6">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+    <div class="glass-card rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
         <div>
-          <h3 class="text-lg font-bold text-white flex items-center space-x-2">
-            <Sliders class="w-5 h-5 text-emerald-400" />
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+            <Sliders class="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             <span>Interactive Mining Configuration Generator</span>
           </h3>
-          <p class="text-xs text-slate-400 mt-1">Select your mining software and enter your wallet credentials</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Select your mining software and enter your wallet credentials</p>
         </div>
       </div>
 
       <!-- Generator Inputs -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
         <div>
-          <label class="block font-semibold uppercase text-slate-400 mb-1.5 font-sans text-[11px]">Mining Software</label>
+          <label class="block font-semibold uppercase text-slate-600 dark:text-slate-400 mb-1.5 font-sans text-[11px]">Mining Software</label>
           <select
             v-model="selectedMiner"
-            class="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-white font-sans focus:outline-none"
+            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-slate-900 dark:text-white font-sans focus:outline-none"
           >
             <option value="t-rex">T-Rex Miner (NVIDIA)</option>
             <option value="teamredminer">TeamRedMiner (AMD)</option>
@@ -105,10 +105,10 @@
         </div>
 
         <div>
-          <label class="block font-semibold uppercase text-slate-400 mb-1.5 font-sans text-[11px]">Operating System</label>
+          <label class="block font-semibold uppercase text-slate-600 dark:text-slate-400 mb-1.5 font-sans text-[11px]">Operating System</label>
           <select
             v-model="selectedOS"
-            class="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-white font-sans focus:outline-none"
+            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-slate-900 dark:text-white font-sans focus:outline-none"
           >
             <option value="windows">Windows (.bat)</option>
             <option value="linux">Linux (.sh)</option>
@@ -117,20 +117,20 @@
         </div>
 
         <div>
-          <label class="block font-semibold uppercase text-slate-400 mb-1.5 font-sans text-[11px]">Worker Name</label>
+          <label class="block font-semibold uppercase text-slate-600 dark:text-slate-400 mb-1.5 font-sans text-[11px]">Worker Name</label>
           <input
             v-model="workerName"
             type="text"
             placeholder="rig01"
-            class="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-white font-mono focus:outline-none"
+            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-slate-900 dark:text-white font-mono focus:outline-none"
           />
         </div>
 
         <div>
-          <label class="block font-semibold uppercase text-slate-400 mb-1.5 font-sans text-[11px]">Region Server</label>
+          <label class="block font-semibold uppercase text-slate-600 dark:text-slate-400 mb-1.5 font-sans text-[11px]">Region Server</label>
           <select
             v-model="selectedRegion"
-            class="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-white font-sans focus:outline-none"
+            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-slate-900 dark:text-white font-sans focus:outline-none"
           >
             <option value="pool:8008">Europe (TCP 8008)</option>
             <option value="us.pool:8008">North America (TCP 8008)</option>
@@ -141,58 +141,58 @@
       </div>
 
       <div>
-        <label class="block font-semibold uppercase text-slate-400 mb-1.5 font-sans text-[11px]">Your ETC Payout Wallet Address</label>
+        <label class="block font-semibold uppercase text-slate-600 dark:text-slate-400 mb-1.5 font-sans text-[11px]">Your ETC Payout Wallet Address</label>
         <input
           v-model="walletAddress"
           type="text"
           placeholder="0xFc9B271B1b03B60e5aD68CB89Bb1016b9eAc2baC"
-          class="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500"
+          class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500"
         />
       </div>
 
       <!-- Generated Code Box -->
       <div class="space-y-2">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-semibold uppercase text-emerald-400 font-sans tracking-wider">
+          <span class="text-xs font-semibold uppercase text-emerald-600 dark:text-emerald-400 font-sans tracking-wider">
             Ready to copy configuration
           </span>
           <button
             @click="copyText(generatedCommand)"
-            class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-colors shadow"
+            class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-colors shadow cursor-pointer"
           >
             <Copy class="w-3.5 h-3.5" />
             <span>{{ copied ? 'Copied!' : 'Copy Config' }}</span>
           </button>
         </div>
 
-        <div class="bg-slate-950 rounded-xl p-4 border border-slate-800 font-mono text-xs text-emerald-300 overflow-x-auto leading-relaxed whitespace-pre-wrap">
+        <div class="bg-slate-900 dark:bg-slate-950 text-emerald-400 dark:text-emerald-300 rounded-xl p-4 border border-slate-800 font-mono text-xs overflow-x-auto leading-relaxed whitespace-pre-wrap">
           {{ generatedCommand }}
         </div>
       </div>
     </div>
 
     <!-- HiveOS Quick Setup Instructions -->
-    <div class="glass-card rounded-2xl p-6 space-y-4">
-      <h3 class="text-base font-bold text-white flex items-center space-x-2">
-        <Server class="w-4 h-4 text-teal-400" />
+    <div class="glass-card rounded-2xl p-6 space-y-4 shadow-sm">
+      <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+        <Server class="w-4 h-4 text-teal-600 dark:text-teal-400" />
         <span>HiveOS Flight Sheet Configuration</span>
       </h3>
       <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
-        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+        <div class="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
           <div class="text-[10px] text-slate-500 uppercase">Coin</div>
-          <div class="font-bold text-white mt-1">ETC</div>
+          <div class="font-bold text-slate-900 dark:text-white mt-1">ETC</div>
         </div>
-        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+        <div class="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
           <div class="text-[10px] text-slate-500 uppercase">Wallet</div>
-          <div class="font-bold text-white mt-1">Your ETC Wallet</div>
+          <div class="font-bold text-slate-900 dark:text-white mt-1">Your ETC Wallet</div>
         </div>
-        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+        <div class="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
           <div class="text-[10px] text-slate-500 uppercase">Pool</div>
-          <div class="font-bold text-white mt-1">Configure in miner</div>
+          <div class="font-bold text-slate-900 dark:text-white mt-1">Configure in miner</div>
         </div>
-        <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+        <div class="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
           <div class="text-[10px] text-slate-500 uppercase">Pool Server URL</div>
-          <div class="font-bold text-emerald-400 mt-1 font-mono">stratum+tcp://pool:8008</div>
+          <div class="font-bold text-emerald-600 dark:text-emerald-400 mt-1 font-mono">stratum+tcp://pool:8008</div>
         </div>
       </div>
     </div>

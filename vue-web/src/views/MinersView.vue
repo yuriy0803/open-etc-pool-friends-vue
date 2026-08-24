@@ -3,8 +3,8 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Active Pool Miners</h1>
-        <p class="text-xs sm:text-sm text-slate-400 mt-1">Real-time leaderboard, connection latency monitoring, and intelligent automated alert thresholds</p>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">Active Pool Miners</h1>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">Real-time leaderboard, connection latency monitoring, and intelligent automated alert thresholds</p>
       </div>
 
       <div class="flex items-center space-x-3">
@@ -13,9 +13,9 @@
             v-model="searchTerm"
             type="text"
             placeholder="Filter by address..."
-            class="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 focus:border-emerald-500 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500"
           />
-          <Search class="w-3.5 h-3.5 text-slate-500 absolute left-3 top-3" />
+          <Search class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-3" />
         </div>
       </div>
     </div>
@@ -23,61 +23,61 @@
     <!-- Connection Health & Alert Config Dashboard Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- 1. Connection Health Monitor -->
-      <div class="glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between space-y-4">
+      <div class="glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between space-y-4 shadow-sm">
         <div>
-          <h3 class="text-sm font-bold text-white flex items-center space-x-2">
-            <Wifi class="w-4 h-4 text-emerald-400" />
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+            <Wifi class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>Miner Connection Health</span>
           </h3>
-          <p class="text-xs text-slate-400 mt-1">Real-time Stratum server latency metrics from active miner sessions</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Real-time Stratum server latency metrics from active miner sessions</p>
         </div>
 
         <!-- Latency Breakdown Stats -->
         <div class="grid grid-cols-3 gap-2 py-2">
-          <div class="bg-emerald-950/20 border border-emerald-500/20 rounded-xl p-2.5 text-center">
-            <div class="text-[10px] text-emerald-400 font-bold uppercase">Excellent</div>
-            <div class="text-lg font-bold font-mono text-white mt-0.5">{{ excellentCount }}</div>
+          <div class="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-500/20 rounded-xl p-2.5 text-center">
+            <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase">Excellent</div>
+            <div class="text-lg font-bold font-mono text-slate-900 dark:text-white mt-0.5">{{ excellentCount }}</div>
             <div class="text-[9px] text-slate-500 mt-0.5">&lt; 50ms</div>
           </div>
-          <div class="bg-amber-950/20 border border-amber-500/20 rounded-xl p-2.5 text-center">
-            <div class="text-[10px] text-amber-400 font-bold uppercase">Fair</div>
-            <div class="text-lg font-bold font-mono text-white mt-0.5">{{ fairCount }}</div>
+          <div class="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-500/20 rounded-xl p-2.5 text-center">
+            <div class="text-[10px] text-amber-600 dark:text-amber-400 font-bold uppercase">Fair</div>
+            <div class="text-lg font-bold font-mono text-slate-900 dark:text-white mt-0.5">{{ fairCount }}</div>
             <div class="text-[9px] text-slate-500 mt-0.5">50-150ms</div>
           </div>
-          <div class="bg-rose-950/20 border border-rose-500/20 rounded-xl p-2.5 text-center">
-            <div class="text-[10px] text-rose-400 font-bold uppercase">Poor</div>
-            <div class="text-lg font-bold font-mono text-white mt-0.5">{{ poorCount }}</div>
+          <div class="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-500/20 rounded-xl p-2.5 text-center">
+            <div class="text-[10px] text-rose-600 dark:text-rose-400 font-bold uppercase">Poor</div>
+            <div class="text-lg font-bold font-mono text-slate-900 dark:text-white mt-0.5">{{ poorCount }}</div>
             <div class="text-[9px] text-slate-500 mt-0.5">&gt; 150ms</div>
           </div>
         </div>
 
-        <div class="space-y-2 pt-2 border-t border-slate-800/60 text-xs text-slate-400 font-sans">
+        <div class="space-y-2 pt-2 border-t border-slate-200 dark:border-slate-800/60 text-xs text-slate-600 dark:text-slate-400 font-sans">
           <div class="flex justify-between items-center">
             <span>Average Latency:</span>
             <span class="font-bold font-mono" :class="avgLatencyColor">{{ avgLatency.toFixed(1) }} ms</span>
           </div>
           <div class="flex justify-between items-center">
             <span>Active Connections:</span>
-            <span class="font-bold font-mono text-white">{{ minerList.length }} Rigs</span>
+            <span class="font-bold font-mono text-slate-900 dark:text-white">{{ minerList.length }} Rigs</span>
           </div>
         </div>
       </div>
 
       <!-- 2. Hashrate Threshold Alert System -->
-      <div class="glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between space-y-4">
+      <div class="glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between space-y-4 shadow-sm">
         <div>
-          <h3 class="text-sm font-bold text-white flex items-center space-x-2">
-            <Sliders class="w-4 h-4 text-emerald-400" />
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+            <Sliders class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>Hashrate Alert Thresholds</span>
           </h3>
-          <p class="text-xs text-slate-400 mt-1">Triggers immediate warning notifications if hashrate drops significantly</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Triggers immediate warning notifications if hashrate drops significantly</p>
         </div>
 
         <!-- Slider controls -->
         <div class="space-y-3 py-1">
           <div class="flex justify-between text-xs font-mono">
-            <span class="text-slate-400">Trigger Drop Threshold:</span>
-            <span class="text-emerald-400 font-bold">{{ alertThresholdPercent }}% Drop</span>
+            <span class="text-slate-600 dark:text-slate-400">Trigger Drop Threshold:</span>
+            <span class="text-emerald-600 dark:text-emerald-400 font-bold">{{ alertThresholdPercent }}% Drop</span>
           </div>
           <input
             v-model="alertThresholdPercent"
@@ -85,7 +85,7 @@
             min="5"
             max="75"
             step="5"
-            class="w-full accent-emerald-500 bg-slate-900 rounded-lg appearance-none h-1.5 cursor-pointer"
+            class="w-full accent-emerald-500 bg-slate-200 dark:bg-slate-900 rounded-lg appearance-none h-1.5 cursor-pointer"
           />
           <div class="flex items-center justify-between text-[11px] text-slate-500 font-sans pt-1">
             <span>Tight (5%)</span>
@@ -94,67 +94,67 @@
           </div>
         </div>
 
-        <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 text-xs">
-          <span class="text-slate-400">System Monitoring:</span>
-          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 animate-pulse font-mono border border-emerald-500/20">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5"></span>
+        <div class="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800/60 text-xs">
+          <span class="text-slate-600 dark:text-slate-400">System Monitoring:</span>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 animate-pulse font-mono border border-emerald-500/20">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 mr-1.5"></span>
             ACTIVE WATCH
           </span>
         </div>
       </div>
 
       <!-- 3. Active Incident Log / Simulation controls -->
-      <div class="glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between space-y-4">
+      <div class="glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between space-y-4 shadow-sm">
         <div>
-          <h3 class="text-sm font-bold text-white flex items-center space-x-2">
-            <Bell class="w-4 h-4 text-emerald-400" />
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+            <Bell class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>Active Incidents Log</span>
           </h3>
-          <p class="text-xs text-slate-400 mt-1">Real-time overview of degraded mining rigs and simulated tests</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Real-time overview of degraded mining rigs and simulated tests</p>
         </div>
 
         <!-- Alerts feed -->
         <div class="flex-1 overflow-y-auto max-h-[100px] min-h-[90px] pr-1 space-y-2">
           <div v-if="activeAlerts.length === 0" class="h-full flex flex-col items-center justify-center text-center py-4">
             <div class="w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center mb-1">
-              <CheckCircle class="w-3.5 h-3.5 text-emerald-400" />
+              <CheckCircle class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
             </div>
             <span class="text-[10px] text-slate-500 font-mono">All rigs operating within thresholds</span>
           </div>
           <div
             v-for="alert in activeAlerts"
             :key="alert.address"
-            class="p-2 rounded-xl bg-rose-950/20 border border-rose-500/20 text-[10px] font-mono flex items-center justify-between gap-2"
+            class="p-2 rounded-xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-500/20 text-[10px] font-mono flex items-center justify-between gap-2"
           >
             <div class="truncate">
-              <div class="text-rose-400 font-bold uppercase flex items-center gap-1">
-                <AlertTriangle class="w-3 h-3 text-rose-400 shrink-0" />
+              <div class="text-rose-600 dark:text-rose-400 font-bold uppercase flex items-center gap-1">
+                <AlertTriangle class="w-3 h-3 text-rose-500 dark:text-rose-400 shrink-0" />
                 <span>DEGRADED PERFORMANCE</span>
               </div>
-              <div class="text-slate-300 truncate mt-0.5">Rig: {{ alert.address.substring(0, 8) }}...</div>
-              <div class="text-slate-400 mt-0.5">Drop: -{{ alert.dropPercent }}% (Avg: {{ formatHashrate(alert.historicalAvg) }})</div>
+              <div class="text-slate-700 dark:text-slate-300 truncate mt-0.5">Rig: {{ alert.address.substring(0, 8) }}...</div>
+              <div class="text-slate-500 dark:text-slate-400 mt-0.5">Drop: -{{ alert.dropPercent }}% (Avg: {{ formatHashrate(alert.historicalAvg) }})</div>
             </div>
             <button
               @click="restoreMiner(alert.address)"
-              class="px-2 py-1 rounded bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 font-sans font-bold transition-colors shrink-0"
+              class="px-2 py-1 rounded bg-rose-100 hover:bg-rose-200 dark:bg-rose-500/20 dark:hover:bg-rose-500/30 text-rose-700 dark:text-rose-300 font-sans font-bold transition-colors shrink-0 cursor-pointer"
             >
               Reboot / Fix
             </button>
           </div>
         </div>
 
-        <div class="flex items-center justify-between pt-2 border-t border-slate-800/60 gap-3">
+        <div class="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800/60 gap-3">
           <button
             @click="simulateRandomDrop"
-            class="w-full inline-flex items-center justify-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500/30 hover:bg-slate-800 text-xs text-slate-300 font-bold transition-all"
+            class="w-full inline-flex items-center justify-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:border-emerald-500/30 hover:bg-slate-200 dark:hover:bg-slate-800 text-xs text-slate-800 dark:text-slate-300 font-bold transition-all cursor-pointer"
           >
-            <Play class="w-3 h-3 text-emerald-400" />
+            <Play class="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
             <span>Simulate Random Incident</span>
           </button>
           <button
             v-if="activeAlerts.length > 0"
             @click="restoreAll"
-            class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 hover:bg-slate-800 text-xs text-slate-400 hover:text-slate-200 font-sans transition-all shrink-0"
+            class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 font-sans transition-all shrink-0 cursor-pointer"
           >
             Reset All
           </button>
@@ -164,35 +164,35 @@
 
     <!-- Summary metrics -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div class="glass-card rounded-xl p-4 flex items-center justify-between">
+      <div class="glass-card rounded-xl p-5 flex items-center justify-between shadow-sm">
         <div>
-          <div class="text-xs text-slate-400 uppercase font-medium">Total Miners</div>
-          <div class="text-2xl font-bold font-mono text-white mt-1">{{ minerList.length }}</div>
+          <div class="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">Total Miners</div>
+          <div class="text-2xl sm:text-3xl font-bold font-mono text-slate-900 dark:text-white mt-1">{{ minerList.length }}</div>
         </div>
-        <Users class="w-6 h-6 text-emerald-400 opacity-80" />
+        <Users class="w-6 h-6 text-emerald-600 dark:text-emerald-400 opacity-80" />
       </div>
-      <div class="glass-card rounded-xl p-4 flex items-center justify-between">
+      <div class="glass-card rounded-xl p-5 flex items-center justify-between shadow-sm">
         <div>
-          <div class="text-xs text-slate-400 uppercase font-medium">Total Online Hashrate</div>
-          <div class="text-2xl font-bold font-mono text-emerald-400 mt-1">{{ formatHashrate(totalMinerHash) }}</div>
+          <div class="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">Total Online Hashrate</div>
+          <div class="text-2xl sm:text-3xl font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-1">{{ formatHashrate(totalMinerHash) }}</div>
         </div>
-        <Zap class="w-6 h-6 text-teal-400 opacity-80" />
+        <Zap class="w-6 h-6 text-teal-600 dark:text-teal-400 opacity-80" />
       </div>
-      <div class="glass-card rounded-xl p-4 flex items-center justify-between">
+      <div class="glass-card rounded-xl p-5 flex items-center justify-between shadow-sm">
         <div>
-          <div class="text-xs text-slate-400 uppercase font-medium">Average Hashrate / Miner</div>
-          <div class="text-2xl font-bold font-mono text-white mt-1">{{ formatHashrate(avgMinerHash) }}</div>
+          <div class="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">Average Hashrate / Miner</div>
+          <div class="text-2xl sm:text-3xl font-bold font-mono text-slate-900 dark:text-white mt-1">{{ formatHashrate(avgMinerHash) }}</div>
         </div>
-        <Activity class="w-6 h-6 text-indigo-400 opacity-80" />
+        <Activity class="w-6 h-6 text-indigo-600 dark:text-indigo-400 opacity-80" />
       </div>
     </div>
 
     <!-- Miners Table -->
-    <div class="glass-card rounded-2xl overflow-hidden">
+    <div class="glass-card rounded-2xl overflow-hidden shadow-sm">
       <div class="overflow-x-auto">
         <table class="w-full text-left text-xs font-mono">
           <thead>
-            <tr class="bg-slate-900/60 border-b border-slate-800 text-slate-400 font-sans text-[11px] uppercase tracking-wider">
+            <tr class="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-sans text-[11px] uppercase tracking-wider">
               <th class="py-3.5 px-4"># Rank</th>
               <th class="py-3.5 px-4">Miner Address</th>
               <th class="py-3.5 px-4">Current Hashrate</th>
@@ -203,39 +203,39 @@
               <th class="py-3.5 px-4 text-right">Action</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-800/50 text-slate-300">
+          <tbody class="divide-y divide-slate-200 dark:divide-slate-800/50 text-slate-700 dark:text-slate-300">
             <tr
               v-for="(miner, index) in filteredMiners"
               :key="miner.address"
-              class="hover:bg-slate-800/40 transition-colors"
-              :class="miner.isSimulatedDrop ? 'bg-rose-950/10 border-l-2 border-l-rose-500' : ''"
+              class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
+              :class="miner.isSimulatedDrop ? 'bg-rose-50 dark:bg-rose-950/10 border-l-2 border-l-rose-500' : ''"
             >
-              <td class="py-3.5 px-4 font-bold text-slate-400 font-sans">
-                <span :class="index < 3 && !miner.isSimulatedDrop ? 'text-emerald-400 font-extrabold' : ''">#{{ index + 1 }}</span>
+              <td class="py-3.5 px-4 font-bold text-slate-500 font-sans">
+                <span :class="index < 3 && !miner.isSimulatedDrop ? 'text-emerald-600 dark:text-emerald-400 font-extrabold' : ''">#{{ index + 1 }}</span>
               </td>
               <td class="py-3.5 px-4">
                 <router-link
                   :to="`/miner/${miner.address}`"
-                  class="font-mono text-emerald-400 hover:text-emerald-300 hover:underline font-medium flex items-center space-x-1.5"
+                  class="font-mono text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 hover:underline font-medium flex items-center space-x-1.5"
                 >
                   <span class="font-bold">{{ miner.address.substring(0, 10) }}...{{ miner.address.substring(miner.address.length - 8) }}</span>
                 </router-link>
               </td>
-              <td class="py-3.5 px-4 font-bold" :class="miner.isSimulatedDrop ? 'text-rose-400 font-extrabold' : 'text-white'">
+              <td class="py-3.5 px-4 font-bold" :class="miner.isSimulatedDrop ? 'text-rose-600 dark:text-rose-400 font-extrabold' : 'text-slate-900 dark:text-white'">
                 {{ formatHashrate(miner.hr) }}
               </td>
-              <td class="py-3.5 px-4 text-slate-400">
+              <td class="py-3.5 px-4 text-slate-600 dark:text-slate-400">
                 {{ formatHashrate(miner.historicalAvg) }}
               </td>
               <td class="py-3.5 px-4">
                 <div class="flex items-center space-x-2">
-                  <div class="w-16 bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                  <div class="w-16 bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
                     <div
-                      class="bg-emerald-400 h-full rounded-full"
+                      class="bg-emerald-500 dark:bg-emerald-400 h-full rounded-full"
                       :style="{ width: `${calculateShare(miner.hr)}%` }"
                     ></div>
                   </div>
-                  <span class="text-[11px] text-slate-400">{{ calculateShare(miner.hr) }}%</span>
+                  <span class="text-[11px] text-slate-600 dark:text-slate-400">{{ calculateShare(miner.hr) }}%</span>
                 </div>
               </td>
               <!-- Real-time Latency (Ping in ms) -->
@@ -252,16 +252,16 @@
               <td class="py-3.5 px-4 font-sans">
                 <span
                   v-if="miner.isSimulatedDrop"
-                  class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/25 animate-pulse"
+                  class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/25 animate-pulse"
                 >
-                  <AlertTriangle class="w-2.5 h-2.5 mr-1 text-rose-400 shrink-0" />
+                  <AlertTriangle class="w-2.5 h-2.5 mr-1 text-rose-500 dark:text-rose-400 shrink-0" />
                   Drop -{{ getDropPercent(miner) }}%
                 </span>
                 <span
                   v-else
-                  class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25"
+                  class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25"
                 >
-                  <CheckCircle class="w-2.5 h-2.5 mr-1 text-emerald-400" />
+                  <CheckCircle class="w-2.5 h-2.5 mr-1 text-emerald-600 dark:text-emerald-400" />
                   Healthy
                 </span>
               </td>
@@ -271,7 +271,7 @@
                   <button
                     v-if="!miner.isSimulatedDrop"
                     @click="triggerSimulationDrop(miner.address)"
-                    class="px-2 py-1 rounded bg-amber-500/10 hover:bg-rose-500/20 text-amber-400 hover:text-rose-400 border border-amber-500/20 hover:border-rose-500/20 text-[10px] font-bold transition-all"
+                    class="px-2 py-1 rounded bg-amber-50 hover:bg-rose-100 dark:bg-amber-500/10 dark:hover:bg-rose-500/20 text-amber-700 hover:text-rose-700 dark:text-amber-400 dark:hover:text-rose-400 border border-amber-200 hover:border-rose-300 dark:border-amber-500/20 dark:hover:border-rose-500/20 text-[10px] font-bold transition-all cursor-pointer"
                     title="Simulate sudden drop in hashing performance"
                   >
                     Simulate Drop
@@ -279,14 +279,14 @@
                   <button
                     v-else
                     @click="restoreMiner(miner.address)"
-                    class="px-2 py-1 rounded bg-emerald-500/20 hover:bg-emerald-500/35 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold transition-all"
+                    class="px-2 py-1 rounded bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-500/20 dark:hover:bg-emerald-500/35 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30 text-[10px] font-bold transition-all cursor-pointer"
                     title="Restore miner hardware back to full healthy hashrate"
                   >
                     Fix Rig
                   </button>
                   <router-link
                     :to="`/miner/${miner.address}`"
-                    class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-400 border border-slate-700/60 text-xs transition-colors"
+                    class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-emerald-500/20 text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 border border-slate-300 dark:border-slate-700/60 text-xs transition-colors"
                   >
                     <span>Stats</span>
                     <ArrowUpRight class="w-3 h-3" />
