@@ -58,10 +58,21 @@
           </div>
         </div>
 
-        <div class="flex items-center space-x-3 self-start md:self-auto">
-          <div class="bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-right">
+        <div class="flex items-center space-x-3 self-start md:self-auto flex-wrap gap-2">
+          <button
+            @click="openAlertSettingsForMiner"
+            id="miner-quick-alert-button"
+            class="px-3 py-2 rounded-xl border text-xs font-semibold flex items-center space-x-1.5 transition-all cursor-pointer shadow-sm"
+            :class="isThisMinerMonitored ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20' : 'bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-800 hover:text-slate-900 dark:hover:text-white'"
+            title="Configure hashrate drop alerts for this miner"
+          >
+            <BellRing class="w-3.5 h-3.5" :class="{ 'animate-pulse text-emerald-500': isThisMinerMonitored }" />
+            <span>{{ isThisMinerMonitored ? `Alert Active (-${config.thresholdPercent}%)` : 'Setup Drop Alert' }}</span>
+          </button>
+
+          <div class="bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-right">
             <div class="text-[10px] text-slate-500 uppercase">Active Workers</div>
-            <div class="text-lg font-bold font-mono text-emerald-600 dark:text-emerald-400">
+            <div class="text-base font-bold font-mono text-emerald-600 dark:text-emerald-400">
               {{ Object.keys(minerData?.workers || {}).length || 1 }} Online
             </div>
           </div>
@@ -562,7 +573,8 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { 
   ArrowLeft, RefreshCw, Copy, ExternalLink, Cpu, Wallet, 
-  Coins, Box, Activity, Server, CreditCard, Sliders, Check, AlertCircle, Download
+  Coins, Box, Activity, Server, CreditCard, Sliders, Check, AlertCircle, Download,
+  BellRing
 } from 'lucide-vue-next';
 import StatCard from '../components/StatCard.vue';
 import HashrateChart from '../components/HashrateChart.vue';
@@ -570,14 +582,27 @@ import { PoolAPI } from '../services/api.js';
 import { formatHashrate, formatCoins, formatTimeAgo, formatDateTime, shortenAddress } from '../utils/formatters.js';
 import { useAutoRefresh } from '../composables/useAutoRefresh.js';
 import { useToasts } from '../composables/useToasts.js';
+import { useHashrateAlerts } from '../composables/useHashrateAlerts.js';
 import { exportMinerAccountToCsv, downloadCsv, escapeCsv } from '../utils/csvExport.js';
 
 const { addToast } = useToasts();
+const { config, isModalOpen, evaluateMiner } = useHashrateAlerts();
 const route = useRoute();
 const walletAddress = computed(() => route.params.address);
 const minerData = ref(null);
 const priceData = ref(null);
 const loading = ref(false);
+
+const isThisMinerMonitored = computed(() => {
+  return config.value.enabled && (!config.value.monitoredWallet || config.value.monitoredWallet.toLowerCase() === (walletAddress.value || '').toLowerCase());
+});
+
+function openAlertSettingsForMiner() {
+  if (walletAddress.value) {
+    config.value.monitoredWallet = walletAddress.value;
+  }
+  isModalOpen.value = true;
+}
 
 const { secondsLeft, isRefreshing, triggerRefresh } = useAutoRefresh(loadMinerData, 30);
 

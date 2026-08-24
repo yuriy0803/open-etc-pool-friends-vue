@@ -57,6 +57,25 @@
             <span>Start Mining</span>
           </router-link>
 
+          <!-- Hashrate Alert Notification Bell -->
+          <button 
+            @click="isModalOpen = true" 
+            id="navbar-alert-bell-button"
+            class="relative p-2 rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-800 transition-all cursor-pointer shadow-sm flex items-center justify-center"
+            title="Hashrate Alert & Incident Settings"
+            aria-label="Hashrate Benachrichtigungen"
+          >
+            <BellRing v-if="unreadCount > 0" class="w-4 h-4 text-rose-500 animate-bounce" />
+            <Bell v-else class="w-4 h-4 text-slate-600 dark:text-slate-400" />
+            
+            <span 
+              v-if="unreadCount > 0" 
+              class="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white rounded-full text-[9px] font-mono font-bold flex items-center justify-center animate-pulse"
+            >
+              {{ unreadCount > 9 ? '9+' : unreadCount }}
+            </span>
+          </button>
+
           <!-- Theme Switcher Button -->
           <button 
             @click="toggleTheme" 
@@ -122,7 +141,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { Search, Zap, Menu, X, Sun, Moon } from 'lucide-vue-next';
+import { Search, Zap, Menu, X, Sun, Moon, Bell, BellRing } from 'lucide-vue-next';
+import { useHashrateAlerts } from '../composables/useHashrateAlerts.js';
+
+const { unreadCount, isModalOpen } = useHashrateAlerts();
 
 const router = useRouter();
 const searchQuery = ref('');

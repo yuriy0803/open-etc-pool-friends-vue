@@ -39,6 +39,17 @@
           <div class="flex flex-col items-end gap-3">
             <div class="flex items-center flex-wrap gap-2">
               <button
+                @click="isModalOpen = true"
+                id="dashboard-hashrate-alert-button"
+                class="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-800 hover:border-emerald-500/40 text-slate-800 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl text-xs font-semibold transition-all flex items-center space-x-1.5 shadow-sm cursor-pointer"
+                title="Configure Hashrate Drop Alarms & Notifications"
+              >
+                <BellRing class="w-3.5 h-3.5" :class="unreadCount > 0 ? 'text-rose-500 animate-pulse' : 'text-emerald-600 dark:text-emerald-400'" />
+                <span>Alerts</span>
+                <span v-if="unreadCount > 0" class="px-1.5 py-0.2 text-[9px] bg-rose-500 text-white rounded-full font-mono font-bold">{{ unreadCount }}</span>
+              </button>
+
+              <button
                 @click="exportCsv"
                 :disabled="!dashboardData || isRefreshing"
                 id="dashboard-export-csv-button"
@@ -629,7 +640,7 @@ import { useRouter } from 'vue-router';
 import { 
   Search, Cpu, Users, Coins, Layers, Activity, Server, Copy, 
   Sliders, Box, ArrowRight, RefreshCw, ShieldCheck, AlertTriangle, Calculator, Download,
-  Info, CheckCircle, Zap, ExternalLink, Terminal, HardDrive
+  Info, CheckCircle, Zap, ExternalLink, Terminal, HardDrive, BellRing
 } from 'lucide-vue-next';
 import StatCard from './StatCard.vue';
 import HashrateChart from './HashrateChart.vue';
@@ -637,9 +648,11 @@ import { PoolStatsService } from '../services/poolStatsService.js';
 import { formatHashrate, formatDifficulty, formatCoins, formatTimeAgo, shortenAddress } from '../utils/formatters.js';
 import { exportPoolStatsToCsv } from '../utils/csvExport.js';
 import { useToasts } from '../composables/useToasts.js';
+import { useHashrateAlerts } from '../composables/useHashrateAlerts.js';
 
 const router = useRouter();
 const { addToast } = useToasts();
+const { isModalOpen, unreadCount } = useHashrateAlerts();
 
 // Dashboard Reactive State
 const dashboardData = ref(null);

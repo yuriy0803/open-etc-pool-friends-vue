@@ -96,10 +96,20 @@
 
         <div class="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800/60 text-xs">
           <span class="text-slate-600 dark:text-slate-400">System Monitoring:</span>
-          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 animate-pulse font-mono border border-emerald-500/20">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 mr-1.5"></span>
-            ACTIVE WATCH
-          </span>
+          <div class="flex items-center space-x-2">
+            <button
+              @click="isModalOpen = true"
+              class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer flex items-center space-x-1"
+              title="Configure Channels & Sound"
+            >
+              <BellRing class="w-3 h-3" />
+              <span>Channels & Audio</span>
+            </button>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 animate-pulse font-mono border border-emerald-500/20">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 mr-1.5"></span>
+              ACTIVE WATCH
+            </span>
+          </div>
         </div>
       </div>
 
@@ -325,18 +335,23 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
-import { Search, Users, Zap, Activity, ArrowUpRight, Wifi, Sliders, Bell, AlertTriangle, CheckCircle, Play, Download } from 'lucide-vue-next';
+import { Search, Users, Zap, Activity, ArrowUpRight, Wifi, Sliders, Bell, BellRing, AlertTriangle, CheckCircle, Play, Download } from 'lucide-vue-next';
 import { PoolAPI } from '../services/api.js';
 import { useToasts } from '../composables/useToasts.js';
+import { useHashrateAlerts } from '../composables/useHashrateAlerts.js';
 import { formatHashrate } from '../utils/formatters.js';
 import { exportMinersListToCsv } from '../utils/csvExport.js';
 
 const { addToast } = useToasts();
+const { config, isModalOpen, evaluateMiner, resolveIncidentForAddress } = useHashrateAlerts();
 
 const rawMinersData = ref(null);
 const minersState = ref([]);
 const searchTerm = ref('');
-const alertThresholdPercent = ref(20);
+const alertThresholdPercent = computed({
+  get: () => config.value.thresholdPercent,
+  set: (val) => { config.value.thresholdPercent = Number(val); }
+});
 
 // Dynamic, Fluctuating telemetry simulation
 let pingInterval = null;
@@ -450,6 +465,7 @@ function triggerSimulationDrop(address) {
     miner.isSimulatedDrop = true;
     // Increase latency slightly as poor connection health can correlate with degraded performance
     miner.ping = Math.min(240, miner.ping + 80);
+    evaluateMiner(miner);
   }
 }
 
@@ -468,6 +484,7 @@ function restoreMiner(address) {
     } else {
       miner.ping = 35;
     }
+    resolveIncidentForAddress(address);
     addToast(`✅ Miner ${address.substring(0, 10)}... hardware successfully rebooted and tuned. Hashrate recovered!`, 'success');
   }
 }

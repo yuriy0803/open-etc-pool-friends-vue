@@ -3,6 +3,9 @@
     <!-- Global Toast Notifications -->
     <ToastContainer />
 
+    <!-- Global Hashrate Alert & Notification Modal -->
+    <HashrateAlertModal />
+
     <!-- Navbar -->
     <Navbar />
 
@@ -25,6 +28,7 @@ import { onMounted } from 'vue';
 import Navbar from './components/Navbar.vue';
 import Footer from './components/Footer.vue';
 import ToastContainer from './components/ToastContainer.vue';
+import HashrateAlertModal from './components/HashrateAlertModal.vue';
 
 onMounted(() => {
   const theme = localStorage.getItem('etc_theme') || 'dark';
