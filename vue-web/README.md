@@ -84,7 +84,7 @@ Set the configuration values:
 PORT=3000
 
 # Upstream Pool API Endpoint (Kept private on the server, never committed to GitHub)
-POOL_API_URL=https://etc-api.pool2mine.net/api
+POOL_API_URL=https://your-pool-api.example.com/api
 ```
 
 > 🔒 **Security Note**: The `.env` file is listed in `.gitignore` and is never pushed to public repositories.
