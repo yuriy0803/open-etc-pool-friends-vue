@@ -1316,6 +1316,32 @@ func (r *RedisClient) CollectWorkersStats(sWindow, lWindow time.Duration, login 
 		} else {
 			online++
 			r.SetWorkerWithEmailStatus(login, id, "0")
+
+			// Worker-specific hashrate drop alert system
+			if worker.TotalHR > 0 {
+				threshold := float64(50.0) // Default 50% drop
+				threshCmd := r.client.HGet(r.formatKey("settings", login), "hashrateDropThreshold")
+				if threshCmd.Err() == nil && threshCmd.Val() != "" {
+					if pct, err := strconv.ParseFloat(threshCmd.Val(), 64); err == nil {
+						threshold = pct
+					}
+				}
+
+				pctOfAvg := (float64(worker.HR) / float64(worker.TotalHR)) * 100.0
+				if pctOfAvg < threshold {
+					alertSent := r.GetWorkerDropAlert(login, id)
+					if alertSent == "0" {
+						body := fmt.Sprintf("Alert: Hashrate for worker %s of miner %s has dropped to %.1f%% of its average. Current: %v H/s, Avg: %v H/s", id, login, pctOfAvg, worker.HR, worker.TotalHR)
+						result := r.GetMailAddress(login)
+						if result != "NA" {
+							send(body, result)
+							r.SetWorkerWithDropAlertStatus(login, id, "1")
+						}
+					}
+				} else {
+					r.SetWorkerWithDropAlertStatus(login, id, "0")
+				}
+			}
 		}
 
 		blocks := cmds[4].(*redis.ZSliceCmd).Val()
@@ -2178,6 +2204,20 @@ func (r *RedisClient) GetMailAddress(login string) string {
 
 func (r *RedisClient) SetWorkerWithEmailStatus(login string, worker string, emailSent string) {
 	r.client.HSet(r.formatKey("settings", login), worker, emailSent)
+}
+
+func (r *RedisClient) GetWorkerDropAlert(login string, worker string) string {
+	cmd := r.client.HGet(r.formatKey("settings", login), "drop:"+worker)
+	if cmd.Err() == redis.Nil {
+		return "0"
+	} else if cmd.Err() != nil {
+		return "0"
+	}
+	return cmd.Val()
+}
+
+func (r *RedisClient) SetWorkerWithDropAlertStatus(login string, worker string, emailSent string) {
+	r.client.HSet(r.formatKey("settings", login), "drop:"+worker, emailSent)
 }
 
 func (r *RedisClient) GetAllMinerAccount() (account []string, err error) {
