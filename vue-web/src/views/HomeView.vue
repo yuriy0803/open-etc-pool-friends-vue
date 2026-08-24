@@ -109,9 +109,9 @@
     </div>
 
     <!-- Charts & Network Insights -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
       <!-- Hashrate History Chart (2 Cols) -->
-      <div class="lg:col-span-2 glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between">
+      <div class="xl:col-span-2 glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
             <h3 class="text-base font-bold text-white flex items-center space-x-2">
@@ -171,7 +171,36 @@
         </div>
       </div>
 
-      <!-- Pool Specification & Quick Config -->
+      <!-- Standalone Pool Difficulty Trend Chart (1 Col) -->
+      <div class="glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center space-x-2">
+            <Layers class="w-4 h-4 text-purple-400" />
+            <span>Network Difficulty Trend</span>
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">Complementing real-time pool hashrate monitoring</p>
+        </div>
+        <div class="h-[180px] w-full my-4">
+          <HashrateChart
+            :chartData="statsData?.netCharts || fallbackChartData"
+            type="difficulty"
+            label="Network Difficulty"
+            color="#a855f7"
+          />
+        </div>
+        <div class="pt-4 border-t border-slate-800/60 text-xs text-slate-400 space-y-2 font-mono">
+          <div class="flex justify-between">
+            <span>Current Diff:</span>
+            <span class="font-bold text-white">{{ formatDifficulty(activeNode?.difficulty) }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Algorithm:</span>
+            <span class="font-bold text-slate-300">ETCHASH</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pool Specification & Quick Config (1 Col) -->
       <div class="glass-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between space-y-6">
         <div>
           <h3 class="text-base font-bold text-white flex items-center space-x-2 mb-1">

@@ -202,28 +202,76 @@ app.use('/api', async (req, res) => {
       return res.json({
         payments: [
           {
-            timestamp: nowSec - 3600,
+            timestamp: nowSec - 1800,
             address: "0x71C7656EC7ab88b098defB751B7401B5f6d1476B",
             amount: "14500000000000000000", // 14.5 ETC
             tx: "0xf2f8d1c7d3ef5123a1a16e82a0e3c5ef8f8a1bc8f0d1d4e623D10f9F75db9583a"
           },
           {
-            timestamp: nowSec - 10800,
+            timestamp: nowSec - 5400,
             address: "0x29D7d1dd5B6f9C864d9db560D72a247c178ae86B",
             amount: "12200000000000000000", // 12.2 ETC
             tx: "0xe1a3d4c7d3ef5123a1a16e82a0e3c5ef8f8a1bc8f0d1d4e623D10f9F75db9583b"
           },
           {
-            timestamp: nowSec - 18000,
+            timestamp: nowSec - 9000,
             address: "0x90F8bf6A479f320ced073E8273B2518772421497",
             amount: "9500000000000000000", // 9.5 ETC
             tx: "0xd0b2c1c7d3ef5123a1a16e82a0e3c5ef8f8a1bc8f0d1d4e623D10f9F75db9583c"
           },
           {
-            timestamp: nowSec - 25200,
+            timestamp: nowSec - 12600,
             address: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
             amount: "6800000000000000000", // 6.8 ETC
             tx: "0xc0a1d4c7d3ef5123a1a16e82a0e3c5ef8f8a1bc8f0d1d4e623D10f9F75db9583d"
+          },
+          {
+            timestamp: nowSec - 16200,
+            address: "0x90e63c3d53e0E0b3D98E101f3d32E3cc5ef8f8a1",
+            amount: "11150000000000000000", // 11.15 ETC
+            tx: "0xb0b3d4c7d3ef5123a1a16e82a0e3c5ef8f8a1bc8f0d1d4e623D10f9F75db9583e"
+          },
+          {
+            timestamp: nowSec - 19800,
+            address: "0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b",
+            amount: "5420000000000000000", // 5.42 ETC
+            tx: "0xa1a2d4c7d3ef5123a1a16e82a0e3c5ef8f8a1bc8f0d1d4e623D10f9F75db9583f"
+          },
+          {
+            timestamp: nowSec - 23400,
+            address: "0x0d1d4e623D10f9F75db95830b7d38D4058240f55",
+            amount: "8120000000000000000", // 8.12 ETC
+            tx: "0x91a1d4c7d3ef5123a1a16e82a0e3c5ef8f8a1bc8f0d1d4e623D10f9F75db95830"
+          },
+          {
+            timestamp: nowSec - 27000,
+            address: "0xe0fc37dbb85f269a8e9903b6e828d0ee5df15cd7",
+            amount: "4320000000000000000", // 4.32 ETC
+            tx: "0x81a0d4c7d3ef5123a1a16e82a0e3c5ef8f8a1bc8f0d1d4e623D10f9F75db95831"
+          },
+          {
+            timestamp: nowSec - 30600,
+            address: "0x71C7656EC7ab88b098defB751B7401B5f6d1476B",
+            amount: "15240000000000000000", // 15.24 ETC
+            tx: "0x71a9d4c7d3ef5123a1a16e82a0e3c5ef8f8a1bc8f0d1d4e623D10f9F75db95832"
+          },
+          {
+            timestamp: nowSec - 34200,
+            address: "0x29D7d1dd5B6f9C864d9db560D72a247c178ae86B",
+            amount: "10880000000000000000", // 10.88 ETC
+            tx: "0x61a8d4c7d3ef5123a1a16e82a0e3c5ef8f8a1bc8f0d1d4e623D10f9F75db95833"
+          },
+          {
+            timestamp: nowSec - 37800,
+            address: "0x90F8bf6A479f320ced073E8273B2518772421497",
+            amount: "7900000000000000000", // 7.9 ETC
+            tx: "0x51a7d4c7d3ef5123a1a16e82a0e3c5ef8f8a1bc8f0d1d4e623D10f9F75db95834"
+          },
+          {
+            timestamp: nowSec - 41400,
+            address: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            amount: "13500000000000000000", // 13.5 ETC
+            tx: "0x41a6d4c7d3ef5123a1a16e82a0e3c5ef8f8a1bc8f0d1d4e623D10f9F75db95835"
           }
         ]
       });

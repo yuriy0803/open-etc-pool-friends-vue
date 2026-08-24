@@ -34,6 +34,7 @@ export const PoolAPI = {
 
   // Get specific miner account data
   getAccount: (walletAddress) => fetchJson(`/accounts/${walletAddress}`),
+  getMiner: (walletAddress) => fetchJson(`/accounts/${walletAddress}`),
 
   // Get specific miner historical hashrate chart
   getAccountHistory: (walletAddress) => fetchJson(`/accounts/${walletAddress}/history`),
