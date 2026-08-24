@@ -189,9 +189,30 @@ func (s *ApiServer) listen() {
 	r.HandleFunc("/api/blocks", s.BlocksIndex)
 	r.HandleFunc("/api/payments", s.PaymentsIndex)
 	r.HandleFunc("/api/accounts/{login:0x[0-9a-fA-F]{40}}", s.AccountIndex)
-	r.HandleFunc("/api/settings", s.SubscribeHandler).Methods("POST")
-	r.HandleFunc("/api/mining", s.MiningHandler).Methods("POST")
+	r.HandleFunc("/api/settings", s.SubscribeHandler).Methods("POST", "OPTIONS")
+	r.HandleFunc("/api/mining", s.MiningHandler).Methods("POST", "OPTIONS")
 	r.NotFoundHandler = http.HandlerFunc(notFound)
+
+	// Custom CORS and Logging Middleware
+	r.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+			
+			if r.Method == "OPTIONS" {
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	})
+
+	log.Printf("==============================================")
+	log.Printf("   ETC Mining Pool Go Backend API Active")
+	log.Printf("   Listening securely on %v", s.config.Listen)
+	log.Printf("==============================================")
+
 	err := http.ListenAndServe(s.config.Listen, r)
 	if err != nil {
 		log.Fatalf("Failed to start API: %v", err)
