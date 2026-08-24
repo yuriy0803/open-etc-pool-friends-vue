@@ -168,19 +168,14 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 		return cs.sendTCPResult(req.Id, reply)
 	case "mining.subscribe":
 		var params []string
-		err := json.Unmarshal(req.Params, &params)
-		if err != nil || len(params) < 2 {
-			log.Println("Malformed stratum request params from", cs.ip)
-			return err
+		// Permissively parse params. Some modern miners send empty arrays or non-standard version arguments.
+		if req.Params != nil {
+			_ = json.Unmarshal(req.Params, &params)
 		}
-
-		if params[1] != "EthereumStratum/1.0.0" && params[0] != "GodMiner/2.0.0" {
-			log.Println("Unsupported stratum version from", cs.ip)
-			return cs.sendStratumError(req.Id, "unsupported stratum version")
-		}
+		
 		cs.ExtranonceSub = true
 		cs.setStratumMode("EthereumStratum/1.0.0")
-		log.Println("Nicehash subscribe", cs.ip)
+		log.Printf("Stratum subscriber connected from %s (params: %v)", cs.ip, params)
 		result := cs.getNotificationResponse(s)
 		return cs.sendStratumResult(req.Id, result)
 
