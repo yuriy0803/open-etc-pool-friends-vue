@@ -104,6 +104,14 @@
           </h3>
           <p class="text-xs text-slate-400">Reported and effective hashrate timeline</p>
         </div>
+        <button
+          @click="exportToCSV"
+          class="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-slate-900 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-400 border border-slate-800 hover:border-emerald-500/30 rounded-xl text-xs font-bold transition-all"
+          title="Export 24-hour historical hashrate points to CSV"
+        >
+          <Download class="w-3.5 h-3.5" />
+          <span>Export CSV</span>
+        </button>
       </div>
       <div class="h-[260px] w-full">
         <HashrateChart
@@ -179,26 +187,79 @@
             <Coins class="w-4 h-4 text-emerald-400" />
             <span>Estimated Rewards</span>
           </h3>
-          <p class="text-xs text-slate-400">Based on miner's current hashrate</p>
+          <p class="text-xs text-slate-400">Interactive profitability calculator</p>
         </div>
 
-        <div class="space-y-3 font-mono text-xs">
-          <div class="bg-slate-900/80 rounded-xl p-3 border border-slate-800">
-            <div class="text-[10px] text-slate-500 uppercase font-sans">Daily (24h)</div>
-            <div class="text-base font-bold text-white mt-0.5">{{ estDailyETC }} ETC</div>
-            <div class="text-xs text-emerald-400 font-sans">≈ ${{ estDailyUSD }} USD</div>
+        <!-- Interactive Calculator Customizer Controls -->
+        <div class="bg-slate-900/60 border border-slate-800/80 p-3 rounded-xl space-y-2 text-[11px] font-sans">
+          <div class="flex items-center justify-between text-slate-400 font-bold uppercase text-[9px] tracking-wider mb-1">
+            <span>Adjust Parameters Below</span>
+            <span class="text-emerald-400 text-[10px]">Real-Time Data</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-slate-500 font-semibold mb-0.5">Hashrate (MH/s):</label>
+              <input
+                v-model.number="calcHashMHs"
+                type="number"
+                step="5"
+                min="0.1"
+                class="w-full bg-slate-950 border border-slate-800/80 rounded px-2 py-1 text-white font-mono text-xs focus:outline-none focus:border-emerald-500"
+              />
+            </div>
+            <div>
+              <label class="block text-slate-500 font-semibold mb-0.5">ETC Price (USD):</label>
+              <input
+                v-model.number="calcUsdPrice"
+                type="number"
+                step="0.5"
+                min="0.1"
+                class="w-full bg-slate-950 border border-slate-800/80 rounded px-2 py-1 text-white font-mono text-xs focus:outline-none focus:border-emerald-500"
+              />
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <label class="text-slate-500 font-semibold">Pool Fee %:</label>
+            <input
+              v-model.number="calcPoolFeePercent"
+              type="number"
+              step="0.5"
+              min="0"
+              max="10"
+              class="w-16 bg-slate-950 border border-slate-800/80 rounded px-2 py-0.5 text-white font-mono text-xs text-center focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+        </div>
+
+        <div class="space-y-2.5 font-mono text-xs">
+          <div class="bg-slate-900/80 rounded-xl p-2.5 border border-slate-800/80 flex items-center justify-between">
+            <div>
+              <div class="text-[10px] text-slate-500 uppercase font-sans">Daily (24h)</div>
+              <div class="text-sm font-bold text-white mt-0.5">{{ calcEstDailyETC.toFixed(4) }} ETC</div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-emerald-400 font-sans font-bold">≈ ${{ calcEstDailyUSD.toFixed(2) }} USD</div>
+            </div>
           </div>
 
-          <div class="bg-slate-900/80 rounded-xl p-3 border border-slate-800">
-            <div class="text-[10px] text-slate-500 uppercase font-sans">Weekly (7d)</div>
-            <div class="text-base font-bold text-white mt-0.5">{{ (estDailyETC * 7).toFixed(4) }} ETC</div>
-            <div class="text-xs text-emerald-400 font-sans">≈ ${{ (estDailyUSD * 7).toFixed(2) }} USD</div>
+          <div class="bg-slate-900/80 rounded-xl p-2.5 border border-slate-800/80 flex items-center justify-between">
+            <div>
+              <div class="text-[10px] text-slate-500 uppercase font-sans">Weekly (7d)</div>
+              <div class="text-sm font-bold text-white mt-0.5">{{ (calcEstDailyETC * 7).toFixed(4) }} ETC</div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-emerald-400 font-sans font-bold">≈ ${{ (calcEstDailyUSD * 7).toFixed(2) }} USD</div>
+            </div>
           </div>
 
-          <div class="bg-slate-900/80 rounded-xl p-3 border border-slate-800">
-            <div class="text-[10px] text-slate-500 uppercase font-sans">Monthly (30d)</div>
-            <div class="text-base font-bold text-white mt-0.5">{{ (estDailyETC * 30).toFixed(4) }} ETC</div>
-            <div class="text-xs text-emerald-400 font-sans">≈ ${{ (estDailyUSD * 30).toFixed(2) }} USD</div>
+          <div class="bg-slate-900/80 rounded-xl p-2.5 border border-slate-800/80 flex items-center justify-between">
+            <div>
+              <div class="text-[10px] text-slate-500 uppercase font-sans">Monthly (30d)</div>
+              <div class="text-sm font-bold text-white mt-0.5">{{ (calcEstDailyETC * 30).toFixed(4) }} ETC</div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-emerald-400 font-sans font-bold">≈ ${{ (calcEstDailyUSD * 30).toFixed(2) }} USD</div>
+            </div>
           </div>
         </div>
 
@@ -491,7 +552,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { 
   ArrowLeft, RefreshCw, Copy, ExternalLink, Cpu, Wallet, 
-  Coins, Box, Activity, Server, CreditCard, Sliders, Check, AlertCircle
+  Coins, Box, Activity, Server, CreditCard, Sliders, Check, AlertCircle, Download
 } from 'lucide-vue-next';
 import StatCard from '../components/StatCard.vue';
 import HashrateChart from '../components/HashrateChart.vue';
@@ -575,6 +636,83 @@ const estDailyETC = computed(() => {
 const estDailyUSD = computed(() => {
   return (estDailyETC.value * etcUsdPrice.value).toFixed(2);
 });
+
+// Interactive Rewards Calculator state & watchers
+const calcHashMHs = ref(0);
+const calcUsdPrice = ref(0);
+const calcPoolFeePercent = ref(1.0);
+
+watch([currentHash, etcUsdPrice], ([newHash, newPrice]) => {
+  if (newHash && calcHashMHs.value === 0) {
+    calcHashMHs.value = Number((newHash / 1000000).toFixed(1));
+  }
+  if (newPrice && calcUsdPrice.value === 0) {
+    calcUsdPrice.value = Number(newPrice.toFixed(2));
+  }
+}, { immediate: true });
+
+const finalCalcHashHps = computed(() => {
+  return (calcHashMHs.value || 0) * 1000000;
+});
+
+const calcEstDailyETC = computed(() => {
+  const hashRateHps = finalCalcHashHps.value || currentHash.value;
+  const blockReward = 2.56;
+  const difficulty = networkDifficulty.value;
+  const baseDailyETC = (hashRateHps * 86400 * blockReward) / difficulty;
+  const withFee = baseDailyETC * (1 - (calcPoolFeePercent.value / 100));
+  return Math.max(0.0001, withFee);
+});
+
+const calcEstDailyUSD = computed(() => {
+  const price = calcUsdPrice.value || etcUsdPrice.value;
+  return calcEstDailyETC.value * price;
+});
+
+// CSV offline analysis exporter function
+function exportToCSV() {
+  if (!minerCharts.value || !minerCharts.value.length) {
+    alert("No historical data available to export.");
+    return;
+  }
+
+  const headers = ['Timestamp', 'Readable Time', 'Hashrate (Hps)', 'Hashrate (MH/s)', 'Est Daily ETC', 'Est Daily USD'];
+  const rows = minerCharts.value.map(point => {
+    const ts = point.x || point.timestamp || point[0];
+    const val = point.y !== undefined ? point.y : (point.minerHash !== undefined ? point.minerHash : point[1]);
+    const date = new Date(ts > 1e12 ? ts : ts * 1000);
+    const dateStr = date.toISOString();
+    const readableTime = date.toLocaleString();
+    const blockReward = 2.56;
+    const diff = networkDifficulty.value;
+    const dailyETC = (val * 86400 * blockReward) / diff;
+    const dailyUSD = dailyETC * etcUsdPrice.value;
+
+    return [
+      dateStr,
+      `"${readableTime.replace(/"/g, '""')}"`,
+      val,
+      (val / 1000000).toFixed(2),
+      dailyETC.toFixed(5),
+      dailyUSD.toFixed(2)
+    ];
+  });
+
+  const csvContent = [
+    headers.join(','),
+    ...rows.map(row => row.join(','))
+  ].join('\n');
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `miner_${walletAddress.value.substring(0, 8)}_analytics.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 
 function copyAddress() {
   if (navigator.clipboard && walletAddress.value) {

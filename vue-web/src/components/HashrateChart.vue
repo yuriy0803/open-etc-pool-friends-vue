@@ -5,6 +5,27 @@
     @mousemove="handleMouseMove"
     @mouseleave="handleMouseLeave"
   >
+    <!-- Y-Scale Mode Selection Overlay -->
+    <div class="absolute top-2 left-2 z-10 flex items-center bg-slate-900/80 border border-slate-800/80 p-0.5 rounded-lg text-[10px] font-mono">
+      <span class="text-slate-500 px-1.5 font-bold uppercase">Y-Axis:</span>
+      <button 
+        @click="localZeroBaseline = false"
+        class="px-2 py-0.5 rounded transition-all font-bold text-[9px]"
+        :class="!localZeroBaseline ? 'bg-emerald-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'"
+        title="Dynamic auto-scaling based on peak and low hashrate performance"
+      >
+        Peak Auto
+      </button>
+      <button 
+        @click="localZeroBaseline = true"
+        class="px-2 py-0.5 rounded transition-all font-bold text-[9px]"
+        :class="localZeroBaseline ? 'bg-emerald-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'"
+        title="Compare from absolute zero hashrate baseline"
+      >
+        0-Baseline
+      </button>
+    </div>
+
     <!-- Timeframe Selection Overlay -->
     <div class="absolute top-2 right-2 z-10 flex items-center bg-slate-900/80 border border-slate-800/80 p-0.5 rounded-lg text-[10px] font-mono">
       <button 
@@ -196,6 +217,7 @@ const props = defineProps({
 
 const emit = defineEmits(['timeframeChange']);
 const selectedTimeframe = ref('24h');
+const localZeroBaseline = ref(false);
 
 // Watch selectedTimeframe to bubble up changes
 watch(selectedTimeframe, (newVal) => {
@@ -272,7 +294,7 @@ const yScale = computed(() => {
   const maxVal = Math.max(...values);
   const diff = maxVal - minVal || 1;
   
-  const bufferMin = Math.max(0, minVal - diff * 0.1);
+  const bufferMin = localZeroBaseline.value ? 0 : Math.max(0, minVal - diff * 0.1);
   const bufferMax = maxVal + diff * 0.1;
   
   return d3.scaleLinear()
