@@ -35,18 +35,31 @@
             </p>
           </div>
 
-          <!-- Right side: Manual Refresh & Direct Actions -->
-          <div class="flex flex-row lg:flex-col items-end sm:items-center lg:items-end justify-between lg:justify-center gap-3">
-            <button
-              @click="refreshData"
-              :disabled="isRefreshing"
-              id="dashboard-refresh-button"
-              class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-800 hover:border-emerald-500/40 text-slate-800 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl text-xs font-semibold transition-all flex items-center space-x-2 shadow-sm cursor-pointer"
-              title="Force immediate pool statistics reload"
-            >
-              <RefreshCw class="w-3.5 h-3.5" :class="{ 'animate-spin': isRefreshing }" />
-              <span>{{ isRefreshing ? 'Updating Stats...' : 'Refresh Telemetry' }}</span>
-            </button>
+          <!-- Right side: Manual Refresh & CSV Export Actions -->
+          <div class="flex flex-col items-end gap-3">
+            <div class="flex items-center flex-wrap gap-2">
+              <button
+                @click="exportCsv"
+                :disabled="!dashboardData || isRefreshing"
+                id="dashboard-export-csv-button"
+                class="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-800 hover:border-emerald-500/40 text-slate-800 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl text-xs font-semibold transition-all flex items-center space-x-1.5 shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Export complete pool metrics, leaderboard, and history as CSV"
+              >
+                <Download class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span>Export CSV</span>
+              </button>
+
+              <button
+                @click="refreshData"
+                :disabled="isRefreshing"
+                id="dashboard-refresh-button"
+                class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-800 hover:border-emerald-500/40 text-slate-800 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl text-xs font-semibold transition-all flex items-center space-x-2 shadow-sm cursor-pointer"
+                title="Force immediate pool statistics reload"
+              >
+                <RefreshCw class="w-3.5 h-3.5" :class="{ 'animate-spin': isRefreshing }" />
+                <span>{{ isRefreshing ? 'Updating Stats...' : 'Refresh Telemetry' }}</span>
+              </button>
+            </div>
 
             <div class="text-[11px] text-slate-500 font-mono text-right flex items-center space-x-1.5">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400"></span>
@@ -532,12 +545,13 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { 
   Search, Cpu, Users, Coins, Layers, Activity, Server, Copy, 
-  Sliders, Box, ArrowRight, RefreshCw, ShieldCheck, AlertTriangle, Calculator
+  Sliders, Box, ArrowRight, RefreshCw, ShieldCheck, AlertTriangle, Calculator, Download
 } from 'lucide-vue-next';
 import StatCard from './StatCard.vue';
 import HashrateChart from './HashrateChart.vue';
 import { PoolStatsService } from '../services/poolStatsService.js';
 import { formatHashrate, formatDifficulty, formatCoins, formatTimeAgo, shortenAddress } from '../utils/formatters.js';
+import { exportPoolStatsToCsv } from '../utils/csvExport.js';
 import { useToasts } from '../composables/useToasts.js';
 
 const router = useRouter();
@@ -611,6 +625,20 @@ function copyText(text) {
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text);
     addToast(`Copied ${text} to clipboard`, 'info');
+  }
+}
+
+function exportCsv() {
+  if (!dashboardData.value) {
+    addToast('No pool statistics data available to export', 'warning');
+    return;
+  }
+  try {
+    exportPoolStatsToCsv(dashboardData.value);
+    addToast('Pool statistics exported successfully as CSV', 'success');
+  } catch (err) {
+    console.error('Failed to export CSV:', err);
+    addToast('Failed to export CSV file', 'error');
   }
 }
 

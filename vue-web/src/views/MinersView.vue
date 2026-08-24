@@ -187,6 +187,23 @@
       </div>
     </div>
 
+    <!-- Miners Table Toolbar -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+      <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>Active Miners Directory</span>
+      </h3>
+      <button
+        @click="exportMinersCSV"
+        :disabled="!filteredMiners.length"
+        id="miners-export-csv-button"
+        class="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-800 px-3.5 py-1.5 rounded-xl transition-all shadow-sm cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        <Download class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+        <span>Export Miners to CSV</span>
+      </button>
+    </div>
+
     <!-- Miners Table -->
     <div class="glass-card rounded-2xl overflow-hidden shadow-sm">
       <div class="overflow-x-auto">
@@ -308,10 +325,11 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
-import { Search, Users, Zap, Activity, ArrowUpRight, Wifi, Sliders, Bell, AlertTriangle, CheckCircle, Play } from 'lucide-vue-next';
+import { Search, Users, Zap, Activity, ArrowUpRight, Wifi, Sliders, Bell, AlertTriangle, CheckCircle, Play, Download } from 'lucide-vue-next';
 import { PoolAPI } from '../services/api.js';
 import { useToasts } from '../composables/useToasts.js';
 import { formatHashrate } from '../utils/formatters.js';
+import { exportMinersListToCsv } from '../utils/csvExport.js';
 
 const { addToast } = useToasts();
 
@@ -507,6 +525,20 @@ async function fetchMiners() {
     }
   } catch (err) {
     console.error('Failed to load miners:', err);
+  }
+}
+
+function exportMinersCSV() {
+  if (!filteredMiners.value || !filteredMiners.value.length) {
+    addToast('No miner data available to export', 'warning');
+    return;
+  }
+  try {
+    exportMinersListToCsv(filteredMiners.value, totalMinerHash.value);
+    addToast(`Exported ${filteredMiners.value.length} miners to CSV`, 'success');
+  } catch (err) {
+    console.error('Failed to export miners CSV:', err);
+    addToast('Failed to export miners CSV', 'error');
   }
 }
 

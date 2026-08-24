@@ -10,6 +10,16 @@
         <div class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800/80 text-[10px] text-slate-600 dark:text-slate-400 font-sans">
           <span>Auto-refresh in <strong class="text-slate-900 dark:text-white font-mono">{{ secondsLeft }}s</strong></span>
         </div>
+        <button
+          @click="exportMinerReport"
+          :disabled="!minerData || loading"
+          id="miner-export-csv-button"
+          class="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-800 px-3 py-1.5 rounded-lg transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+          title="Export complete miner telemetry, workers, and payouts to CSV"
+        >
+          <Download class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+          <span>Export CSV</span>
+        </button>
         <button @click="triggerRefresh" class="inline-flex items-center space-x-1 text-xs text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-lg cursor-pointer">
           <RefreshCw class="w-3 h-3" :class="{ 'animate-spin': loading || isRefreshing }" />
           <span>Refresh</span>
@@ -559,7 +569,10 @@ import HashrateChart from '../components/HashrateChart.vue';
 import { PoolAPI } from '../services/api.js';
 import { formatHashrate, formatCoins, formatTimeAgo, formatDateTime, shortenAddress } from '../utils/formatters.js';
 import { useAutoRefresh } from '../composables/useAutoRefresh.js';
+import { useToasts } from '../composables/useToasts.js';
+import { exportMinerAccountToCsv, downloadCsv, escapeCsv } from '../utils/csvExport.js';
 
+const { addToast } = useToasts();
 const route = useRoute();
 const walletAddress = computed(() => route.params.address);
 const minerData = ref(null);
@@ -669,10 +682,25 @@ const calcEstDailyUSD = computed(() => {
   return calcEstDailyETC.value * price;
 });
 
+// Comprehensive Miner Report Exporter
+function exportMinerReport() {
+  if (!walletAddress.value || !minerData.value) {
+    addToast('No miner data available to export', 'warning');
+    return;
+  }
+  try {
+    exportMinerAccountToCsv(walletAddress.value, minerData.value, workerList.value);
+    addToast('Miner telemetry report exported as CSV', 'success');
+  } catch (err) {
+    console.error('Failed to export miner CSV:', err);
+    addToast('Failed to export miner CSV', 'error');
+  }
+}
+
 // CSV offline analysis exporter function
 function exportToCSV() {
   if (!minerCharts.value || !minerCharts.value.length) {
-    alert("No historical data available to export.");
+    addToast('No historical chart data available to export', 'warning');
     return;
   }
 
@@ -690,7 +718,7 @@ function exportToCSV() {
 
     return [
       dateStr,
-      `"${readableTime.replace(/"/g, '""')}"`,
+      escapeCsv(readableTime),
       val,
       (val / 1000000).toFixed(2),
       dailyETC.toFixed(5),
@@ -701,17 +729,10 @@ function exportToCSV() {
   const csvContent = [
     headers.join(','),
     ...rows.map(row => row.join(','))
-  ].join('\n');
+  ].join('\r\n');
 
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.setAttribute('href', url);
-  link.setAttribute('download', `miner_${walletAddress.value.substring(0, 8)}_analytics.csv`);
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  downloadCsv(`miner_${walletAddress.value.substring(0, 8)}_analytics.csv`, csvContent);
+  addToast('Miner hashrate history exported as CSV', 'success');
 }
 
 function copyAddress() {
