@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-slate-50 dark:bg-[#090d16] text-slate-900 dark:text-slate-100 selection:bg-emerald-500 selection:text-black transition-colors duration-200">
+  <div class="min-h-screen flex flex-col bg-slate-50 dark:bg-[#02040a] text-slate-900 dark:text-slate-100 selection:bg-emerald-500 selection:text-black transition-colors duration-200">
     <!-- Global Toast Notifications -->
     <ToastContainer />
 
