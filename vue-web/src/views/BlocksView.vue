@@ -66,6 +66,22 @@
       </div>
     </div>
 
+    <!-- Blocks Table Header / Toolbar -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+      <h3 class="text-base font-bold text-white flex items-center space-x-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>Mined Blocks List</span>
+      </h3>
+      <button
+        @click="exportToCSV"
+        :disabled="!currentBlockList.length"
+        class="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 px-3.5 py-1.5 rounded-xl transition-all shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        <Download class="w-3.5 h-3.5" />
+        <span>Export tab to CSV</span>
+      </button>
+    </div>
+
     <!-- Blocks Table -->
     <div class="glass-card rounded-2xl overflow-hidden">
       <div class="overflow-x-auto">
@@ -137,12 +153,39 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { ExternalLink } from 'lucide-vue-next';
+import { ExternalLink, Download } from 'lucide-vue-next';
 import { PoolAPI } from '../services/api.js';
 import { formatDifficulty, formatCoins, formatTimeAgo, shortenAddress } from '../utils/formatters.js';
 
 const activeTab = ref('matured');
 const blocksData = ref(null);
+
+function exportToCSV() {
+  const data = currentBlockList.value;
+  if (!data || !data.length) return;
+
+  const headers = ['Height', 'Block Hash', 'Reward (ETC)', 'Difficulty', 'Shares', 'Luck', 'Time Found'];
+  const rows = data.map(b => [
+    b.height,
+    b.hash,
+    (Number(b.reward || '2500000000000000000') / 1e18).toFixed(6),
+    b.difficulty,
+    b.shares || 0,
+    `${calculateBlockLuck(b)}%`,
+    new Date(b.timestamp * 1000).toISOString()
+  ]);
+
+  const csvContent = [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `etc_pool_${activeTab.value}_blocks.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 
 const currentBlockList = computed(() => {
   if (!blocksData.value) return [];

@@ -1,10 +1,23 @@
 <template>
   <div 
     ref="containerRef" 
-    class="w-full h-full min-h-[240px] relative select-none font-sans"
+    class="w-full h-full min-h-[260px] relative select-none font-sans pt-12"
     @mousemove="handleMouseMove"
     @mouseleave="handleMouseLeave"
   >
+    <!-- Timeframe Selection Overlay -->
+    <div class="absolute top-2 right-2 z-10 flex items-center bg-slate-900/80 border border-slate-800/80 p-0.5 rounded-lg text-[10px] font-mono">
+      <button 
+        v-for="tf in ['24h', '7d', '30d']" 
+        :key="tf"
+        @click="selectedTimeframe = tf"
+        class="px-2.5 py-1 rounded transition-all uppercase font-bold"
+        :class="selectedTimeframe === tf ? 'bg-emerald-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'"
+      >
+        {{ tf }}
+      </button>
+    </div>
+
     <!-- Fallback if no data -->
     <div v-if="!chartData || !chartData.length" class="absolute inset-0 flex items-center justify-center text-xs text-slate-500">
       No chart data available
@@ -180,6 +193,14 @@ const props = defineProps({
   }
 });
 
+const emit = defineEmits(['timeframeChange']);
+const selectedTimeframe = ref('24h');
+
+// Watch selectedTimeframe to bubble up changes
+watch(selectedTimeframe, (newVal) => {
+  emit('timeframeChange', newVal);
+});
+
 // Random ID for gradient to support multiple charts
 const gradientId = computed(() => `recharts-grad-${props.type}-${Math.floor(Math.random() * 10000)}`);
 
@@ -200,7 +221,7 @@ const chartHeight = computed(() => Math.max(10, height.value - paddingTop.value 
 const parsedData = computed(() => {
   if (!props.chartData || !props.chartData.length) return [];
   
-  return props.chartData.map(item => {
+  const mapped = props.chartData.map(item => {
     const ts = item.x || item.timestamp || item[0];
     const val = item.y !== undefined ? item.y : (item.minerHash !== undefined ? item.minerHash : item[1]);
     
@@ -216,6 +237,19 @@ const parsedData = computed(() => {
       value: Number(val) || 0
     };
   }).sort((a, b) => a.timestamp - b.timestamp);
+
+  if (mapped.length === 0) return [];
+
+  // Filter based on selected timeframe relative to the latest data timestamp
+  const latestTs = mapped[mapped.length - 1].timestamp;
+  if (selectedTimeframe.value === '24h') {
+    const threshold = latestTs - 24 * 3600;
+    return mapped.filter(d => d.timestamp >= threshold);
+  } else if (selectedTimeframe.value === '7d') {
+    const threshold = latestTs - 7 * 24 * 3600;
+    return mapped.filter(d => d.timestamp >= threshold);
+  }
+  return mapped; // 30d
 });
 
 // Coordinate bounds

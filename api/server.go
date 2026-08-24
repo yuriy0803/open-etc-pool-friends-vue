@@ -306,6 +306,16 @@ func (s *ApiServer) SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 		s.backend.SetMailAddress(login, email)
 		s.backend.SetAlert(login, alert)
 
+		// Set hashrate drop threshold if provided
+		dropThresh := r.FormValue("hashrateDropThreshold")
+		if dropThresh != "" {
+			s.backend.SetHashrateDropThreshold(login, dropThresh)
+		}
+		dropAlert := r.FormValue("hashrateDropAlert")
+		if dropAlert != "" {
+			s.backend.SetHashrateDropAlert(login, dropAlert)
+		}
+
 		reply["result"] = "success"
 	}
 
@@ -584,6 +594,8 @@ func (s *ApiServer) AccountIndex(w http.ResponseWriter, r *http.Request) {
 		stats["paymentCharts"], err = s.backend.GetPaymentCharts(login)
 		stats["difficulty"], err = s.backend.GetNetworkDifficulty()
 		stats["threshold"], err = s.backend.GetThreshold(login)
+		stats["hashrateDropThreshold"] = s.backend.GetHashrateDropThreshold(login)
+		stats["hashrateDropAlert"] = s.backend.GetHashrateDropAlert(login)
 
 		blocks, err := s.backend.CollectBlocks(login)
 		if err != nil {

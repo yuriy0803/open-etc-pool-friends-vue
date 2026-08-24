@@ -1869,6 +1869,28 @@ func convertPaymentsResults(raw *redis.ZSliceCmd) []map[string]interface{} {
 	return result
 }
 
+func (r *RedisClient) GetHashrateDropThreshold(login string) string {
+	login = strings.ToLower(login)
+	cmd := r.client.HGet(r.formatKey("settings", login), "hashrateDropThreshold")
+	if cmd.Err() == redis.Nil {
+		return "50"
+	} else if cmd.Err() != nil {
+		return "50"
+	}
+	return cmd.Val()
+}
+
+func (r *RedisClient) GetHashrateDropAlert(login string) string {
+	login = strings.ToLower(login)
+	cmd := r.client.HGet(r.formatKey("settings", login), "hashrateDropAlert")
+	if cmd.Err() == redis.Nil {
+		return "off"
+	} else if cmd.Err() != nil {
+		return "off"
+	}
+	return cmd.Val()
+}
+
 func (r *RedisClient) GetIP(login string) string {
 	login = strings.ToLower(login)
 	cmd := r.client.HGet(r.formatKey("settings", login), "ip_address")
@@ -1905,6 +1927,18 @@ func (r *RedisClient) SetMailAddress(login string, email string) (bool, error) {
 func (r *RedisClient) SetAlert(login string, alert string) (bool, error) {
 	login = strings.ToLower(login)
 	cmd, err := r.client.HSet(r.formatKey("settings", login), "alert", alert).Result()
+	return cmd, err
+}
+
+func (r *RedisClient) SetHashrateDropThreshold(login string, threshold string) (bool, error) {
+	login = strings.ToLower(login)
+	cmd, err := r.client.HSet(r.formatKey("settings", login), "hashrateDropThreshold", threshold).Result()
+	return cmd, err
+}
+
+func (r *RedisClient) SetHashrateDropAlert(login string, alert string) (bool, error) {
+	login = strings.ToLower(login)
+	cmd, err := r.client.HSet(r.formatKey("settings", login), "hashrateDropAlert", alert).Result()
 	return cmd, err
 }
 

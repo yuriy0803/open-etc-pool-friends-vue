@@ -347,6 +347,51 @@
                 Send offline worker alerts
               </label>
             </div>
+            <!-- Hashrate Drop Alert System Settings -->
+            <div class="border-t border-slate-800/40 pt-2 mt-2 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] text-slate-400 font-bold uppercase">Hashrate Drop Alert</span>
+                <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">{{ dropAlert ? 'Enabled' : 'Disabled' }}</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <input
+                  v-model="dropAlert"
+                  type="checkbox"
+                  id="dropCheck"
+                  class="rounded border-slate-800 text-emerald-500 focus:ring-emerald-500/30 bg-slate-900"
+                />
+                <label for="dropCheck" class="text-slate-400 cursor-pointer select-none">
+                  Alert if hashrate drops
+                </label>
+              </div>
+              <div v-if="dropAlert" class="space-y-1">
+                <div class="flex justify-between text-[10px]">
+                  <span class="text-slate-500">Drop Threshold:</span>
+                  <span class="text-emerald-400 font-bold font-mono">{{ dropThreshold }}%</span>
+                </div>
+                <input
+                  v-model.number="dropThreshold"
+                  type="range"
+                  min="10"
+                  max="90"
+                  step="5"
+                  class="w-full accent-emerald-500 h-1.5 bg-slate-950 rounded"
+                />
+                <span class="text-[9px] text-slate-500 block leading-normal">
+                  Alerts if current hashrate falls below this % of worker average.
+                </span>
+              </div>
+            </div>
+            <!-- Alert Config Status Trigger Modal Button -->
+            <div class="pt-2">
+              <button
+                type="button"
+                @click="showStatusModal = true"
+                class="w-full py-1.5 bg-slate-950 hover:bg-slate-900 border border-slate-800/80 rounded-xl text-slate-400 hover:text-white transition-all text-[11px] font-medium"
+              >
+                View Live Alert Diagnostic Status
+              </button>
+            </div>
           </div>
 
           <!-- Authentication Check -->
@@ -388,6 +433,56 @@
         </form>
       </div>
     </div>
+
+    <!-- Live Alerts Diagnostic Modal -->
+    <div v-if="showStatusModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <h3 class="text-base font-bold text-white flex items-center space-x-2">
+            <Activity class="w-4 h-4 text-emerald-400" />
+            <span>Alert Diagnostics Status</span>
+          </h3>
+          <button @click="showStatusModal = false" class="text-slate-400 hover:text-white font-bold">&times;</button>
+        </div>
+
+        <div class="space-y-3 text-xs">
+          <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800 space-y-1.5">
+            <div class="flex justify-between">
+              <span class="text-slate-500">Miner Address:</span>
+              <span class="font-mono text-slate-300 break-all text-[11px]">{{ walletAddress }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Subscribed Email:</span>
+              <span class="font-mono text-emerald-400">{{ notificationEmail || 'None' }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Offline Rig Alerts:</span>
+              <span class="font-mono" :class="emailAlert ? 'text-emerald-400' : 'text-slate-500'">{{ emailAlert ? 'ACTIVE (Email)' : 'INACTIVE' }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Hashrate Drop Alerts:</span>
+              <span class="font-mono" :class="dropAlert ? 'text-emerald-400' : 'text-slate-500'">{{ dropAlert ? 'ACTIVE' : 'INACTIVE' }}</span>
+            </div>
+            <div class="flex justify-between" v-if="dropAlert">
+              <span class="text-slate-500">Drop Threshold:</span>
+              <span class="font-mono text-emerald-400 font-bold">{{ dropThreshold }}%</span>
+            </div>
+          </div>
+
+          <div class="p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-xl text-[11px] text-slate-400 leading-relaxed">
+            <span class="font-bold text-white block mb-1">How it works:</span>
+            Our background Go-scheduler scans workers every 10 minutes. If drop alerts are active and a worker's hashrate drops below {{ dropThreshold }}% of its 24h moving average, an automatic notification is fired to <strong>{{ notificationEmail || 'your email' }}</strong>.
+          </div>
+        </div>
+
+        <button
+          @click="showStatusModal = false"
+          class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition-all text-xs"
+        >
+          Dismiss Diagnostics
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -417,6 +512,9 @@ const selectedScheme = ref('pplns');
 const payoutThreshold = ref(0.5);
 const notificationEmail = ref('');
 const emailAlert = ref(false);
+const dropAlert = ref(false);
+const dropThreshold = ref(50);
+const showStatusModal = ref(false);
 const verificationIP = ref('');
 const settingsLoading = ref(false);
 const settingsStatus = ref(null);
@@ -428,6 +526,8 @@ watch(minerData, (newVal) => {
     payoutThreshold.value = newVal.threshold ? Number((newVal.threshold / 1e9).toFixed(2)) : 0.5;
     notificationEmail.value = newVal.email || '';
     emailAlert.value = newVal.alert === 'on';
+    dropAlert.value = newVal.hashrateDropAlert === 'on';
+    dropThreshold.value = newVal.hashrateDropThreshold ? Number(newVal.hashrateDropThreshold) : 50;
   }
 }, { immediate: true });
 
@@ -525,7 +625,9 @@ async function saveSettings() {
       login: walletAddress.value,
       threshold: payoutThreshold.value.toString(),
       ip_address: verificationIP.value,
-      alertCheck: emailAlert.value ? 'on' : 'off'
+      alertCheck: emailAlert.value ? 'on' : 'off',
+      hashrateDropAlert: dropAlert.value ? 'on' : 'off',
+      hashrateDropThreshold: dropThreshold.value.toString()
     });
 
     settingsStatus.value = {
