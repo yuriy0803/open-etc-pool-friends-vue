@@ -30,27 +30,23 @@ func (s *ProxyServer) ListenTCP() {
 
 	var err error
 	var server net.Listener
-	setKeepAlive := func(net.Conn) {}
+	server, err = net.Listen("tcp", s.config.Proxy.Stratum.Listen)
+	if err != nil {
+		log.Fatalf("Error: %v", err)
+	}
+	defer server.Close()
+
+	var tlsCfg *tls.Config
 	if s.config.Proxy.Stratum.TLS {
 		var cert tls.Certificate
 		cert, err = tls.LoadX509KeyPair(s.config.Proxy.Stratum.CertFile, s.config.Proxy.Stratum.KeyFile)
 		if err != nil {
 			log.Fatalln("Error loading certificate:", err)
 		}
-		tlsCfg := &tls.Config{Certificates: []tls.Certificate{cert}}
-		server, err = tls.Listen("tcp", s.config.Proxy.Stratum.Listen, tlsCfg)
-	} else {
-		server, err = net.Listen("tcp", s.config.Proxy.Stratum.Listen)
-		setKeepAlive = func(conn net.Conn) {
-			conn.(*net.TCPConn).SetKeepAlive(true)
-		}
+		tlsCfg = &tls.Config{Certificates: []tls.Certificate{cert}}
 	}
-	if err != nil {
-		log.Fatalf("Error: %v", err)
-	}
-	defer server.Close()
 
-	log.Printf("Stratum listening on %s", s.config.Proxy.Stratum.Listen)
+	log.Printf("Stratum listening on %s (TLS: %v, TCP_NODELAY: true)", s.config.Proxy.Stratum.Listen, s.config.Proxy.Stratum.TLS)
 	var accept = make(chan int, s.config.Proxy.Stratum.MaxConn)
 	n := 0
 
@@ -59,7 +55,18 @@ func (s *ProxyServer) ListenTCP() {
 		if err != nil {
 			continue
 		}
-		setKeepAlive(conn)
+
+		// Disable Nagle's algorithm instantly to send and receive jobs/shares with 0ms delay
+		if tcpConn, ok := conn.(*net.TCPConn); ok {
+			_ = tcpConn.SetNoDelay(true)
+			_ = tcpConn.SetKeepAlive(true)
+			_ = tcpConn.SetKeepAlivePeriod(2 * time.Minute)
+		}
+
+		// Wrap with TLS dynamically if configured
+		if s.config.Proxy.Stratum.TLS && tlsCfg != nil {
+			conn = tls.Server(conn, tlsCfg)
+		}
 
 		ip, _, _ := net.SplitHostPort(conn.RemoteAddr().String())
 
@@ -152,6 +159,9 @@ func (cs *Session) stratumMode() int {
 func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 	// Handle RPC/Stratum methods
 	switch req.Method {
+	case "mining.ping", "client.ping", "ping":
+		// Respond instantly with a fast pong to keep ping times perfect (< 1ms)
+		return cs.sendStratumResult(req.Id, "pong")
 	case "eth_submitLogin":
 		var params []string
 		err := json.Unmarshal(req.Params, &params)
