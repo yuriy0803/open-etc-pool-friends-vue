@@ -170,8 +170,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { formatHashrate, formatDifficulty } from '../utils/formatters.js';
+import * as d3 from 'd3';
 
 const props = defineProps({
   chartData: {
@@ -252,32 +253,40 @@ const parsedData = computed(() => {
   return mapped; // 30d
 });
 
-// Coordinate bounds
-const valBounds = computed(() => {
-  if (!parsedData.value.length) return { min: 0, max: 1 };
+// D3 X & Y scale computation
+const xScale = computed(() => {
+  if (!parsedData.value.length) return null;
+  const timestamps = parsedData.value.map(d => d.timestamp);
+  const minTs = Math.min(...timestamps);
+  const maxTs = Math.max(...timestamps);
+  
+  return d3.scaleLinear()
+    .domain([minTs, maxTs])
+    .range([paddingLeft.value, width.value - paddingRight.value]);
+});
+
+const yScale = computed(() => {
+  if (!parsedData.value.length) return null;
   const values = parsedData.value.map(d => d.value);
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  // Add a 10% ceiling buffer and 10% floor buffer
-  const diff = max - min || 1;
-  const bufferMax = max + diff * 0.1;
-  const bufferMin = Math.max(0, min - diff * 0.1);
-  return { min: bufferMin, max: bufferMax };
+  const minVal = Math.min(...values);
+  const maxVal = Math.max(...values);
+  const diff = maxVal - minVal || 1;
+  
+  const bufferMin = Math.max(0, minVal - diff * 0.1);
+  const bufferMax = maxVal + diff * 0.1;
+  
+  return d3.scaleLinear()
+    .domain([bufferMin, bufferMax])
+    .range([height.value - paddingBottom.value, paddingTop.value]);
 });
 
 // Plotting points
 const points = computed(() => {
-  if (!parsedData.value.length) return [];
-  const N = parsedData.value.length;
-  const bounds = valBounds.value;
-  const range = bounds.max - bounds.min || 1;
-  
-  return parsedData.value.map((d, index) => {
-    const x = paddingLeft.value + (N > 1 ? (index / (N - 1)) * chartWidth.value : chartWidth.value / 2);
-    const y = paddingTop.value + chartHeight.value - ((d.value - bounds.min) / range) * chartHeight.value;
+  if (!parsedData.value.length || !xScale.value || !yScale.value) return [];
+  return parsedData.value.map(d => {
     return {
-      x,
-      y,
+      x: xScale.value(d.timestamp),
+      y: yScale.value(d.value),
       rawValue: d.value,
       timeLabel: d.timeLabel,
       timestamp: d.timestamp
@@ -285,68 +294,49 @@ const points = computed(() => {
   });
 });
 
-// Build smooth Recharts-style spline curves
+// Build smooth Recharts-style spline curves using d3 curveMonotoneX
 const linePath = computed(() => {
-  if (!points.value.length) return '';
-  const pts = points.value;
-  if (pts.length === 1) return `M ${pts[0].x} ${pts[0].y}`;
-  
-  let d = `M ${pts[0].x} ${pts[0].y}`;
-  for (let i = 0; i < pts.length - 1; i++) {
-    const p0 = pts[i];
-    const p1 = pts[i + 1];
-    
-    // Smooth control points
-    const cpX1 = p0.x + (p1.x - p0.x) / 3.5;
-    const cpY1 = p0.y;
-    const cpX2 = p0.x + 2 * (p1.x - p0.x) / 3.5;
-    const cpY2 = p1.y;
-    
-    d += ` C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${p1.x} ${p1.y}`;
-  }
-  return d;
+  if (!parsedData.value.length || !xScale.value || !yScale.value) return '';
+  const lineGenerator = d3.line()
+    .x(d => xScale.value(d.timestamp))
+    .y(d => yScale.value(d.value))
+    .curve(d3.curveMonotoneX);
+  return lineGenerator(parsedData.value);
 });
 
-// Filled area path under spline
+// Filled area path under spline using d3 curveMonotoneX
 const areaPath = computed(() => {
-  if (!points.value.length) return '';
-  const pts = points.value;
-  const startX = pts[0].x;
-  const endX = pts[pts.length - 1].x;
-  const baseY = height.value - paddingBottom.value;
-  
-  return `${linePath.value} L ${endX} ${baseY} L ${startX} ${baseY} Z`;
+  if (!parsedData.value.length || !xScale.value || !yScale.value) return '';
+  const areaGenerator = d3.area()
+    .x(d => xScale.value(d.timestamp))
+    .y0(height.value - paddingBottom.value)
+    .y1(d => yScale.value(d.value))
+    .curve(d3.curveMonotoneX);
+  return areaGenerator(parsedData.value);
 });
 
 // Y-Axis Ticks (5 division marks)
 const horizontalGridLines = computed(() => {
-  const bounds = valBounds.value;
-  const lines = [];
-  const count = 5;
-  for (let i = 0; i < count; i++) {
-    const val = bounds.max - (i / (count - 1)) * (bounds.max - bounds.min);
-    const y = paddingTop.value + (i / (count - 1)) * chartHeight.value;
-    lines.push({ y, val });
-  }
-  return lines;
+  if (!yScale.value) return [];
+  const ticks = yScale.value.ticks(5);
+  return ticks.map(val => ({
+    y: yScale.value(val),
+    val
+  }));
 });
 
 // X-Axis Ticks (5 evenly spread vertical markers)
 const verticalGridLines = computed(() => {
-  if (!points.value.length) return [];
-  const pts = points.value;
-  const lines = [];
-  const count = Math.min(5, pts.length);
-  if (count <= 1) return pts.map(p => ({ x: p.x, label: p.timeLabel }));
-  
-  for (let i = 0; i < count; i++) {
-    const idx = Math.round((i / (count - 1)) * (pts.length - 1));
-    const p = pts[idx];
-    if (p) {
-      lines.push({ x: p.x, label: p.timeLabel });
-    }
-  }
-  return lines;
+  if (!xScale.value || !parsedData.value.length) return [];
+  const ticks = xScale.value.ticks(5);
+  return ticks.map(val => {
+    const date = new Date(val > 1e12 ? val : val * 1000);
+    const label = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return {
+      x: xScale.value(val),
+      label
+    };
+  });
 });
 
 // Formatter mapping
