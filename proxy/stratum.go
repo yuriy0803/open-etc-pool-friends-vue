@@ -226,29 +226,21 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 		case "mining.extranonce.subscribe":
 			var params []string
 			if req.Params != nil {
-				err := json.Unmarshal(req.Params, &params)
-				if err != nil {
-					return errors.New("invalid params")
-				}
+				_ = json.Unmarshal(req.Params, &params)
 			}
-			if len(params) == 0 {
-				if err := cs.sendStratumResult(req.Id, true); err != nil {
-					return err
-				}
-				cs.ExtranonceSub = true
-				req := JSONStratumReq{
-					Id:     nil,
-					Method: "mining.set_extranonce",
-					Params: []interface{}{
-						cs.Extranonce,
-					},
-				}
-				return cs.sendTCPReq(req)
+			// Permissively always accept extranonce subscribe
+			if err := cs.sendStratumResult(req.Id, true); err != nil {
+				return err
 			}
-			return cs.sendStratumError(req.Id, []string{
-				"20",
-				"Not supported.",
-			})
+			cs.ExtranonceSub = true
+			req := JSONStratumReq{
+				Id:     nil,
+				Method: "mining.set_extranonce",
+				Params: []interface{}{
+					cs.Extranonce,
+				},
+			}
+			return cs.sendTCPReq(req)
 		case "mining.submit":
 			var params []string
 			err := json.Unmarshal(req.Params, &params)
@@ -350,21 +342,24 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 	case "eth_submitHashrate":
 		var params []string
 		err := json.Unmarshal(req.Params, &params)
-		if err != nil || len(params) < 2 {
+		if err != nil || len(params) < 1 {
 			log.Println("Malformed stratum request params from", cs.ip)
-			return err
+			return cs.sendTCPResult(req.Id, true)
 		}
 
 		hashrateStr := params[0]
-		if !strings.HasPrefix(hashrateStr, "0x") {
-			log.Println("Malformed hashrate value in eth_submitHashrate request from", cs.ip)
-			return errors.New("Malformed hashrate value")
+		var hashrate int64
+		var parseErr error
+
+		if strings.HasPrefix(hashrateStr, "0x") {
+			hashrate, parseErr = strconv.ParseInt(hashrateStr[2:], 16, 64)
+		} else {
+			hashrate, parseErr = strconv.ParseInt(hashrateStr, 10, 64)
 		}
 
-		hashrate, err := strconv.ParseInt(hashrateStr[2:], 16, 64)
-		if err != nil {
-			log.Println("Malformed hashrate value in eth_submitHashrate request from", cs.ip)
-			return err
+		if parseErr != nil {
+			log.Printf("Non-standard hashrate value in eth_submitHashrate request from %s: %s (falling back to 0)", cs.ip, hashrateStr)
+			hashrate = 0
 		}
 
 		formattedHashrate := formatEthHashrate(hashrate)
