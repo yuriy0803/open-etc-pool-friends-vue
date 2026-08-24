@@ -6,6 +6,9 @@
     <!-- Global Hashrate Alert & Notification Modal -->
     <HashrateAlertModal />
 
+    <!-- Global Miner Quick Stats Modal -->
+    <MinerQuickStatsModal />
+
     <!-- Navbar -->
     <Navbar />
 
