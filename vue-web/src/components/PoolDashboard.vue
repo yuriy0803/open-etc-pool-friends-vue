@@ -204,10 +204,13 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
             <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
-              <Activity class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <span>Pool Telemetry History</span>
+              <Info v-if="activeChartTab === 'info'" class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <Activity v-else class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <span>{{ activeChartTab === 'info' ? 'Pool Configuration & Specifications' : 'Pool Telemetry History' }}</span>
             </h3>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Continuous telemetry sampling from pool API</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              {{ activeChartTab === 'info' ? 'Stratum server endpoints, difficulty parameters, and hardware requirements' : 'Continuous telemetry sampling from pool API' }}
+            </p>
           </div>
 
           <div class="flex items-center space-x-1 bg-slate-100 dark:bg-slate-900/90 p-1 rounded-xl border border-slate-200 dark:border-slate-800 self-start sm:self-auto">
@@ -232,6 +235,15 @@
             >
               Difficulty
             </button>
+            <button
+              @click="activeChartTab = 'info'"
+              class="px-3 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer flex items-center space-x-1"
+              :class="activeChartTab === 'info' ? 'bg-emerald-500 text-slate-950 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+              id="dashboard-info-tab-button"
+            >
+              <Info class="w-3 h-3" />
+              <span>Info & Config</span>
+            </button>
           </div>
         </div>
 
@@ -251,12 +263,83 @@
             color="#38bdf8"
           />
           <HashrateChart
-            v-else
+            v-else-if="activeChartTab === 'diff'"
             :chartData="dashboardData?.pool?.netCharts || []"
             type="difficulty"
             label="Network Difficulty"
             color="#a855f7"
           />
+          <!-- Info & Pool Configuration Tab Content -->
+          <div
+            v-else-if="activeChartTab === 'info'"
+            class="h-full overflow-y-auto pr-1 space-y-3 font-sans text-xs custom-scrollbar"
+            id="dashboard-pool-info-tab-content"
+          >
+            <!-- Stratum Ports Specification Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800/80">
+                <div class="flex items-center justify-between text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-1">
+                  <span>Standard Stratum (TCP)</span>
+                  <span class="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono text-[9px]">VarDiff 4G-32G</span>
+                </div>
+                <div class="flex items-center justify-between font-mono font-semibold text-slate-900 dark:text-white text-xs">
+                  <span class="text-emerald-600 dark:text-emerald-400">stratum+tcp://pool:8008</span>
+                  <button @click="copyText('stratum+tcp://pool:8008')" class="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white cursor-pointer" title="Copy URL">
+                    <Copy class="w-3 h-3" />
+                  </button>
+                </div>
+                <div class="text-[10px] text-slate-500 mt-1">Recommended for GPU rigs & ASIC miners</div>
+              </div>
+
+              <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800/80">
+                <div class="flex items-center justify-between text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-1">
+                  <span>Encrypted Stratum (SSL/TLS)</span>
+                  <span class="px-1.5 py-0.5 rounded bg-teal-500/10 text-teal-600 dark:text-teal-400 font-mono text-[9px]">TLS 1.2/1.3</span>
+                </div>
+                <div class="flex items-center justify-between font-mono font-semibold text-slate-900 dark:text-white text-xs">
+                  <span class="text-teal-600 dark:text-teal-400">stratum+ssl://pool:8443</span>
+                  <button @click="copyText('stratum+ssl://pool:8443')" class="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white cursor-pointer" title="Copy URL">
+                    <Copy class="w-3 h-3" />
+                  </button>
+                </div>
+                <div class="text-[10px] text-slate-500 mt-1">Secure encrypted mining proxy traffic</div>
+              </div>
+            </div>
+
+            <!-- Pool Requirements & Parameters Checklist -->
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800/80 space-y-2">
+              <div class="text-[11px] font-bold text-slate-900 dark:text-white flex items-center space-x-1.5">
+                <ShieldCheck class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span>Mining Requirements & Pool Rules</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-[11px]">
+                <div class="bg-white dark:bg-slate-900/90 p-2 rounded-lg border border-slate-200 dark:border-slate-800">
+                  <div class="text-[9px] font-sans text-slate-500 uppercase">Algorithm</div>
+                  <div class="font-bold text-slate-900 dark:text-white mt-0.5">ETCHASH (ETC)</div>
+                </div>
+                <div class="bg-white dark:bg-slate-900/90 p-2 rounded-lg border border-slate-200 dark:border-slate-800">
+                  <div class="text-[9px] font-sans text-slate-500 uppercase">Payout System</div>
+                  <div class="font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">PPLNS (0.5% Fee)</div>
+                </div>
+                <div class="bg-white dark:bg-slate-900/90 p-2 rounded-lg border border-slate-200 dark:border-slate-800">
+                  <div class="text-[9px] font-sans text-slate-500 uppercase">Min Payout</div>
+                  <div class="font-bold text-slate-900 dark:text-white mt-0.5">0.50 ETC</div>
+                </div>
+                <div class="bg-white dark:bg-slate-900/90 p-2 rounded-lg border border-slate-200 dark:border-slate-800">
+                  <div class="text-[9px] font-sans text-slate-500 uppercase">Payout Interval</div>
+                  <div class="font-bold text-slate-900 dark:text-white mt-0.5">Every 120 Min</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hardware & DAG Prerequisites -->
+            <div class="p-2.5 rounded-xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-300 flex items-start space-x-2">
+              <HardDrive class="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+              <div>
+                <strong class="text-slate-900 dark:text-white">DAG & VRAM Requirement:</strong> ETCHASH DAG size is ~3.2 GB. Compatible with 4GB, 6GB, 8GB+ AMD/NVIDIA GPUs (e.g. GTX 1060 6GB, RX 570/580 4GB/8GB, RTX 30/40 series) & dedicated ASIC miners (Ipollo, Jasminer, Antminer E9).
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -545,7 +628,8 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { 
   Search, Cpu, Users, Coins, Layers, Activity, Server, Copy, 
-  Sliders, Box, ArrowRight, RefreshCw, ShieldCheck, AlertTriangle, Calculator, Download
+  Sliders, Box, ArrowRight, RefreshCw, ShieldCheck, AlertTriangle, Calculator, Download,
+  Info, CheckCircle, Zap, ExternalLink, Terminal, HardDrive
 } from 'lucide-vue-next';
 import StatCard from './StatCard.vue';
 import HashrateChart from './HashrateChart.vue';
