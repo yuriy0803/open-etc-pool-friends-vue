@@ -272,12 +272,18 @@ watch([isMinerModalOpen, selectedMinerAddress], async ([open, addr]) => {
     loading.value = true;
     minerData.value = initialMinerData.value || null;
     try {
-      const [minerRes, priceRes] = await Promise.all([
+      const [minerRes, priceRes] = await Promise.allSettled([
         PoolAPI.getMiner(addr),
-        PoolAPI.getETCPrice()
+        PoolAPI.getPrice()
       ]);
-      minerData.value = minerRes || initialMinerData.value;
-      priceData.value = priceRes;
+      if (minerRes.status === 'fulfilled' && minerRes.value) {
+        minerData.value = minerRes.value;
+      } else {
+        minerData.value = initialMinerData.value;
+      }
+      if (priceRes.status === 'fulfilled' && priceRes.value) {
+        priceData.value = priceRes.value;
+      }
     } catch (err) {
       console.error('Error loading miner stats in modal:', err);
     } finally {

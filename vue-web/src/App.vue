@@ -32,6 +32,7 @@ import Navbar from './components/Navbar.vue';
 import Footer from './components/Footer.vue';
 import ToastContainer from './components/ToastContainer.vue';
 import HashrateAlertModal from './components/HashrateAlertModal.vue';
+import MinerQuickStatsModal from './components/MinerQuickStatsModal.vue';
 
 onMounted(() => {
   const theme = localStorage.getItem('etc_theme') || 'dark';

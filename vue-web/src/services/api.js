@@ -52,6 +52,7 @@ export const PoolAPI = {
 
   // Get live price and market stats
   getPrice: () => fetchJson('/price'),
+  getETCPrice: () => fetchJson('/price'),
 
   // Get quick live stats
   getLiveStats: () => fetchJson('/live_stats'),

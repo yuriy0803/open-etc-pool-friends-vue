@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = 3000;
 
-// Upstream Pool API URL from environment variable (never hardcoded in git)
+// Upstream Pool API URL strictly from environment variable (never hardcoded in source files)
 const POOL_API_URL = (process.env.POOL_API_URL || '').replace(/\/+$/, '');
 
 app.use(cors());

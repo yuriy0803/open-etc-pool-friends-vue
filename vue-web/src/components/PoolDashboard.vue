@@ -644,14 +644,14 @@
               <td class="py-3.5 px-3.5 font-semibold text-slate-900 dark:text-white">
                 <div class="flex items-center space-x-2">
                   <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" title="Online & Mining"></div>
-                  <router-link 
-                    :to="`/miner/${miner.address}`" 
-                    class="hover:text-emerald-600 dark:text-emerald-400 hover:underline flex items-center space-x-1 font-mono"
-                    :title="miner.address"
+                  <button
+                    @click="openMinerModal(miner.address, miner)"
+                    class="hover:text-emerald-600 dark:text-emerald-400 hover:underline flex items-center space-x-1 font-mono text-left cursor-pointer"
+                    :title="`View quick stats for ${miner.address}`"
                   >
                     <span class="hidden sm:inline">{{ shortenAddress(miner.address, 10, 8) }}</span>
                     <span class="sm:hidden">{{ shortenAddress(miner.address, 6, 4) }}</span>
-                  </router-link>
+                  </button>
                   <button 
                     @click="copyText(miner.address)" 
                     class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-emerald-500 transition-opacity p-0.5 cursor-pointer"
@@ -903,10 +903,12 @@ import { formatHashrate, formatDifficulty, formatCoins, formatTimeAgo, shortenAd
 import { exportPoolStatsToCsv } from '../utils/csvExport.js';
 import { useToasts } from '../composables/useToasts.js';
 import { useHashrateAlerts } from '../composables/useHashrateAlerts.js';
+import { useMinerModal } from '../composables/useMinerModal.js';
 
 const router = useRouter();
 const { addToast } = useToasts();
 const { isModalOpen, unreadCount, config } = useHashrateAlerts();
+const { openMinerModal } = useMinerModal();
 
 // Dashboard Reactive State
 const dashboardData = ref(null);

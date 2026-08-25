@@ -241,12 +241,13 @@
                 <span :class="index < 3 && !miner.isSimulatedDrop ? 'text-emerald-600 dark:text-emerald-400 font-extrabold' : ''">#{{ index + 1 }}</span>
               </td>
               <td class="py-3.5 px-4">
-                <router-link
-                  :to="`/miner/${miner.address}`"
-                  class="font-mono text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 hover:underline font-medium flex items-center space-x-1.5"
+                <button
+                  @click="openMinerModal(miner.address, miner)"
+                  class="font-mono text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 hover:underline font-medium flex items-center space-x-1.5 cursor-pointer text-left"
+                  :title="`Open stats modal for ${miner.address}`"
                 >
                   <span class="font-bold">{{ miner.address.substring(0, 10) }}...{{ miner.address.substring(miner.address.length - 8) }}</span>
-                </router-link>
+                </button>
               </td>
               <td class="py-3.5 px-4 font-bold" :class="miner.isSimulatedDrop ? 'text-rose-600 dark:text-rose-400 font-extrabold' : 'text-slate-900 dark:text-white'">
                 {{ formatHashrate(miner.hr) }}
@@ -339,11 +340,13 @@ import { Search, Users, Zap, Activity, ArrowUpRight, Wifi, Sliders, Bell, BellRi
 import { PoolAPI } from '../services/api.js';
 import { useToasts } from '../composables/useToasts.js';
 import { useHashrateAlerts } from '../composables/useHashrateAlerts.js';
+import { useMinerModal } from '../composables/useMinerModal.js';
 import { formatHashrate } from '../utils/formatters.js';
 import { exportMinersListToCsv } from '../utils/csvExport.js';
 
 const { addToast } = useToasts();
 const { config, isModalOpen, evaluateMiner, resolveIncidentForAddress } = useHashrateAlerts();
+const { openMinerModal } = useMinerModal();
 
 const rawMinersData = ref(null);
 const minersState = ref([]);
