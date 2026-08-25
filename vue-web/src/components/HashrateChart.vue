@@ -68,7 +68,7 @@
     </div>
 
     <!-- D3 Interactive SVG Canvas -->
-    <div v-else class="relative flex-1 w-full min-h-[210px] overflow-hidden">
+    <div v-else class="relative flex-1 w-full min-h-[210px] overflow-visible">
       <svg 
         :width="width" 
         :height="svgHeight" 
@@ -248,11 +248,7 @@
       <div 
         v-if="hoveredPoint" 
         class="absolute z-30 pointer-events-none bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-700/80 px-3 py-2.5 rounded-xl shadow-xl text-left flex flex-col space-y-1 min-w-[160px] backdrop-blur-md transition-all duration-75"
-        :style="{
-          left: tooltipStyle.left,
-          top: tooltipStyle.top,
-          transform: 'translate(-50%, -105%)'
-        }"
+        :style="tooltipStyle"
       >
         <div class="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-mono font-medium border-b border-slate-100 dark:border-slate-800 pb-1">
           <span>{{ hoveredPoint.fullDateLabel }}</span>
@@ -491,18 +487,21 @@ const hoveredPoint = computed(() => {
 });
 
 const tooltipStyle = computed(() => {
-  if (!hoveredPoint.value) return { left: '0px', top: '0px' };
+  if (!hoveredPoint.value) return { left: '0px', top: '0px', transform: 'translate(-50%, -105%)' };
   
   let leftPos = hoveredPoint.value.x;
+  // Keep horizontally within bounds
   if (leftPos < 90) leftPos = 90;
   if (leftPos > width.value - 90) leftPos = width.value - 90;
 
-  let topPos = hoveredPoint.value.y - 10;
-  if (topPos < 50) topPos = 50;
+  const y = hoveredPoint.value.y;
+  // If the point is high up (less than 100px from the top), render the tooltip below the point to prevent clipping
+  const showBelow = y < 100;
 
   return {
     left: `${leftPos}px`,
-    top: `${topPos}px`
+    top: `${y}px`,
+    transform: showBelow ? 'translate(-50%, 15px)' : 'translate(-50%, calc(-100% - 12px))'
   };
 });
 
