@@ -187,7 +187,19 @@
                         {{ formatHashrate(worker.hr || worker.hashrate || currentHashrate) }}
                       </td>
                       <td class="py-2.5 px-3 text-slate-600 dark:text-slate-300">
-                        {{ worker.shares || worker.validShares || 142 }}
+                        <div class="space-y-1">
+                          <div class="flex items-center space-x-1.5">
+                            <span class="font-bold text-slate-900 dark:text-white">{{ (worker.valid !== undefined ? worker.valid : worker.shares ?? 142).toLocaleString() }}</span>
+                            <span class="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold font-sans bg-emerald-500/10 px-1 py-0.5 rounded">
+                              {{ worker.v_per ?? 100 }}% OK
+                            </span>
+                          </div>
+                          <div class="flex items-center space-x-2 text-[10px] text-slate-500 font-sans">
+                            <span>Stale: <strong class="font-mono" :class="(worker.stale ?? 0) > 0 ? 'text-amber-500 font-bold' : 'text-slate-400'">{{ worker.stale ?? 0 }}</strong> ({{ worker.s_per ?? 0 }}%)</span>
+                            <span>•</span>
+                            <span>Invalid: <strong class="font-mono" :class="(worker.invalid ?? 0) > 0 ? 'text-rose-500 font-bold' : 'text-slate-400'">{{ worker.invalid ?? 0 }}</strong> ({{ worker.i_per ?? 0 }}%)</span>
+                          </div>
+                        </div>
                       </td>
                       <td class="py-2.5 px-3 text-slate-500 text-[11px] font-sans">
                         {{ formatTimeAgo(worker.lastBeat || Math.floor(Date.now() / 1000) - 15) }}

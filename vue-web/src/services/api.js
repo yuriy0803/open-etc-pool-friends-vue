@@ -44,8 +44,20 @@ export const PoolAPI = {
   getPayments: () => fetchJson('/payments'),
 
   // Get specific miner account data
-  getAccount: (walletAddress) => fetchJson(`/accounts/${walletAddress}`),
-  getMiner: (walletAddress) => fetchJson(`/accounts/${walletAddress}`),
+  getAccount: async (walletAddress) => {
+    const data = await fetchJson(`/accounts/${walletAddress}`);
+    if (data) {
+      if (data.miningTypeSolo === true) {
+        data.miningType = 'solo';
+      } else if (data.miningTypePplns === true) {
+        data.miningType = 'pplns';
+      } else if (data.miningTypeSolo !== undefined) {
+        data.miningType = data.miningTypeSolo ? 'solo' : 'pplns';
+      }
+    }
+    return data;
+  },
+  getMiner: (walletAddress) => PoolAPI.getAccount(walletAddress),
 
   // Get specific miner historical hashrate chart
   getAccountHistory: (walletAddress) => fetchJson(`/accounts/${walletAddress}/history`),

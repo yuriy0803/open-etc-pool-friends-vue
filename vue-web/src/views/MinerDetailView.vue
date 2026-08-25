@@ -177,7 +177,19 @@
                   {{ formatHashrate(w.hr) }}
                 </td>
                 <td class="py-3 px-3 text-slate-700 dark:text-slate-300">
-                  {{ (w.shares || 0).toLocaleString() }}
+                  <div class="space-y-1">
+                    <div class="flex items-center space-x-1.5">
+                      <span class="font-bold text-slate-900 dark:text-white">{{ (w.valid !== undefined ? w.valid : w.shares ?? 0).toLocaleString() }}</span>
+                      <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold font-sans bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                        {{ w.v_per ?? 100 }}% OK
+                      </span>
+                    </div>
+                    <div class="flex items-center space-x-2 text-[10px] text-slate-500 font-sans">
+                      <span>Stale: <strong class="font-mono" :class="(w.stale ?? 0) > 0 ? 'text-amber-500 font-bold' : 'text-slate-400'">{{ w.stale ?? 0 }}</strong> ({{ w.s_per ?? 0 }}%)</span>
+                      <span>•</span>
+                      <span>Invalid: <strong class="font-mono" :class="(w.invalid ?? 0) > 0 ? 'text-rose-500 font-bold' : 'text-slate-400'">{{ w.invalid ?? 0 }}</strong> ({{ w.i_per ?? 0 }}%)</span>
+                    </div>
+                  </div>
                 </td>
                 <td class="py-3 px-3 text-slate-500 dark:text-slate-400 font-sans">
                   {{ formatTimeAgo(w.lastBeat) }}

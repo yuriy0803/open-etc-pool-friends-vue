@@ -310,6 +310,15 @@ app.use('/api', async (req, res) => {
         hash = 10000000000 + (code % 100) * 1000000000; // 10 to 110 GH/s
       }
 
+      const apiHost = (() => {
+        try {
+          if (process.env.POOL_API_URL) {
+            return new URL(process.env.POOL_API_URL).hostname;
+          }
+        } catch (e) {}
+        return "etc-pool-hostname";
+      })();
+
       return res.json({
         currentHashrate: hash,
         hashrate: hash * 0.96,
@@ -318,11 +327,39 @@ app.use('/api', async (req, res) => {
           "Rig-Alpha": {
             hr: hash * 0.6,
             shares: Math.floor(hash / 2000000),
+            valid: Math.floor(hash / 2000000),
+            stale: 0,
+            invalid: 0,
+            v_per: 100,
+            s_per: 0,
+            i_per: 0,
+            w_stat: 1,
+            w_stat_s: 0,
+            offline: false,
+            solo: false,
+            blocks: 0,
+            hr2: hash * 0.55,
+            portDiff: "17179869184",
+            hostname: apiHost,
             lastBeat: nowSec - 14
           },
           "Rig-Beta": {
             hr: hash * 0.4,
             shares: Math.floor(hash / 3000000),
+            valid: Math.floor(hash / 3000000),
+            stale: 0,
+            invalid: 0,
+            v_per: 100,
+            s_per: 0,
+            i_per: 0,
+            w_stat: 1,
+            w_stat_s: 0,
+            offline: false,
+            solo: false,
+            blocks: 0,
+            hr2: hash * 0.35,
+            portDiff: "17179869184",
+            hostname: apiHost,
             lastBeat: nowSec - 41
           }
         },
@@ -419,8 +456,11 @@ app.use('/api', async (req, res) => {
 
     res.status(upstreamRes.status).send(rawText);
   } catch (err) {
-    console.error(`Proxy request error for ${req.path}:`, err.message);
-    res.status(502).json({ error: 'Upstream pool API error', message: err.message });
+    console.error(`Proxy request error for ${req.path} to ${targetUrl}:`, err);
+    if (err.cause) {
+      console.error(`  Error cause:`, err.cause);
+    }
+    res.status(502).json({ error: 'Upstream pool API error', message: err.message, target: targetUrl });
   }
 });
 
