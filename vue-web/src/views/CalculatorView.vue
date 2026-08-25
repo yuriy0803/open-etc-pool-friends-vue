@@ -7,10 +7,10 @@
         <span>Ethereum Classic Mining Calculator</span>
       </div>
       <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-        Mining Profitability Calculator
+        {{ t('calculator') }}
       </h1>
       <p class="text-sm text-slate-600 dark:text-slate-400">
-        Estimate your gross mining rewards, electricity overheads, and net profit based on live network difficulty.
+        {{ t('calculatorSub') }}
       </p>
     </div>
 
@@ -28,4 +28,7 @@
 import { Calculator } from 'lucide-vue-next';
 import MiningCalculator from '../components/MiningCalculator.vue';
 import EtcPriceChart from '../components/EtcPriceChart.vue';
+import { useI18n } from '../composables/useI18n.js';
+
+const { t } = useI18n();
 </script>

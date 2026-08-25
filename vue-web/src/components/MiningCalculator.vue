@@ -7,21 +7,21 @@
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/60 pb-3">
           <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Cpu class="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
-            <span>Mining Rig Parameters</span>
+            <span>{{ t('parametersTitle') }}</span>
           </h3>
           <button 
             @click="resetToDefault" 
             class="text-[10px] font-semibold text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1"
           >
             <RotateCcw class="w-3 h-3" />
-            Reset
+            {{ t('resetBtn') }}
           </button>
         </div>
 
         <!-- Hashrate -->
         <div class="space-y-2">
           <div class="flex justify-between items-center">
-            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Hashrate</label>
+            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{{ t('hashrate') }}</label>
             <span class="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">
               {{ hashrateVal }} {{ hashrateUnit }}/s
             </span>
@@ -57,7 +57,7 @@
         <!-- Power -->
         <div class="space-y-2">
           <div class="flex justify-between items-center">
-            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Power Consumption</label>
+            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{{ t('powerConsumption') }}</label>
             <span class="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">
               {{ powerWatts }} Watts
             </span>
@@ -86,7 +86,7 @@
         <!-- Electricity Cost -->
         <div class="space-y-2">
           <div class="flex justify-between items-center">
-            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Electricity Cost</label>
+            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{{ t('electricityCost') }}</label>
             <span class="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">
               ${{ powerCost.toFixed(2) }} / kWh
             </span>
@@ -115,7 +115,7 @@
         <!-- Pool Fee -->
         <div class="space-y-2">
           <div class="flex justify-between items-center">
-            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Pool Fee (%)</label>
+            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{{ t('poolFee') }}</label>
             <span class="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">{{ poolFee }}%</span>
           </div>
           <div class="relative flex rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500 transition-all">
@@ -135,7 +135,7 @@
         <!-- Hardware Presets -->
         <div class="pt-4 border-t border-slate-100 dark:border-slate-800/60">
           <div class="flex items-center justify-between mb-3">
-            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Quick Hardware Presets</label>
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{{ t('quickPresets') }}</label>
             <span class="text-[10px] text-slate-400 font-mono">Popular GPUs & ASICs</span>
           </div>
           <div class="grid grid-cols-2 gap-2">
@@ -160,7 +160,7 @@
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800/60 pb-3">
             <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <TrendingUp class="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
-              <span>Projected Earnings Breakdown</span>
+              <span>{{ t('projectedBreakdown') }}</span>
             </h3>
             <div class="flex items-center gap-2">
               <span class="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-1 rounded-lg">
@@ -174,19 +174,19 @@
             <!-- Day -->
             <div class="bg-slate-50/50 dark:bg-slate-950/60 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800/80 space-y-3.5 shadow-xs">
               <div class="flex items-center justify-between">
-                <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Daily (24h)</div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">{{ t('daily24h') }}</div>
                 <Clock class="w-3.5 h-3.5 text-slate-400" />
               </div>
               <div class="space-y-0.5">
                 <div class="text-xl font-black font-mono text-emerald-600 dark:text-emerald-400">{{ results.dailyETC }}</div>
-                <div class="text-[10px] font-semibold text-slate-400">ETC Estimated</div>
+                <div class="text-[10px] font-semibold text-slate-400">{{ t('estimatedEtc') }}</div>
               </div>
               <div class="space-y-1.5 text-xs font-mono pt-2 border-t border-slate-100 dark:border-slate-800/60">
-                <div class="flex justify-between"><span class="text-slate-500">Gross Rev:</span><span class="text-slate-800 dark:text-slate-200 font-semibold">${{ results.dailyRevUSD }}</span></div>
-                <div class="flex justify-between"><span class="text-slate-500">Power Cost:</span><span class="text-rose-600 dark:text-rose-400 font-semibold">-${{ results.dailyPowerUSD }}</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">{{ t('grossRev') }}:</span><span class="text-slate-800 dark:text-slate-200 font-semibold">${{ results.dailyRevUSD }}</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">{{ t('powerCost') }}:</span><span class="text-rose-600 dark:text-rose-400 font-semibold">-${{ results.dailyPowerUSD }}</span></div>
               </div>
               <div class="border-t border-slate-200 dark:border-slate-800/80 pt-2 flex justify-between items-center text-xs font-extrabold font-mono" :class="results.dailyProfitUSD >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
-                <span>Net Profit:</span>
+                <span>{{ t('netProfit') }}:</span>
                 <span>${{ results.dailyProfitUSD }}</span>
               </div>
             </div>
@@ -194,19 +194,19 @@
             <!-- Week -->
             <div class="bg-slate-50/50 dark:bg-slate-950/60 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800/80 space-y-3.5 shadow-xs">
               <div class="flex items-center justify-between">
-                <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Weekly (7d)</div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">{{ t('weekly7d') }}</div>
                 <CalendarDays class="w-3.5 h-3.5 text-slate-400" />
               </div>
               <div class="space-y-0.5">
                 <div class="text-xl font-black font-mono text-emerald-600 dark:text-emerald-400">{{ (results.dailyETC * 7).toFixed(4) }}</div>
-                <div class="text-[10px] font-semibold text-slate-400">ETC Estimated</div>
+                <div class="text-[10px] font-semibold text-slate-400">{{ t('estimatedEtc') }}</div>
               </div>
               <div class="space-y-1.5 text-xs font-mono pt-2 border-t border-slate-100 dark:border-slate-800/60">
-                <div class="flex justify-between"><span class="text-slate-500">Gross Rev:</span><span class="text-slate-800 dark:text-slate-200 font-semibold">${{ (results.dailyRevUSD * 7).toFixed(2) }}</span></div>
-                <div class="flex justify-between"><span class="text-slate-500">Power Cost:</span><span class="text-rose-600 dark:text-rose-400 font-semibold">-${{ (results.dailyPowerUSD * 7).toFixed(2) }}</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">{{ t('grossRev') }}:</span><span class="text-slate-800 dark:text-slate-200 font-semibold">${{ (results.dailyRevUSD * 7).toFixed(2) }}</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">{{ t('powerCost') }}:</span><span class="text-rose-600 dark:text-rose-400 font-semibold">-${{ (results.dailyPowerUSD * 7).toFixed(2) }}</span></div>
               </div>
               <div class="border-t border-slate-200 dark:border-slate-800/80 pt-2 flex justify-between items-center text-xs font-extrabold font-mono" :class="results.dailyProfitUSD >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
-                <span>Net Profit:</span>
+                <span>{{ t('netProfit') }}:</span>
                 <span>${{ (results.dailyProfitUSD * 7).toFixed(2) }}</span>
               </div>
             </div>
@@ -214,19 +214,19 @@
             <!-- Month -->
             <div class="bg-slate-50/50 dark:bg-slate-950/60 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800/80 space-y-3.5 shadow-xs">
               <div class="flex items-center justify-between">
-                <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Monthly (30d)</div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">{{ t('monthly30d') }}</div>
                 <Milestone class="w-3.5 h-3.5 text-slate-400" />
               </div>
               <div class="space-y-0.5">
                 <div class="text-xl font-black font-mono text-emerald-600 dark:text-emerald-400">{{ (results.dailyETC * 30).toFixed(4) }}</div>
-                <div class="text-[10px] font-semibold text-slate-400">ETC Estimated</div>
+                <div class="text-[10px] font-semibold text-slate-400">{{ t('estimatedEtc') }}</div>
               </div>
               <div class="space-y-1.5 text-xs font-mono pt-2 border-t border-slate-100 dark:border-slate-800/60">
-                <div class="flex justify-between"><span class="text-slate-500">Gross Rev:</span><span class="text-slate-800 dark:text-slate-200 font-semibold">${{ (results.dailyRevUSD * 30).toFixed(2) }}</span></div>
-                <div class="flex justify-between"><span class="text-slate-500">Power Cost:</span><span class="text-rose-600 dark:text-rose-400 font-semibold">-${{ (results.dailyPowerUSD * 30).toFixed(2) }}</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">{{ t('grossRev') }}:</span><span class="text-slate-800 dark:text-slate-200 font-semibold">${{ (results.dailyRevUSD * 30).toFixed(2) }}</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">{{ t('powerCost') }}:</span><span class="text-rose-600 dark:text-rose-400 font-semibold">-${{ (results.dailyPowerUSD * 30).toFixed(2) }}</span></div>
               </div>
               <div class="border-t border-slate-200 dark:border-slate-800/80 pt-2 flex justify-between items-center text-xs font-extrabold font-mono" :class="results.dailyProfitUSD >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
-                <span>Net Profit:</span>
+                <span>{{ t('netProfit') }}:</span>
                 <span>${{ (results.dailyProfitUSD * 30).toFixed(2) }}</span>
               </div>
             </div>
@@ -238,19 +238,19 @@
           <div class="flex items-center justify-between">
             <div class="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
               <Sliders class="w-3.5 h-3.5 text-emerald-500" />
-              <span>Advanced Simulations (Live Values Overrides)</span>
+              <span>{{ t('advancedSimulations') }}</span>
             </div>
             <button 
               @click="toggleSimulation" 
               class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
             >
-              {{ isSimulating ? 'Use Live Stats' : 'Customize Stats' }}
+              {{ isSimulating ? t('useLiveStats') : t('customizeStats') }}
             </button>
           </div>
 
           <div v-if="isSimulating" class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
             <div class="space-y-1">
-              <label class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">ETC Price ($)</label>
+              <label class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">{{ t('etcPriceLabel') }}</label>
               <input 
                 v-model.number="etcPrice" 
                 type="number" 
@@ -259,7 +259,7 @@
               />
             </div>
             <div class="space-y-1">
-              <label class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Difficulty (T)</label>
+              <label class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">{{ t('difficultyLabel') }}</label>
               <input 
                 v-model.number="simDifficultyT" 
                 type="number" 
@@ -268,7 +268,7 @@
               />
             </div>
             <div class="space-y-1">
-              <label class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Block Reward (ETC)</label>
+              <label class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">{{ t('blockRewardLabel') }}</label>
               <input 
                 v-model.number="blockReward" 
                 type="number" 
@@ -288,14 +288,14 @@
           <div class="flex items-center justify-between">
             <div class="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
               <Bell class="w-3.5 h-3.5 text-purple-500 animate-pulse" />
-              <span>Mining Pool Price & Reward Alerts</span>
+              <span>{{ t('alertsTitle') }}</span>
             </div>
             
             <div class="flex items-center gap-2">
               <button 
                 @click="toggleSound" 
                 class="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-pointer transition-colors"
-                :title="soundAlertsEnabled ? 'Mute Sounds' : 'Unmute Sounds'"
+                :title="soundAlertsEnabled ? t('soundAlertsMute') : t('soundAlertsUnmute')"
               >
                 <Volume2 v-if="soundAlertsEnabled" class="w-3.5 h-3.5 text-emerald-500" />
                 <VolumeX v-else class="w-3.5 h-3.5 text-rose-500" />
@@ -307,11 +307,11 @@
                 class="text-[10px] bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 font-bold px-2.5 py-1 rounded-lg border border-purple-500/20 transition-all cursor-pointer flex items-center gap-1"
               >
                 <ShieldAlert class="w-3 h-3" />
-                <span>Enable Push</span>
+                <span>{{ t('enablePush') }}</span>
               </button>
               <span v-else class="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg flex items-center gap-1">
                 <Check class="w-3 h-3" />
-                Push Enabled
+                {{ t('pushEnabled') }}
               </span>
             </div>
           </div>
@@ -321,7 +321,7 @@
             <!-- Price alert -->
             <div class="bg-white dark:bg-slate-900/40 rounded-xl p-3 border border-slate-200/60 dark:border-slate-800/40 space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] font-bold text-slate-700 dark:text-slate-300">ETC Target Price</span>
+                <span class="text-[10px] font-bold text-slate-700 dark:text-slate-300">{{ t('etcTargetPrice') }}</span>
                 <input 
                   type="checkbox" 
                   v-model="priceAlertEnabled" 
@@ -333,8 +333,8 @@
                   v-model="priceAlertCondition" 
                   class="col-span-6 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-1.5 py-1 rounded-lg text-[10px] font-mono focus:outline-none cursor-pointer"
                 >
-                  <option value="above">≥ Rises Above</option>
-                  <option value="below">≤ Drops Below</option>
+                  <option value="above">{{ t('risesAbove') }}</option>
+                  <option value="below">{{ t('dropsBelow') }}</option>
                 </select>
                 <div class="col-span-6 relative flex items-center">
                   <span class="absolute left-2 text-[10px] font-mono text-slate-400">$</span>
@@ -347,14 +347,14 @@
                 </div>
               </div>
               <p class="text-[9px] text-slate-400">
-                Current price is <span class="font-mono">${{ etcPrice.toFixed(2) }}</span>
+                {{ t('currentPriceIs') }} <span class="font-mono">${{ etcPrice.toFixed(2) }}</span>
               </p>
             </div>
 
             <!-- Reward alert -->
             <div class="bg-white dark:bg-slate-900/40 rounded-xl p-3 border border-slate-200/60 dark:border-slate-800/40 space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-[10px] font-bold text-slate-700 dark:text-slate-300">Daily Reward Target</span>
+                <span class="text-[10px] font-bold text-slate-700 dark:text-slate-300">{{ t('dailyRewardTarget') }}</span>
                 <input 
                   type="checkbox" 
                   v-model="rewardAlertEnabled" 
@@ -366,8 +366,8 @@
                   v-model="rewardAlertCondition" 
                   class="col-span-6 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-1.5 py-1 rounded-lg text-[10px] font-mono focus:outline-none cursor-pointer"
                 >
-                  <option value="above">≥ Rises Above</option>
-                  <option value="below">≤ Drops Below</option>
+                  <option value="above">{{ t('risesAbove') }}</option>
+                  <option value="below">{{ t('dropsBelow') }}</option>
                 </select>
                 <div class="col-span-6 relative flex items-center">
                   <input 
@@ -380,7 +380,7 @@
                 </div>
               </div>
               <p class="text-[9px] text-slate-400">
-                Current reward is <span class="font-mono">{{ results.dailyETC }} ETC</span>
+                {{ t('currentRewardIs') }} <span class="font-mono">{{ results.dailyETC }} ETC</span>
               </p>
             </div>
           </div>
@@ -388,7 +388,7 @@
           <!-- Bottom controls -->
           <div class="flex justify-between items-center pt-1 border-t border-slate-200/60 dark:border-slate-800/40">
             <span class="text-[9px] text-slate-400">
-              Alerts save automatically and scan live.
+              {{ t('alertsSaveAuto') }}
             </span>
             <button 
               @click="triggerSimulatedAlert" 
@@ -405,11 +405,13 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import { Cpu, TrendingUp, RotateCcw, Clock, CalendarDays, Milestone, Sliders, Bell, Volume2, VolumeX, ShieldAlert, Check } from 'lucide-vue-next';
+import { Cpu, TrendingUp, RotateCcw, Clock, CalendarDays, Milestone, Sliders, Bell, Volume2, VolumeX, ShieldAlert, Check, Zap, Terminal, Copy, ExternalLink } from 'lucide-vue-next';
 import { PoolAPI } from '../services/api.js';
 import { useToasts } from '../composables/useToasts.js';
+import { useI18n } from '../composables/useI18n.js';
 
 const { addToast } = useToasts();
+const { t } = useI18n();
 
 const hashrateVal = ref(500);
 const hashrateUnit = ref('MH');

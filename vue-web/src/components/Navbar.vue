@@ -33,7 +33,7 @@
             class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
             :class="$route.path === item.path ? 'bg-emerald-50 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 font-semibold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/50'"
           >
-            {{ item.name }}
+            {{ t(item.key) }}
           </router-link>
         </nav>
 
@@ -43,7 +43,7 @@
             <input
               v-model="searchQuery"
               type="text"
-              placeholder="Miner address 0x..."
+              :placeholder="t('minerAddressPlaceholder')"
               class="w-full bg-slate-100 dark:bg-slate-900/90 border border-slate-300 dark:border-slate-800 focus:border-emerald-500 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all font-mono"
             />
             <Search class="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-2.5 top-2.5" />
@@ -54,8 +54,11 @@
             class="flex items-center space-x-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-3.5 py-1.5 rounded-lg text-xs tracking-wide transition-all shadow-md shadow-emerald-950/20"
           >
             <Zap class="w-3.5 h-3.5 fill-current" />
-            <span>Start Mining</span>
+            <span>{{ t('startMining') }}</span>
           </router-link>
+
+          <!-- Language Selector -->
+          <LanguageToggle />
 
           <!-- Hashrate Alert Notification Bell -->
           <button 
@@ -106,14 +109,14 @@
         <input
           v-model="searchQuery"
           type="text"
-          placeholder="Miner address 0x..."
+          :placeholder="t('minerAddressPlaceholder')"
           class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-emerald-500 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 font-mono"
         />
       </form>
 
       <!-- Mobile Theme Toggle row -->
       <div class="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/60">
-        <span class="text-xs font-medium text-slate-600 dark:text-slate-400">Color Mode</span>
+        <span class="text-xs font-medium text-slate-600 dark:text-slate-400">{{ t('colorMode') }}</span>
         <button 
           @click="toggleTheme" 
           class="flex items-center space-x-1.5 px-3 py-1 rounded-md bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold"
@@ -124,6 +127,12 @@
         </button>
       </div>
 
+      <!-- Mobile Language Toggle row -->
+      <div class="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/60">
+        <span class="text-xs font-medium text-slate-600 dark:text-slate-400">Language</span>
+        <LanguageToggle />
+      </div>
+
       <router-link 
         v-for="item in navItems" 
         :key="item.path" 
@@ -132,7 +141,7 @@
         class="block px-3 py-2 rounded-lg text-sm font-medium transition-colors"
         :class="$route.path === item.path ? 'bg-slate-100 dark:bg-slate-800 text-emerald-600 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800/50'"
       >
-        {{ item.name }}
+        {{ t(item.key) }}
       </router-link>
     </div>
   </header>
@@ -143,8 +152,11 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { Search, Zap, Menu, X, Sun, Moon, Bell, BellRing } from 'lucide-vue-next';
 import { useHashrateAlerts } from '../composables/useHashrateAlerts.js';
+import LanguageToggle from './LanguageToggle.vue';
+import { useI18n } from '../composables/useI18n.js';
 
 const { unreadCount, isModalOpen } = useHashrateAlerts();
+const { t } = useI18n();
 
 const router = useRouter();
 const searchQuery = ref('');
@@ -167,13 +179,11 @@ function toggleTheme() {
 }
 
 const navItems = [
-  { name: 'Dashboard', path: '/' },
-  { name: 'Miners', path: '/miners' },
-  { name: 'Blocks', path: '/blocks' },
-  { name: 'Payments', path: '/payments' },
-  { name: 'Calculator', path: '/calculator' },
-  { name: 'Connect', path: '/connect' },
-  { name: 'FAQ', path: '/faq' },
+  { name: 'Dashboard', key: 'poolStats', path: '/' },
+  { name: 'Miners', key: 'miners', path: '/miners' },
+  { name: 'Blocks', key: 'blocks', path: '/blocks' },
+  { name: 'Calculator', key: 'calculator', path: '/calculator' },
+  { name: 'Connect', key: 'connect', path: '/connect' }
 ];
 
 function handleSearch() {
