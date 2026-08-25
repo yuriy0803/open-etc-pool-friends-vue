@@ -140,6 +140,7 @@
           type="hashrate"
           label="Miner Hashrate"
           color="#10b981"
+          minHeight="210px"
         />
       </div>
     </div>

@@ -150,7 +150,7 @@
                 </span>
               </div>
               <div class="h-48 w-full">
-                <HashrateChart :chartData="chartData" color="#10b981" label="Hashrate" />
+                <HashrateChart :chartData="chartData" color="#10b981" label="Hashrate" minHeight="140px" />
               </div>
             </div>
 

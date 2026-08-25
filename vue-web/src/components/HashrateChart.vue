@@ -1,7 +1,8 @@
 <template>
   <div 
     ref="containerRef" 
-    class="w-full h-full min-h-[280px] relative select-none font-sans flex flex-col justify-between"
+    class="w-full h-full relative select-none font-sans flex flex-col justify-between"
+    :style="{ minHeight: minHeight }"
     @mousemove="handleMouseMove"
     @mouseleave="handleMouseLeave"
     @touchmove="handleTouchMove"
@@ -304,6 +305,10 @@ const props = defineProps({
   color: {
     type: String,
     default: '#10b981' // emerald
+  },
+  minHeight: {
+    type: String,
+    default: '160px'
   }
 });
 
@@ -470,10 +475,11 @@ const verticalGridLines = computed(() => {
 });
 
 function formatYValue(val) {
+  const isMobile = width.value < 480;
   if (props.type === 'hashrate') {
-    return formatHashrate(val);
+    return formatHashrate(val, isMobile ? 1 : 2);
   } else if (props.type === 'difficulty') {
-    return formatDifficulty(val);
+    return formatDifficulty(val, isMobile ? 1 : 2);
   }
   return Math.round(val).toLocaleString();
 }
@@ -534,9 +540,20 @@ function handleMouseLeave() {
 
 function updateDimensions() {
   if (containerRef.value) {
-    width.value = containerRef.value.clientWidth || 300;
+    const w = containerRef.value.clientWidth || 300;
+    width.value = w;
+    
+    // Dynamically adjust padding to maximize graph render area on smaller mobile screens
+    if (w < 480) {
+      paddingLeft.value = 56;
+      paddingRight.value = 10;
+    } else {
+      paddingLeft.value = 85;
+      paddingRight.value = 20;
+    }
+    
     const clientH = containerRef.value.clientHeight || 280;
-    svgHeight.value = Math.max(160, clientH - 45); // Account for top controls bar
+    svgHeight.value = Math.max(100, clientH - 45); // Account for top controls bar
   }
 }
 

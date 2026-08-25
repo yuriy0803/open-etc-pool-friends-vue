@@ -265,6 +265,7 @@
             type="hashrate"
             label="Pool Hashrate"
             color="#10b981"
+            minHeight="220px"
           />
           <HashrateChart
             v-else-if="activeChartTab === 'workers'"
@@ -272,6 +273,7 @@
             type="miners"
             label="Active Workers"
             color="#38bdf8"
+            minHeight="220px"
           />
           <HashrateChart
             v-else-if="activeChartTab === 'diff'"
@@ -279,6 +281,7 @@
             type="difficulty"
             label="Network Difficulty"
             color="#a855f7"
+            minHeight="220px"
           />
           <!-- Info & Pool Configuration Tab Content -->
           <div
@@ -369,6 +372,7 @@
             type="difficulty"
             label="Network Difficulty"
             color="#a855f7"
+            minHeight="130px"
           />
         </div>
         <div class="pt-4 border-t border-slate-200 dark:border-slate-800/60 text-xs text-slate-600 dark:text-slate-400 space-y-2 font-mono">
