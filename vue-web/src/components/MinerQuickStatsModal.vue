@@ -130,7 +130,7 @@
                   Total Paid Out
                 </div>
                 <div class="text-base sm:text-lg font-bold font-mono text-slate-900 dark:text-white mt-1">
-                  {{ formatCoins(minerData?.stats?.paid || minerData?.paid || 0, 2) }} ETC
+                  {{ formatCoins(totalPaidOut, 2) }} ETC
                 </div>
                 <div class="text-[10px] text-slate-500 font-mono mt-1">
                   {{ (minerData?.payments || []).length }} payouts total
@@ -150,7 +150,7 @@
                 </span>
               </div>
               <div class="h-48 w-full">
-                <HashrateChart :data="chartData" color="#10b981" label="Hashrate" />
+                <HashrateChart :chartData="chartData" color="#10b981" label="Hashrate" />
               </div>
             </div>
 
@@ -310,6 +310,15 @@ const currentHashrate = computed(() => {
          initialMinerData.value?.hashrate || 
          initialMinerData.value?.hr || 
          45000000000;
+});
+
+const totalPaidOut = computed(() => {
+  const paid = Number(minerData.value?.stats?.paid || minerData.value?.paid || 0);
+  if (paid > 0) return paid;
+  if (minerData.value?.payments && minerData.value.payments.length > 0) {
+    return minerData.value.payments.reduce((acc, p) => acc + Number(p.amount || 0), 0);
+  }
+  return 0;
 });
 
 const etcUsdPrice = computed(() => {

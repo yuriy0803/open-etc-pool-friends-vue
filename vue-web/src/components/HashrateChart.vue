@@ -328,7 +328,7 @@ const glowFilterId = computed(() => `d3-glow-${props.type}-${randId}`);
 const containerRef = ref(null);
 const width = ref(300);
 const svgHeight = ref(210);
-const paddingLeft = ref(65);
+const paddingLeft = ref(85);
 const paddingRight = ref(20);
 const paddingTop = ref(15);
 const paddingBottom = ref(26);

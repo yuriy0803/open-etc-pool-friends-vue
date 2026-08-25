@@ -99,7 +99,7 @@
       />
       <StatCard
         title="Total Paid Out"
-        :value="`${formatCoins(minerData?.stats?.paid || 0)} ETC`"
+        :value="`${formatCoins(totalPaidOut)} ETC`"
         :subValue="`${(minerData?.payments || []).length} Payments`"
         :badgeText="(minerData?.miningType || 'pplns').toUpperCase()"
         :badgeClass="minerData?.miningType === 'solo' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'"
@@ -661,6 +661,15 @@ const minerCharts = computed(() => {
     arr.push({ x: now - i * 600, y: hr * (1 + (Math.random() - 0.5) * 0.1) });
   }
   return arr;
+});
+
+const totalPaidOut = computed(() => {
+  const paid = Number(minerData.value?.stats?.paid || minerData.value?.paid || 0);
+  if (paid > 0) return paid;
+  if (minerData.value?.payments && minerData.value.payments.length > 0) {
+    return minerData.value.payments.reduce((acc, p) => acc + Number(p.amount || 0), 0);
+  }
+  return 0;
 });
 
 const currentHash = computed(() => {

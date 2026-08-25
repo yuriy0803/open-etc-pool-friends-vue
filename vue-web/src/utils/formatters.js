@@ -27,11 +27,11 @@ export function formatDifficulty(diff) {
 // Format ETC currency (converts Wei/gwei or raw atomic units if needed)
 export function formatCoins(amount, decimals = 4) {
   if (!amount || isNaN(amount)) return '0.0000';
-  // If amount is in Wei (> 1e12), convert to ETC
+  // If amount is in Wei (> 1e15), convert to ETC
   let val = Number(amount);
-  if (val > 1e12) {
+  if (val > 1e15) {
     val = val / 1e18;
-  } else if (val > 1e6 && val <= 1e12) {
+  } else if (val > 1e6 && val <= 1e15) {
     // Some pools represent ETC in Shannon / Gwei (1e9)
     val = val / 1e9;
   }
