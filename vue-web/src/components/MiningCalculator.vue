@@ -1,0 +1,437 @@
+<template>
+  <div class="space-y-6">
+    <!-- Main Calculator Box -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Input Panel (5 Cols) -->
+      <div class="lg:col-span-5 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-6 space-y-6 shadow-xs">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/60 pb-3">
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <Cpu class="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+            <span>Mining Rig Parameters</span>
+          </h3>
+          <button 
+            @click="resetToDefault" 
+            class="text-[10px] font-semibold text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors cursor-pointer flex items-center gap-1"
+          >
+            <RotateCcw class="w-3 h-3" />
+            Reset
+          </button>
+        </div>
+
+        <!-- Hashrate -->
+        <div class="space-y-2">
+          <div class="flex justify-between items-center">
+            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Hashrate</label>
+            <span class="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+              {{ hashrateVal }} {{ hashrateUnit }}/s
+            </span>
+          </div>
+          <div class="flex rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500 transition-all">
+            <input
+              v-model.number="hashrateVal"
+              type="number"
+              min="0.1"
+              step="any"
+              class="w-full bg-transparent px-3.5 py-2.5 text-sm text-slate-900 dark:text-white font-mono focus:outline-none"
+              placeholder="Enter hashrate"
+            />
+            <select
+              v-model="hashrateUnit"
+              class="bg-slate-100 dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 px-3 py-2.5 text-xs text-slate-700 dark:text-slate-200 font-mono focus:outline-none cursor-pointer"
+            >
+              <option value="MH">MH/s</option>
+              <option value="GH">GH/s</option>
+              <option value="TH">TH/s</option>
+            </select>
+          </div>
+          <input 
+            type="range" 
+            v-model.number="hashrateVal" 
+            :min="1" 
+            :max="hashrateUnit === 'MH' ? 3000 : hashrateUnit === 'GH' ? 100 : 5"
+            step="1"
+            class="w-full accent-emerald-500 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg cursor-pointer"
+          />
+        </div>
+
+        <!-- Power -->
+        <div class="space-y-2">
+          <div class="flex justify-between items-center">
+            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Power Consumption</label>
+            <span class="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+              {{ powerWatts }} Watts
+            </span>
+          </div>
+          <div class="relative flex rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500 transition-all">
+            <input
+              v-model.number="powerWatts"
+              type="number"
+              min="0"
+              step="10"
+              class="w-full bg-transparent px-3.5 py-2.5 pr-12 text-sm text-slate-900 dark:text-white font-mono focus:outline-none"
+              placeholder="0"
+            />
+            <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-mono text-slate-400 dark:text-slate-500">W</span>
+          </div>
+          <input 
+            type="range" 
+            v-model.number="powerWatts" 
+            min="0" 
+            max="5000" 
+            step="50"
+            class="w-full accent-emerald-500 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg cursor-pointer"
+          />
+        </div>
+
+        <!-- Electricity Cost -->
+        <div class="space-y-2">
+          <div class="flex justify-between items-center">
+            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Electricity Cost</label>
+            <span class="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+              ${{ powerCost.toFixed(2) }} / kWh
+            </span>
+          </div>
+          <div class="relative flex rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500 transition-all">
+            <input
+              v-model.number="powerCost"
+              type="number"
+              min="0"
+              step="0.01"
+              class="w-full bg-transparent px-3.5 py-2.5 pr-16 text-sm text-slate-900 dark:text-white font-mono focus:outline-none"
+              placeholder="0.00"
+            />
+            <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-mono text-slate-400 dark:text-slate-500">$/kWh</span>
+          </div>
+          <input 
+            type="range" 
+            v-model.number="powerCost" 
+            min="0" 
+            max="1.50" 
+            step="0.01"
+            class="w-full accent-emerald-500 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg cursor-pointer"
+          />
+        </div>
+
+        <!-- Pool Fee -->
+        <div class="space-y-2">
+          <div class="flex justify-between items-center">
+            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Pool Fee (%)</label>
+            <span class="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">{{ poolFee }}%</span>
+          </div>
+          <div class="relative flex rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500 transition-all">
+            <input
+              v-model.number="poolFee"
+              type="number"
+              min="0"
+              max="15"
+              step="0.1"
+              class="w-full bg-transparent px-3.5 py-2.5 pr-10 text-sm text-slate-900 dark:text-white font-mono focus:outline-none"
+              placeholder="0.5"
+            />
+            <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-mono text-slate-400 dark:text-slate-500">%</span>
+          </div>
+        </div>
+
+        <!-- Hardware Presets -->
+        <div class="pt-4 border-t border-slate-100 dark:border-slate-800/60">
+          <div class="flex items-center justify-between mb-3">
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Quick Hardware Presets</label>
+            <span class="text-[10px] text-slate-400 font-mono">Popular GPUs & ASICs</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <button
+              v-for="p in presets"
+              :key="p.name"
+              @click="applyPreset(p)"
+              class="px-2.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-950 hover:bg-emerald-500/10 text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/30 text-[10px] font-mono text-left transition-all duration-200 cursor-pointer flex flex-col justify-between"
+            >
+              <span class="font-bold truncate w-full">{{ p.shortName }}</span>
+              <span class="text-[9px] text-slate-500 dark:text-slate-400 mt-1 font-semibold">
+                {{ p.val }} {{ p.unit }} • {{ p.watts }}W
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Output Results Panel (7 Cols) -->
+      <div class="lg:col-span-7 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-6 flex flex-col justify-between space-y-6 shadow-xs">
+        <div class="space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800/60 pb-3">
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <TrendingUp class="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+              <span>Projected Earnings Breakdown</span>
+            </h3>
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-1 rounded-lg">
+                ETC Price: ${{ etcPrice }} USD
+              </span>
+            </div>
+          </div>
+
+          <!-- Profitability Metric Boxes -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Day -->
+            <div class="bg-slate-50/50 dark:bg-slate-950/60 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800/80 space-y-3.5 shadow-xs">
+              <div class="flex items-center justify-between">
+                <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Daily (24h)</div>
+                <Clock class="w-3.5 h-3.5 text-slate-400" />
+              </div>
+              <div class="space-y-0.5">
+                <div class="text-xl font-black font-mono text-emerald-600 dark:text-emerald-400">{{ results.dailyETC }}</div>
+                <div class="text-[10px] font-semibold text-slate-400">ETC Estimated</div>
+              </div>
+              <div class="space-y-1.5 text-xs font-mono pt-2 border-t border-slate-100 dark:border-slate-800/60">
+                <div class="flex justify-between"><span class="text-slate-500">Gross Rev:</span><span class="text-slate-800 dark:text-slate-200 font-semibold">${{ results.dailyRevUSD }}</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">Power Cost:</span><span class="text-rose-600 dark:text-rose-400 font-semibold">-${{ results.dailyPowerUSD }}</span></div>
+              </div>
+              <div class="border-t border-slate-200 dark:border-slate-800/80 pt-2 flex justify-between items-center text-xs font-extrabold font-mono" :class="results.dailyProfitUSD >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
+                <span>Net Profit:</span>
+                <span>${{ results.dailyProfitUSD }}</span>
+              </div>
+            </div>
+
+            <!-- Week -->
+            <div class="bg-slate-50/50 dark:bg-slate-950/60 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800/80 space-y-3.5 shadow-xs">
+              <div class="flex items-center justify-between">
+                <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Weekly (7d)</div>
+                <CalendarDays class="w-3.5 h-3.5 text-slate-400" />
+              </div>
+              <div class="space-y-0.5">
+                <div class="text-xl font-black font-mono text-emerald-600 dark:text-emerald-400">{{ (results.dailyETC * 7).toFixed(4) }}</div>
+                <div class="text-[10px] font-semibold text-slate-400">ETC Estimated</div>
+              </div>
+              <div class="space-y-1.5 text-xs font-mono pt-2 border-t border-slate-100 dark:border-slate-800/60">
+                <div class="flex justify-between"><span class="text-slate-500">Gross Rev:</span><span class="text-slate-800 dark:text-slate-200 font-semibold">${{ (results.dailyRevUSD * 7).toFixed(2) }}</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">Power Cost:</span><span class="text-rose-600 dark:text-rose-400 font-semibold">-${{ (results.dailyPowerUSD * 7).toFixed(2) }}</span></div>
+              </div>
+              <div class="border-t border-slate-200 dark:border-slate-800/80 pt-2 flex justify-between items-center text-xs font-extrabold font-mono" :class="results.dailyProfitUSD >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
+                <span>Net Profit:</span>
+                <span>${{ (results.dailyProfitUSD * 7).toFixed(2) }}</span>
+              </div>
+            </div>
+
+            <!-- Month -->
+            <div class="bg-slate-50/50 dark:bg-slate-950/60 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800/80 space-y-3.5 shadow-xs">
+              <div class="flex items-center justify-between">
+                <div class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Monthly (30d)</div>
+                <Milestone class="w-3.5 h-3.5 text-slate-400" />
+              </div>
+              <div class="space-y-0.5">
+                <div class="text-xl font-black font-mono text-emerald-600 dark:text-emerald-400">{{ (results.dailyETC * 30).toFixed(4) }}</div>
+                <div class="text-[10px] font-semibold text-slate-400">ETC Estimated</div>
+              </div>
+              <div class="space-y-1.5 text-xs font-mono pt-2 border-t border-slate-100 dark:border-slate-800/60">
+                <div class="flex justify-between"><span class="text-slate-500">Gross Rev:</span><span class="text-slate-800 dark:text-slate-200 font-semibold">${{ (results.dailyRevUSD * 30).toFixed(2) }}</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">Power Cost:</span><span class="text-rose-600 dark:text-rose-400 font-semibold">-${{ (results.dailyPowerUSD * 30).toFixed(2) }}</span></div>
+              </div>
+              <div class="border-t border-slate-200 dark:border-slate-800/80 pt-2 flex justify-between items-center text-xs font-extrabold font-mono" :class="results.dailyProfitUSD >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
+                <span>Net Profit:</span>
+                <span>${{ (results.dailyProfitUSD * 30).toFixed(2) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Simulations / Custom Overrides -->
+        <div class="bg-slate-50 dark:bg-slate-950/40 rounded-2xl p-4 border border-slate-200 dark:border-slate-800/60 space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
+              <Sliders class="w-3.5 h-3.5 text-emerald-500" />
+              <span>Advanced Simulations (Live Values Overrides)</span>
+            </div>
+            <button 
+              @click="toggleSimulation" 
+              class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
+            >
+              {{ isSimulating ? 'Use Live Stats' : 'Customize Stats' }}
+            </button>
+          </div>
+
+          <div v-if="isSimulating" class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            <div class="space-y-1">
+              <label class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">ETC Price ($)</label>
+              <input 
+                v-model.number="etcPrice" 
+                type="number" 
+                step="any"
+                class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2.5 py-1.5 rounded-lg text-xs font-mono focus:outline-none"
+              />
+            </div>
+            <div class="space-y-1">
+              <label class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Difficulty (T)</label>
+              <input 
+                v-model.number="simDifficultyT" 
+                type="number" 
+                step="any"
+                class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2.5 py-1.5 rounded-lg text-xs font-mono focus:outline-none"
+              />
+            </div>
+            <div class="space-y-1">
+              <label class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Block Reward (ETC)</label>
+              <input 
+                v-model.number="blockReward" 
+                type="number" 
+                step="any"
+                class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2.5 py-1.5 rounded-lg text-xs font-mono focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <p class="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400 pt-0.5">
+            Network Difficulty is currently <span class="text-slate-800 dark:text-slate-200 font-mono font-bold">{{ formattedDifficulty }}</span>. Live reward is <span class="text-slate-800 dark:text-slate-200 font-mono font-bold">{{ blockReward }} ETC</span> per block. Revenue math is <span class="text-slate-800 dark:text-slate-200 font-mono font-semibold">Rewards = (Rig Hashrate * Block Time Reward) / Network Difficulty</span>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted, watch } from 'vue';
+import { Cpu, TrendingUp, RotateCcw, Clock, CalendarDays, Milestone, Sliders } from 'lucide-vue-next';
+import { PoolAPI } from '../services/api.js';
+
+const hashrateVal = ref(500);
+const hashrateUnit = ref('MH');
+const powerWatts = ref(650);
+const powerCost = ref(0.12);
+const poolFee = ref(0.5);
+
+// Network parameters
+const etcPrice = ref(28.45);
+const difficulty = ref(17179869184000); // 17.18 T
+const blockReward = ref(2.56);
+
+// Live cached values
+const livePrice = ref(28.45);
+const liveDifficulty = ref(17179869184000);
+const liveBlockReward = ref(2.56);
+
+// Simulator overrides
+const isSimulating = ref(false);
+const simDifficultyT = ref(17.18);
+
+const formattedDifficulty = computed(() => {
+  const d = difficulty.value;
+  if (d >= 1e12) return `${(d / 1e12).toFixed(2)} T`;
+  if (d >= 1e9) return `${(d / 1e9).toFixed(2)} G`;
+  if (d >= 1e6) return `${(d / 1e6).toFixed(2)} M`;
+  return d.toLocaleString();
+});
+
+const presets = [
+  { name: 'rtx3070', shortName: '1x RTX 3070', val: 62, unit: 'MH', watts: 130 },
+  { name: 'rtx3080', shortName: '1x RTX 3080', val: 100, unit: 'MH', watts: 220 },
+  { name: 'rtx4090', shortName: '1x RTX 4090', val: 240, unit: 'MH', watts: 350 },
+  { name: 'jasminer', shortName: 'Jasminer X4', val: 2.5, unit: 'GH', watts: 1200 },
+  { name: 'antminer', shortName: 'Antminer E9', val: 3.68, unit: 'GH', watts: 2200 }
+];
+
+function applyPreset(p) {
+  hashrateVal.value = p.val;
+  hashrateUnit.value = p.unit;
+  powerWatts.value = p.watts;
+}
+
+function resetToDefault() {
+  hashrateVal.value = 500;
+  hashrateUnit.value = 'MH';
+  powerWatts.value = 650;
+  powerCost.value = 0.12;
+  poolFee.value = 0.5;
+  isSimulating.value = false;
+  etcPrice.value = livePrice.value;
+  difficulty.value = liveDifficulty.value;
+  blockReward.value = liveBlockReward.value;
+  simDifficultyT.value = parseFloat((liveDifficulty.value / 1e12).toFixed(2));
+}
+
+function toggleSimulation() {
+  if (isSimulating.value) {
+    // Turning off: restore live values
+    isSimulating.value = false;
+    etcPrice.value = livePrice.value;
+    difficulty.value = liveDifficulty.value;
+    blockReward.value = liveBlockReward.value;
+  } else {
+    // Turning on: copy values to let user edit them
+    isSimulating.value = true;
+    simDifficultyT.value = parseFloat((difficulty.value / 1e12).toFixed(2));
+  }
+}
+
+// Watch simulator difficulty input in Terahashes and map to raw hash Difficulty value
+watch(simDifficultyT, (newVal) => {
+  if (isSimulating.value && newVal > 0) {
+    difficulty.value = newVal * 1e12;
+  }
+});
+
+const totalHashInMH = computed(() => {
+  let mult = 1;
+  if (hashrateUnit.value === 'GH') mult = 1000;
+  if (hashrateUnit.value === 'TH') mult = 1000000;
+  return (hashrateVal.value || 0) * mult;
+});
+
+const results = computed(() => {
+  const mh = totalHashInMH.value;
+  const hashRateHps = mh * 1e6; // Convert MH/s to H/s
+  
+  // Calculate block share / daily output:
+  // Daily Rewards = (hashrate * 86400 * blockReward) / difficulty
+  let baseDailyETC = 0;
+  if (difficulty.value > 0) {
+    baseDailyETC = (hashRateHps * 86400 * blockReward.value) / difficulty.value;
+  }
+  
+  const dailyETC = baseDailyETC * (1 - (poolFee.value || 0) / 100);
+  const dailyRevUSD = dailyETC * etcPrice.value;
+
+  const dailyPowerKWh = ((powerWatts.value || 0) * 24) / 1000;
+  const dailyPowerUSD = dailyPowerKWh * (powerCost.value || 0);
+  const dailyProfitUSD = dailyRevUSD - dailyPowerUSD;
+
+  return {
+    dailyETC: dailyETC.toFixed(4),
+    dailyRevUSD: dailyRevUSD.toFixed(2),
+    dailyPowerUSD: dailyPowerUSD.toFixed(2),
+    dailyProfitUSD: dailyProfitUSD.toFixed(2),
+  };
+});
+
+async function loadPrice() {
+  try {
+    const data = await PoolAPI.getPrice();
+    if (data?.market_data?.current_price?.usd) {
+      livePrice.value = data.market_data.current_price.usd;
+      if (!isSimulating.value) {
+        etcPrice.value = data.market_data.current_price.usd;
+      }
+    }
+  } catch (err) {
+    console.error('Failed to load price for calculator:', err);
+  }
+}
+
+async function loadStatsAndPrice() {
+  await loadPrice();
+  try {
+    const stats = await PoolAPI.getStats();
+    if (stats?.nodes?.[0]?.difficulty) {
+      liveDifficulty.value = stats.nodes[0].difficulty;
+      if (!isSimulating.value) {
+        difficulty.value = stats.nodes[0].difficulty;
+        simDifficultyT.value = parseFloat((stats.nodes[0].difficulty / 1e12).toFixed(2));
+      }
+    }
+  } catch (err) {
+    console.warn('Failed to load stats for calculator:', err);
+  }
+}
+
+onMounted(() => {
+  loadStatsAndPrice();
+});
+</script>

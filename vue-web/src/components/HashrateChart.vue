@@ -561,7 +561,10 @@ onMounted(() => {
   updateDimensions();
   if (containerRef.value) {
     resizeObserver = new ResizeObserver(() => {
-      updateDimensions();
+      window.requestAnimationFrame(() => {
+        if (!containerRef.value) return;
+        updateDimensions();
+      });
     });
     resizeObserver.observe(containerRef.value);
   }
