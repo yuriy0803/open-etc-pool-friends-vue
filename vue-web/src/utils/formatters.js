@@ -1,18 +1,30 @@
 // Format hashrate to human-readable string (H/s, KH/s, MH/s, GH/s, TH/s, PH/s)
-export function formatHashrate(hashrate) {
-  if (!hashrate || isNaN(hashrate) || hashrate <= 0) return '0 H/s';
+// Supports custom decimal places and target units for absolute UI consistency
+export function formatHashrate(hashrate, decimals = 2, targetUnit = null) {
+  if (!hashrate || isNaN(hashrate) || hashrate <= 0) return `0.00 ${targetUnit || 'H/s'}`;
   const units = ['H/s', 'KH/s', 'MH/s', 'GH/s', 'TH/s', 'PH/s'];
-  let i = 0;
   let val = Number(hashrate);
+
+  if (targetUnit) {
+    const targetIdx = units.indexOf(targetUnit);
+    if (targetIdx !== -1) {
+      // Convert value to the requested target unit
+      val = val / Math.pow(1000, targetIdx);
+      return `${val.toFixed(decimals)} ${targetUnit}`;
+    }
+  }
+
+  // Automatic unit selection
+  let i = 0;
   while (val >= 1000 && i < units.length - 1) {
     val /= 1000;
     i++;
   }
-  return `${val.toFixed(2)} ${units[i]}`;
+  return `${val.toFixed(decimals)} ${units[i]}`;
 }
 
 // Format difficulty
-export function formatDifficulty(diff) {
+export function formatDifficulty(diff, decimals = 2) {
   if (!diff || isNaN(diff)) return '0';
   const units = ['', 'K', 'M', 'G', 'T', 'P'];
   let i = 0;
@@ -21,20 +33,38 @@ export function formatDifficulty(diff) {
     val /= 1000;
     i++;
   }
-  return `${val.toFixed(2)} ${units[i]}`;
+  return `${val.toFixed(decimals)} ${units[i]}`;
 }
 
-// Format ETC currency (converts Wei/gwei or raw atomic units if needed)
-export function formatCoins(amount, decimals = 4) {
-  if (!amount || isNaN(amount)) return '0.0000';
-  // If amount is in Wei (> 1e15), convert to ETC
+// Convert raw coins (Wei/Shannon/atomic) to standard coin float
+export function convertToCoins(amount) {
+  if (!amount || isNaN(amount)) return 0;
   let val = Number(amount);
   if (val > 1e15) {
-    val = val / 1e18;
+    return val / 1e18; // Wei to ETC
   } else if (val > 1e6 && val <= 1e15) {
-    // Some pools represent ETC in Shannon / Gwei (1e9)
-    val = val / 1e9;
+    return val / 1e9;  // Shannon/Gwei to ETC
   }
+  return val;
+}
+
+// Format ETC currency consistently across the UI (with option for compact/abbreviated representation)
+export function formatCoins(amount, decimals = 4, compact = false) {
+  const val = convertToCoins(amount);
+  
+  if (compact && val >= 1000) {
+    const coinUnits = [
+      { value: 1e9, symbol: 'B' },
+      { value: 1e6, symbol: 'M' },
+      { value: 1e3, symbol: 'K' }
+    ];
+    for (const unit of coinUnits) {
+      if (val >= unit.value) {
+        return (val / unit.value).toFixed(2) + unit.symbol;
+      }
+    }
+  }
+
   return val.toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: decimals
